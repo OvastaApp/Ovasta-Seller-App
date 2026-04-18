@@ -1,25 +1,15 @@
 package com.ovasta.sellers.presentation.home.data
 
 import com.ovasta.sellers.data.ApiResponse
-import com.ovasta.sellers.presentation.home.data.model.HomeTask
-import com.ovasta.sellers.presentation.home.data.model.PartnerStatistics
-import com.ovasta.sellers.presentation.home.data.model.PartnerStatus
-import kotlinx.coroutines.flow.Flow
+import com.ovasta.sellers.presentation.home.data.model.OrderResponse
+import com.ovasta.sellers.presentation.home.data.model.PointsInfo
 
 interface IHomeRemoteDataSource {
-    suspend fun getAssignedTasks(
-        userId: Int,
-        districtId: Int
-    ): Flow<List<HomeTask>>
-
-    suspend fun logLocation(
-        userId: Int, districtId: Int, latitude: Double, longitude: Double
+    suspend fun createOrder(
+        destination: String, clientPhone: String, clientName: String, note: String
     )
 
-    suspend fun changePartnerStatus(isOnline: Boolean)
+    suspend fun getMyOrders(): ApiResponse<List<OrderResponse>>
 
-    suspend fun getPartnerStatus(): ApiResponse<PartnerStatus>
-
-    suspend fun getPartnerStatistics(): ApiResponse<PartnerStatistics>
-
+    suspend fun getPointsInfo(): ApiResponse<PointsInfo>
 }

@@ -28,7 +28,7 @@ import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.lgMedium
 import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.base.xsMedium
-
+import com.ovasta.sellers.R
 @Composable
 fun BaseDialog(
     icon: Painter? = null,

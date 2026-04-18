@@ -1,40 +1,16 @@
 package com.ovasta.sellers.presentation.home.data
 
-import android.content.Context
 import com.ovasta.sellers.data.ApiResponse
-import com.ovasta.sellers.presentation.home.data.model.HomeTask
-import com.ovasta.sellers.presentation.home.data.model.PartnerStatistics
-import com.ovasta.sellers.presentation.home.data.model.PartnerStatus
-import kotlinx.coroutines.flow.Flow
+import com.ovasta.sellers.presentation.home.data.model.OrderResponse
+import com.ovasta.sellers.presentation.home.data.model.PointsInfo
 
 interface IHomeRepository {
-    suspend fun getAssignedTasks(
-        userId: Int,
-        districtId: Int
-    ): Flow<List<HomeTask>>
 
-    /**
-     * Starts location tracking by launching the LocationTrackerService
-     * @param context Android application context
-     */
-    suspend fun startLocationTracking(context: Context)
+    suspend fun createOrder(
+        destination: String, clientPhone: String, clientName: String, note: String
+    )
 
-    /**
-     * Stops location tracking by stopping the LocationTrackerService
-     * @param context Android application context
-     */
-    suspend fun stopLocationTracking(context: Context)
+    suspend fun getMyOrders(): ApiResponse<List<OrderResponse>>
 
-    /**
-     * Checks if location tracking is currently active
-     * @return Boolean indicating if tracking is active
-     */
-
-    suspend fun sendLocation(lat: Double, long: Double)
-
-    suspend fun changePartnerStatus(isOnline: Boolean)
-
-    suspend fun getPartnerStatus(): ApiResponse<PartnerStatus>
-
-    suspend fun getPartnerStatistics(): ApiResponse<PartnerStatistics>
+    suspend fun getPointsInfo(): ApiResponse<PointsInfo>
 }

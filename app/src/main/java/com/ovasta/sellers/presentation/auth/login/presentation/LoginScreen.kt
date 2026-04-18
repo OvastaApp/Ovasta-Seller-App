@@ -259,56 +259,6 @@ private fun LoginContent(
                             .padding(top = dimensionResource(com.intuit.sdp.R.dimen._4sdp))
                     )
                 }
-
-                // User Type Selection
-                Text(
-                    modifier = Modifier.padding(top = dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
-                    text = stringResource(R.string.agent_type),
-                    style = smMedium
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            top = dimensionResource(com.intuit.sdp.R.dimen._8sdp),
-                            bottom = dimensionResource(com.intuit.sdp.R.dimen._16sdp)
-                        ),
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(com.intuit.sdp.R.dimen._12sdp))
-                ) {
-
-                    // Delivery Agent Option
-                    UserTypeOption(
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag(LoginContentTestTag.BTN_DELIVERY_AGENT),
-                        icon = R.drawable.ic_delivery_agent,
-                        label = stringResource(R.string.courier),
-                        isSelected = viewState.selectedUserType == UserType.COURIER,
-                        onClick = { onAction(LoginAction.UserTypeChanged(UserType.COURIER)) }
-                    )
-
-                    // Picker Option
-                    UserTypeOption(
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag(LoginContentTestTag.BTN_PICKER),
-                        icon = R.drawable.ic_picker,
-                        label = stringResource(R.string.picker),
-                        isSelected = viewState.selectedUserType == UserType.WORKER,
-                        onClick = { onAction(LoginAction.UserTypeChanged(UserType.WORKER)) }
-                    )
-                    // Admin Agent Option
-                    UserTypeOption(
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag(LoginContentTestTag.BTN_DELIVERY_AGENT),
-                        icon = R.drawable.ic_admin,
-                        label = stringResource(R.string.admin),
-                        isSelected = viewState.selectedUserType == UserType.ADMIN,
-                        onClick = { onAction(LoginAction.UserTypeChanged(UserType.ADMIN)) }
-                    )
-                }
             }
 
             // Login Button - stays at bottom, above keyboard

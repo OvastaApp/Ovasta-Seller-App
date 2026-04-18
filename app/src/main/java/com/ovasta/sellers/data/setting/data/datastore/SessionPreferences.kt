@@ -17,7 +17,6 @@ import android.util.Base64
 data class SessionPreferences(
     val userLang: String = LANGUAGE_AR_ISO,
     val user: User? = null,
-    val userCountry: Country? = null,
     val remoteConfigModel: RemoteConfigModel? = null,
     val isLoggedIn: Boolean = false,
     val deviceRam: String = "",
