@@ -17,7 +17,7 @@ class HomeRepository(
         homeRemoteDataSource.getMyOrders()
     }
 
-    override suspend fun getPointsInfo() = withContext(Dispatchers.IO) {
-        homeRemoteDataSource.getPointsInfo()
+    override suspend fun getHomeInfo() = withContext(Dispatchers.IO) {
+        homeRemoteDataSource.getHomeInfo()
     }
 }

@@ -19,7 +19,7 @@ class HomeRemoteDataSource(
         homeApi.createOrder(order)
     }
 
-    override suspend fun getMyOrders() = homeApi.getMyOrders()
+    override suspend fun getMyOrders() = homeApi.getMyOrders().data
 
-    override suspend fun getPointsInfo() = homeApi.getPointsInfo()
+    override suspend fun getHomeInfo() = homeApi.getPointsInfo().data
 }

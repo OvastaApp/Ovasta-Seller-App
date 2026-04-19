@@ -2,7 +2,7 @@ package com.ovasta.sellers.presentation.home.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class OrderResponse(
+data class OrderInfo(
     @SerializedName("id") var id: Long = 0,
     @SerializedName("client_name") var clientName: String? = null,
     @SerializedName("client_address") var clientAddress: String,
