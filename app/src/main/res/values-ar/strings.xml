@@ -178,6 +178,7 @@
     <!-- Order Details Screen -->
     <string name="client_information">معلومات العميل</string>
     <string name="client_name">اسم العميل</string>
+    <string name="client_address">العنوان</string>
     <string name="client_phone">هاتف العميل</string>
     <string name="products_summary">ملخص المنتجات</string>
     <string name="total_products">إجمالي المنتجات</string>
@@ -192,4 +193,13 @@
     <string name="product_quantity">الكمية: %d</string>
     <string name="product_price_format">%.2f ج.م</string>
     <string name="source_label">المصدر: %s</string>
+
+    <!-- Seller Home -->
+    <string name="your_points">نقاطك</string>
+    <string name="equivalent_money">المبلغ المعادل</string>
+    <string name="points_rate">سعر النقطة</string>
+    <string name="my_orders">طلباتي</string>
+    <string name="no_orders_yet">لا توجد طلبات بعد</string>
+    <string name="create_order">إنشاء طلب</string>
+    <string name="call_courier">اتصل بالسائق</string>
 </resources>

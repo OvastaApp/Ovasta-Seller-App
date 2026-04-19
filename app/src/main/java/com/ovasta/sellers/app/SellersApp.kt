@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.datastore.core.DataStore
 import com.ovasta.sellers.base.di.startKoin
 import com.ovasta.sellers.base.interceptor.SessionHeaderCache
-import com.ovasta.sellers.base.services.LocationTrackerService
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,18 +21,6 @@ class SellersApp : Application(){
         val sessionDataStore: DataStore<SessionPreferences> by inject()
         CoroutineScope(Dispatchers.IO).launch {
             SessionHeaderCache.initialize(sessionDataStore)
-        }
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                LocationTrackerService.LOCATION_CHANNEL,
-                "Location",
-                NotificationManager.IMPORTANCE_LOW
-            )
-
-            val notificationManager =
-                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
         }
     }
 }

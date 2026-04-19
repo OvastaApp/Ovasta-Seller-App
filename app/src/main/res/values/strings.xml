@@ -179,6 +179,7 @@
     <!-- Order Details Screen -->
     <string name="client_information">Client Information</string>
     <string name="client_name">Client Name</string>
+    <string name="client_address">Address</string>
     <string name="client_phone">Client Phone</string>
     <string name="products_summary">Products Summary</string>
     <string name="total_products">Total Products</string>
@@ -193,4 +194,13 @@
     <string name="product_quantity">Qty: %d</string>
     <string name="product_price_format">%.2f EGP</string>
     <string name="source_label">Source: %s</string>
+
+    <!-- Seller Home -->
+    <string name="your_points">Your Points</string>
+    <string name="equivalent_money">Equivalent Money</string>
+    <string name="points_rate">Points Rate</string>
+    <string name="my_orders">My Orders</string>
+    <string name="no_orders_yet">No orders yet</string>
+    <string name="create_order">Create Order</string>
+    <string name="call_courier">Call Courier</string>
 </resources>

@@ -7,7 +7,9 @@ import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.ScreenDirection
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
+import com.ovasta.sellers.presentation.nav.CreateOrder
 import com.ovasta.sellers.presentation.nav.Login
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,42 +22,51 @@ class HomeViewModel(
     private val _viewState = MutableStateFlow(HomeViewState())
     val viewState = _viewState.asStateFlow()
 
-    fun getHomeInfo() {
+    init {
+        loadHomeData()
+    }
+
+    fun loadHomeData() {
         viewModelScope.launch {
             setComposeUILoading(true)
-            kotlin.runCatching {
-                homeRepository.getHomeInfo()
-            }.onSuccess { pointsResponse ->
-                setComposeUILoading(false)
-                updateViewState { state ->
-                    state.copy(pointsInfo = pointsResponse)
-                }
-            }.onFailure {
-                updateViewStateWithFail(it)
+            val pointsDeferred = async {
+                kotlin.runCatching { homeRepository.getHomeInfo() }
             }
+            val ordersDeferred = async {
+                kotlin.runCatching { homeRepository.getMyOrders() }
+            }
+            val pointsResult = pointsDeferred.await()
+            val ordersResult = ordersDeferred.await()
+
+            setComposeUILoading(false)
+
+            pointsResult.onSuccess { points ->
+                updateViewState { it.copy(pointsInfo = points) }
+            }.onFailure { updateViewStateWithFail(it) }
+
+            ordersResult.onSuccess { orders ->
+                updateViewState { it.copy(myOrders = orders) }
+            }.onFailure { updateViewStateWithFail(it) }
         }
     }
 
-    fun getMyOrders() {
-        viewModelScope.launch {
-            setComposeUILoading(true)
-            kotlin.runCatching {
-                homeRepository.getMyOrders()
-            }.onSuccess { ordersResponse ->
-                setComposeUILoading(false)
-                updateViewState { state ->
-                    state.copy(myOrders = ordersResponse)
-                }
-            }.onFailure {
-                updateViewStateWithFail(it)
+    fun onScreenAction(action: HomeScreenActions) {
+        when (action) {
+            is HomeScreenActions.ChangeLogoutDialogStatus ->
+                updateViewState { it.copy(isLogoutDialogVisible = action.isVisible) }
+            is HomeScreenActions.OnLogoutClicked -> logout()
+            is HomeScreenActions.CreateOrder ->
+                emitScreenDirectionEvent(ScreenDirection.Push(CreateOrder))
+            is HomeScreenActions.OrderClicked -> {
+                // TODO: navigate to order details
             }
+            else -> Unit
         }
     }
 
     fun updateViewState(update: (HomeViewState) -> HomeViewState) {
         _viewState.update(update)
     }
-
 
     fun logout() {
         viewModelScope.launch {

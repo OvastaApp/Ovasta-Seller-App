@@ -27,6 +27,7 @@ sealed interface HomeScreenActions {
 
     data class ChangeLogoutDialogStatus(val isVisible: Boolean) : HomeScreenActions
     object OnLogoutClicked : HomeScreenActions
-
-
+    object CreateOrder : HomeScreenActions
+    data class OrderClicked(val orderId: Long) : HomeScreenActions
+    data class CallCourier(val phone: String) : HomeScreenActions
 }

@@ -33,7 +33,7 @@ val Gray100 = Color(0xFFF2F4F7)
 val Base_white = Color(0xFFFFFFFF)
 val Primary50 = Color(0xFFECF3FA)
 
-val Primary = Color(0xFF6d42ba)
+val Primary = Color(0xFF006D98)
 val Primary70 = Color(0xFF195388)
 val Gray200 = Color(0xFFEAECF0)
 

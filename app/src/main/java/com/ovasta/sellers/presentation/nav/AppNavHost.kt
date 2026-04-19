@@ -26,6 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 data object Splash
 data object Login
 data object Home
+data object CreateOrder
 data class TaskDetails(val taskId: Int)
 
 
@@ -56,6 +57,11 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                         is Home -> NavEntry(key) {
                             val viewModel: HomeViewModel = koinViewModel()
                             HomeScreen(viewModel)
+                        }
+
+                        is CreateOrder -> NavEntry(key) {
+                            // TODO: Implement CreateOrderScreen
+                            Text("Create Order - Coming Soon")
                         }
 
                         is TaskDetails -> NavEntry(key) {

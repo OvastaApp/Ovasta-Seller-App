@@ -7,6 +7,8 @@ data class OrderInfo(
     @SerializedName("client_name") var clientName: String? = null,
     @SerializedName("client_address") var clientAddress: String,
     @SerializedName("client_phone") var clientPhone: String,
+    @SerializedName("order_price") var orderPrice: String,
+    @SerializedName("delivery_fees") var deliveryFees: String,
     @SerializedName("courier") var courier: Courier
 
 )
