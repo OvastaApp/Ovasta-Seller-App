@@ -17,17 +17,16 @@ import com.ovasta.sellers.presentation.auth.login.presentation.LoginScreen
 import com.ovasta.sellers.presentation.auth.login.presentation.LoginViewModel
 import com.ovasta.sellers.presentation.auth.splash.SplashScreen
 import com.ovasta.sellers.presentation.auth.splash.SplashViewModel
+import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderScreen
+import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewModel
 import com.ovasta.sellers.presentation.home.presentation.HomeScreen
 import com.ovasta.sellers.presentation.home.presentation.HomeViewModel
-import com.ovasta.sellers.presentation.orderDetails.presentation.DropOfOrderDetailsScreen
-import com.ovasta.sellers.presentation.orderDetails.presentation.TaskDetailsViewModel
 import org.koin.androidx.compose.koinViewModel
 
 data object Splash
 data object Login
 data object Home
 data object CreateOrder
-data class TaskDetails(val taskId: Int)
 
 
 @Composable
@@ -60,17 +59,10 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                         }
 
                         is CreateOrder -> NavEntry(key) {
-                            // TODO: Implement CreateOrderScreen
-                            Text("Create Order - Coming Soon")
+                            val viewModel: CreateOrderViewModel = koinViewModel()
+                            CreateOrderScreen(viewModel = viewModel)
                         }
 
-                        is TaskDetails -> NavEntry(key) {
-                            val viewModel: TaskDetailsViewModel = koinViewModel()
-                            DropOfOrderDetailsScreen(
-                                viewModel = viewModel,
-                                taskId = key.taskId,
-                            )
-                        }
 
                         else -> NavEntry(Unit) { Text("Unknown route") }
                     }
@@ -79,6 +71,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         }
     }
 }
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun PreviewHomeNavigationBar() {

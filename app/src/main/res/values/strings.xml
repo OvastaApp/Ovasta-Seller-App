@@ -203,4 +203,25 @@
     <string name="no_orders_yet">No orders yet</string>
     <string name="create_order">Create Order</string>
     <string name="call_courier">Call Courier</string>
+
+    <!-- Create Order Screen -->
+    <string name="customer_information">Customer Information</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="collection_amount">Collection Amount</string>
+    <string name="when_to_deliver">When to deliver?</string>
+    <string name="now">Now</string>
+    <string name="later">Later</string>
+    <string name="delivery_date">Delivery Date (DD/MM/YYYY)</string>
+    <string name="confirm_order_title">Confirm Order</string>
+    <string name="confirm_order_message">Are you sure you want to create this order?</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Validation Messages -->
+    <string name="customer_name_required">Customer name is required</string>
+    <string name="valid_phone_required">Valid phone number is required</string>
+    <string name="address_required">Address is required</string>
+    <string name="valid_amount_required">Valid amount is required</string>
+    <string name="delivery_date_required">Delivery date is required</string>
+    <string name="delivery_time_required">Delivery time is required</string>
 </resources>

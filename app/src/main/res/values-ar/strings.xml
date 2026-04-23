@@ -58,7 +58,7 @@
     <string name="out_for_delivery">خارج للتوصيل</string>
     <string name="unknown">غير معروف</string>
     <string name="account">الحساب</string>
-    <string name="personal_info">المعلومات الشخصية</string>
+    <string name="personal_info">معلومات العميل</string>
     <string name="saved_addresses">العناوين المحفوظة</string>
     <string name="favourites">المفضلة</string>
     <string name="settings">الإعدادات</string>
@@ -78,7 +78,6 @@
     <string name="no_order_details">لا توجد تفاصيل للطلب</string>
     <string name="delivered_at">تم التوصيل في %s</string>
     <string name="branch">الفرع</string>
-    <string name="delivery_address">عنوان التوصيل</string>
     <string name="notes">ملاحظات</string>
     <string name="item_price">%s ريال</string>
     <string name="pricing_summary">ملخص التسعير</string>
@@ -202,4 +201,26 @@
     <string name="no_orders_yet">لا توجد طلبات بعد</string>
     <string name="create_order">إنشاء طلب</string>
     <string name="call_courier">اتصل بالسائق</string>
+
+    <!-- Create Order Screen -->
+    <string name="customer_information">معلومات العميل</string>
+    <string name="customer_name">اسم العميل</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="delivery_address">عنوان التوصيل</string>
+    <string name="collection_amount">مبلغ التحصيل</string>
+    <string name="when_to_deliver">متى التوصيل؟</string>
+    <string name="now">الآن</string>
+    <string name="later">لاحقاً</string>
+    <string name="delivery_date">تاريخ التوصيل (يوم/شهر/سنة)</string>
+    <string name="confirm_order_title">تأكيد الطلب</string>
+    <string name="confirm_order_message">هل أنت متأكد من إنشاء هذا الطلب؟</string>
+    <string name="cancel">إلغاء</string>
+
+    <!-- Validation Messages -->
+    <string name="customer_name_required">اسم العميل مطلوب</string>
+    <string name="valid_phone_required">رقم هاتف صحيح مطلوب</string>
+    <string name="address_required">العنوان مطلوب</string>
+    <string name="valid_amount_required">مبلغ صحيح مطلوب</string>
+    <string name="delivery_date_required">تاريخ التوصيل مطلوب</string>
+    <string name="delivery_time_required">وقت التوصيل مطلوب</string>
 </resources>
