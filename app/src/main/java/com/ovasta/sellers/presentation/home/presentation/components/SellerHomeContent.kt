@@ -34,14 +34,18 @@ import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 import com.ovasta.sellers.presentation.home.presentation.HomeScreenActions
 import com.ovasta.sellers.presentation.home.presentation.HomeViewState
 import com.ovasta.sellers.ui.theme.BLACK
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SellerHomeContent(
     viewState: HomeViewState,
-    onAction: (HomeScreenActions) -> Unit,
+    onAction: (HomeScreenActions) -> Unit
 ) {
     Scaffold(
+        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
@@ -58,11 +62,11 @@ fun SellerHomeContent(
                 })
         },
         floatingActionButton = {},
-    ) { padding ->
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(paddingValues)
                 .background(Gray100),
             contentPadding = PaddingValues(dimensionResource(com.intuit.sdp.R.dimen._12sdp)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(com.intuit.sdp.R.dimen._12sdp))
@@ -358,4 +362,3 @@ fun SellerHomeContentPreview() {
             )
         ), onAction = {})
 }
-

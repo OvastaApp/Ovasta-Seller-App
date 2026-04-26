@@ -60,9 +60,10 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
                         is CreateOrder -> NavEntry(key) {
                             val viewModel: CreateOrderViewModel = koinViewModel()
-                            CreateOrderScreen(viewModel = viewModel)
+                            CreateOrderScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navigator.pop() })
                         }
-
 
                         else -> NavEntry(Unit) { Text("Unknown route") }
                     }

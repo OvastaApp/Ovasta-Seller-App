@@ -115,7 +115,7 @@
     <string name="agent_type">نوع العمل</string>
     <string name="try_again">حاول مرة أخرى</string>
     <string name="an_error_occurred">حدث خطأ</string>
-    <string name="back">عودة</string>
+    <string name="back">رجوع</string>
     <string name="message_on_whatsapp">إرسال رسالة على واتساب</string>
     <string name="copy">نسخ</string>
     <string name="hash_task">#%s</string>

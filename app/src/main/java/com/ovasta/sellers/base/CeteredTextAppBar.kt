@@ -23,7 +23,7 @@ fun CenteredTextAppBar(
 ) {
     CenterAlignedTopAppBar(
         modifier = Modifier, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Base_white
+            containerColor = Color.White
         ),
         title = {
             Text(
