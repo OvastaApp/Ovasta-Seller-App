@@ -21,19 +21,16 @@ import com.ovasta.sellers.base.CenteredTextAppBar
 import com.ovasta.sellers.base.Gray100
 import com.ovasta.sellers.base.Gray200
 import com.ovasta.sellers.base.Gray500
-import com.ovasta.sellers.base.Gray600
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.lgSemiBold
 import com.ovasta.sellers.base.mdRegular
 import com.ovasta.sellers.base.mdSemiBold
-import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.base.smSemiBold
-import com.ovasta.sellers.base.xlSemiBold
 import com.ovasta.sellers.base.xsMedium
 import com.ovasta.sellers.presentation.home.data.model.OrderInfo
 import com.ovasta.sellers.presentation.home.data.model.Courier
-import com.ovasta.sellers.presentation.home.data.model.PointsInfo
+import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 import com.ovasta.sellers.presentation.home.presentation.HomeScreenActions
 import com.ovasta.sellers.presentation.home.presentation.HomeViewState
 import com.ovasta.sellers.ui.theme.BLACK
@@ -48,9 +45,7 @@ fun SellerHomeContent(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
-                title = stringResource(R.string.home),
-                showBackButton = false,
-                actions = {
+                title = stringResource(R.string.home), showBackButton = false, actions = {
                     IconButton(onClick = {
                         onAction(HomeScreenActions.ChangeLogoutDialogStatus(isVisible = true))
                     }) {
@@ -60,8 +55,7 @@ fun SellerHomeContent(
                             tint = Color.Black
                         )
                     }
-                }
-            )
+                })
         },
         floatingActionButton = {},
     ) { padding ->
@@ -75,7 +69,7 @@ fun SellerHomeContent(
         ) {
             // Points card
             item(key = "points") {
-                PointsCard(pointsInfo = viewState.pointsInfo)
+                PointsCard(homeInfo = viewState.homeInfo)
             }
 
             // Orders header + Create order button
@@ -133,8 +127,7 @@ fun SellerHomeContent(
                     OrderCard(
                         order = order,
                         onClick = { onAction(HomeScreenActions.OrderClicked(order.id)) },
-                        onCallCourier = { phone -> onAction(HomeScreenActions.CallCourier(phone)) }
-                    )
+                        onCallCourier = { phone -> onAction(HomeScreenActions.CallCourier(phone)) })
                 }
             }
 
@@ -145,7 +138,7 @@ fun SellerHomeContent(
 }
 
 @Composable
-private fun PointsCard(pointsInfo: PointsInfo?) {
+private fun PointsCard(homeInfo: HomeInfo?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(dimensionResource(com.intuit.sdp.R.dimen._12sdp)),
@@ -162,26 +155,22 @@ private fun PointsCard(pointsInfo: PointsInfo?) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            val points = pointsInfo?.points ?: 0
-            val money = String.format("%.0f", pointsInfo?.deliveryProfitSum ?: 0.0)
-            val rate = String.format("%.1f", pointsInfo?.pointsRate ?: 0.0)
+            val points = homeInfo?.pointsCount ?: 0
+            val money = String.format("%.0f", homeInfo?.walletBalance ?: 0.0)
+            val rate = String.format("%.1f", homeInfo?.pointsPerPound ?: 0.0)
 
             Text(
-                text = "$points ",
-                style = lgSemiBold.copy(color = Primary)
+                text = "$points ", style = lgSemiBold.copy(color = Primary)
             )
             Text(
-                text = "pt  ≈  ",
-                style = smNormal.copy(color = Gray500)
+                text = "pt  ≈  ", style = smNormal.copy(color = Gray500)
             )
             Text(
-                text = "$money EGP",
-                style = mdSemiBold.copy(color = BLACK)
+                text = "$money EGP", style = mdSemiBold.copy(color = BLACK)
             )
             Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
             Text(
-                text = "(1pt = $rate)",
-                style = xsMedium.copy(color = Gray500)
+                text = "(1pt = $rate)", style = xsMedium.copy(color = Gray500)
             )
         }
     }
@@ -218,21 +207,18 @@ private fun OrderCard(order: OrderInfo, onClick: () -> Unit, onCallCourier: (Str
             // Client info section
             if (!order.clientName.isNullOrEmpty()) {
                 InfoRow(
-                    icon = R.drawable.ic_profile,
-                    value = order.clientName!!
+                    icon = R.drawable.ic_profile, value = order.clientName!!
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
             }
 
             InfoRow(
-                icon = R.drawable.ic_location,
-                value = order.clientAddress
+                icon = R.drawable.ic_location, value = order.clientAddress
             )
             Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
 
             InfoRow(
-                icon = R.drawable.ic_call,
-                value = order.clientPhone
+                icon = R.drawable.ic_call, value = order.clientPhone
             )
 
             Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
@@ -241,8 +227,7 @@ private fun OrderCard(order: OrderInfo, onClick: () -> Unit, onCallCourier: (Str
 
             // Pricing section
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -347,8 +332,12 @@ private fun InfoRow(icon: Int, value: String) {
 fun SellerHomeContentPreview() {
     SellerHomeContent(
         viewState = HomeViewState(
-            pointsInfo = PointsInfo(points = 1250, deliveryProfitSum = 625.0, pointsRate = 0.5),
-            myOrders = listOf(
+            homeInfo = HomeInfo(
+                walletBalance = 120.50,
+                pointsCount = 300.00,
+                pointsPerPound = 5.0,
+                minRedeemPoints = 140.0
+            ), myOrders = listOf(
                 OrderInfo(
                     id = 101,
                     clientName = "Ahmed Mohamed",
@@ -357,8 +346,7 @@ fun SellerHomeContentPreview() {
                     orderPrice = "150.00",
                     deliveryFees = "25.00",
                     courier = Courier(id = 1, name = "Courier 1", phone = "010000")
-                ),
-                OrderInfo(
+                ), OrderInfo(
                     id = 102,
                     clientName = "Sara Ali",
                     clientAddress = "Maadi, Cairo",
@@ -368,8 +356,6 @@ fun SellerHomeContentPreview() {
                     courier = Courier(id = 2, name = "Courier 2", phone = "010001")
                 )
             )
-        ),
-        onAction = {}
-    )
+        ), onAction = {})
 }
 

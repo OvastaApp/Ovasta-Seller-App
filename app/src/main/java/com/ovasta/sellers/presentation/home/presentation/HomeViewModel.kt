@@ -41,7 +41,7 @@ class HomeViewModel(
             setComposeUILoading(false)
 
             pointsResult.onSuccess { points ->
-                updateViewState { it.copy(pointsInfo = points) }
+                updateViewState { it.copy(homeInfo = points) }
             }.onFailure { updateViewStateWithFail(it) }
 
             ordersResult.onSuccess { orders ->

@@ -6,5 +6,5 @@ class HomeRemoteDataSource(
 ) : IHomeRemoteDataSource {
     override suspend fun getMyOrders() = homeApi.getMyOrders().data
 
-    override suspend fun getHomeInfo() = homeApi.getPointsInfo().data
+    override suspend fun getHomeInfo() = homeApi.getHome().data
 }

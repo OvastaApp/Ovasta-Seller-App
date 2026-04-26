@@ -8,8 +8,8 @@ import com.ovasta.sellers.presentation.auth.login.data.model.LoginRequest
 class LoginRemoteDataSource(private val loginApi: LoginApi) :
     ILoginRemoteDataSource {
 
-    override suspend fun login(phone: String, password: String, userType: Int):  ApiResponse<User> {
-        val loginData = LoginRequest(mobile = phone, password, userType)
+    override suspend fun login(phone: String, password: String, userType: Int): ApiResponse<User> {
+        val loginData = LoginRequest(mobile = phone, password)
         return loginApi.login(login = loginData)
     }
 
