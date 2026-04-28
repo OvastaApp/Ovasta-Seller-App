@@ -69,7 +69,7 @@ fun SellerHomeContent(
     var showCancelDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
@@ -299,7 +299,8 @@ private fun DeliveryOrderCard(
 
                 // Pricing section
                 Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
