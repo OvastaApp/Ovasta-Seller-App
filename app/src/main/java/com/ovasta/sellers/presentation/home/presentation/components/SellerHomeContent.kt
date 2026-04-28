@@ -43,7 +43,11 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.ui.platform.LocalContext
+import com.ovasta.sellers.base.Amber
+import com.ovasta.sellers.base.Green
 import com.ovasta.sellers.base.ext.makePhoneCall
+import com.ovasta.sellers.presentation.home.data.model.OrderSteps
+import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -353,11 +357,13 @@ private fun DeliveryOrderCard(
 
 @Composable
 private fun StatusBadge(statusId: Int) {
-    val (text, color) = when (statusId) {
-        1 -> Pair(stringResource(R.string.status_pending), Color.Gray)
-        2 -> Pair(stringResource(R.string.status_assigned), Primary)
-        3 -> Pair(stringResource(R.string.status_delivered), Color(0xFF4CAF50))
-        4 -> Pair(stringResource(R.string.status_cancelled), Color.Red)
+    val stepId = fromStatusId(statusId)
+    val (text, color) = when (stepId) {
+        OrderSteps.Pending -> Pair(stringResource(R.string.status_pending), Color.Gray)
+        OrderSteps.Assigned -> Pair(stringResource(R.string.status_assigned), Primary)
+        OrderSteps.Picked -> Pair(stringResource(R.string.status_picked), Amber)
+        OrderSteps.Delivered -> Pair(stringResource(R.string.status_delivered), Green)
+        OrderSteps.Canceled -> Pair(stringResource(R.string.status_cancelled), Color.Red)
         else -> Pair("-", Color.Gray)
     }
     Surface(

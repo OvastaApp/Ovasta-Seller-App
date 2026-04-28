@@ -7,11 +7,15 @@ class HomeRepository(
     private val homeRemoteDataSource: IHomeRemoteDataSource,
 ) : IHomeRepository {
 
-    override suspend fun getMyOrders(page: Int?) = withContext(Dispatchers.IO) {
-        homeRemoteDataSource.getMyOrders(page)
+    override suspend fun getCurrentOrders(page: Int?) = withContext(Dispatchers.IO) {
+        homeRemoteDataSource.getCurrentOrders(page)
     }
 
     override suspend fun getHomeInfo() = withContext(Dispatchers.IO) {
         homeRemoteDataSource.getHomeInfo()
+    }
+
+    override suspend fun cancelOrder(orderId: Int) = withContext(Dispatchers.IO) {
+        homeRemoteDataSource.cancelOrder(orderId)
     }
 }

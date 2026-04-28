@@ -1,13 +1,11 @@
 package com.ovasta.sellers.presentation.home.presentation
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
 import com.ovasta.sellers.presentation.home.data.IHomeRepository
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.ScreenDirection
 import com.ovasta.sellers.base.exception.toComposeUIException
-import com.ovasta.sellers.base.ext.makePhoneCall
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.nav.CreateOrder
 import com.ovasta.sellers.presentation.nav.Login
@@ -15,9 +13,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import com.ovasta.sellers.presentation.home.data.model.DeliveryOrder
-import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 
 class HomeViewModel(
     val homeRepository: IHomeRepository,
@@ -42,7 +37,7 @@ class HomeViewModel(
                 kotlin.runCatching { homeRepository.getHomeInfo() }
             }
             val ordersDeferred = async {
-                kotlin.runCatching { homeRepository.getMyOrders(page) }
+                runCatching { homeRepository.getCurrentOrders(page) }
             }
             val pointsResult = pointsDeferred.await()
             val ordersResult = ordersDeferred.await()
@@ -72,6 +67,7 @@ class HomeViewModel(
             is HomeScreenActions.OrderClicked -> {
                 // TODO: navigate to order details
             }
+
             is HomeScreenActions.RefreshHome -> loadHomeData(isRefresh = true)
 
             else -> Unit
@@ -80,6 +76,20 @@ class HomeViewModel(
 
     fun updateViewState(update: (HomeViewState) -> HomeViewState) {
         _viewState.update(update)
+    }
+
+    fun cancelOrder(orderId: Int) {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            kotlin.runCatching {
+                homeRepository.cancelOrder(orderId)
+            }.onSuccess {
+                setComposeUILoading(false)
+                loadHomeData(isRefresh = true)
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
+        }
     }
 
     fun logout() {

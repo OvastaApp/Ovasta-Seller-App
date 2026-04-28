@@ -10,7 +10,7 @@ data class Orders(
     @SerializedName("date") val date: String,
     @SerializedName("total_price") val totalPrice: Double,
     @SerializedName("discount") val discount: Double,
-    //@SerializedName("order_status") val orderStatus: OrderStatus?,
+    //@SerializedName("order_status") val orderStatus: OrderSteps?,
     @SerializedName("coupons") val coupons: Double,
     @SerializedName("weight") val weight: Float,
     @SerializedName("partner_name") val partnerName: String,
