@@ -1,5 +1,6 @@
 package com.ovasta.sellers.presentation.home.presentation
 
+import android.content.Context
 import com.ovasta.sellers.presentation.home.data.model.HomeTask
 
 
@@ -16,18 +17,10 @@ sealed interface HomeItemActions {
 }
 
 sealed interface HomeScreenActions {
-    data object LoadTasks : HomeScreenActions
-    data class OnSearchKeyChange(val searchKey: String) : HomeScreenActions
-    data object ClearToastMessage : HomeScreenActions
-
-    data object OnSearchTriggered : HomeScreenActions
-    data object RefreshTasks : HomeScreenActions
-
-    object ToggleTracking : HomeScreenActions
-
     data class ChangeLogoutDialogStatus(val isVisible: Boolean) : HomeScreenActions
     object OnLogoutClicked : HomeScreenActions
     object CreateOrder : HomeScreenActions
     data class OrderClicked(val orderId: Long) : HomeScreenActions
     data class CallCourier(val phone: String) : HomeScreenActions
+    object RefreshHome : HomeScreenActions
 }

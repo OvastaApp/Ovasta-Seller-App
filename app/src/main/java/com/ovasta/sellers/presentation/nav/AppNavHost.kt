@@ -26,8 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 data object Splash
 data object Login
 data object Home
-data object CreateOrder
-
+data class CreateOrder(val id: Long = System.currentTimeMillis())
 
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
@@ -59,7 +58,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                         }
 
                         is CreateOrder -> NavEntry(key) {
-                            val viewModel: CreateOrderViewModel = koinViewModel()
+                            val viewModel: CreateOrderViewModel =
+                                koinViewModel(key = key.id.toString())
                             CreateOrderScreen(
                                 viewModel = viewModel,
                                 onNavigateBack = { navigator.pop() })

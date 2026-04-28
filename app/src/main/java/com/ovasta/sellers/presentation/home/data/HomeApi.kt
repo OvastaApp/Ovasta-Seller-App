@@ -1,14 +1,16 @@
 package com.ovasta.sellers.presentation.home.data
 
 import com.ovasta.sellers.data.ApiResponse
+import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
 import com.ovasta.sellers.presentation.home.data.model.HomeInfo
-import com.ovasta.sellers.presentation.home.data.model.OrderInfo
 import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface HomeApi {
-    @POST("orders")
-    suspend fun getMyOrders(): ApiResponse<List<OrderInfo>>
+    @GET("delivery-orders")
+    suspend fun getMyOrders(
+        @Query("page") page: Int? = null
+    ): ApiResponse<DeliveryOrdersResponse>
 
     @GET("home")
     suspend fun getHome(): ApiResponse<HomeInfo>

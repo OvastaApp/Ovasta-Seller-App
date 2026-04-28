@@ -8,6 +8,9 @@ sealed class ScreenDirection {
     data class Push(val screen: Any) : ScreenDirection()
     object Pop : ScreenDirection()
     data class Replace(val screen: Any) : ScreenDirection()
+    data class ReplaceAll(val screen: Any) : ScreenDirection() // 👈 جديد
+
+
 }
 
 @Composable
@@ -23,6 +26,8 @@ fun ScreenDirectionEventHandler(
                 is ScreenDirection.Push -> navigator.push(direction.screen)
                 is ScreenDirection.Pop -> navigator.pop()
                 is ScreenDirection.Replace -> navigator.replace(direction.screen)
+                is ScreenDirection.ReplaceAll -> navigator.replaceAll(direction.screen) // 👈 مهم
+
                 null -> Unit
             }
         }

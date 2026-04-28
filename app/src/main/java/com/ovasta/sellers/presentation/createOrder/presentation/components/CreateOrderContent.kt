@@ -59,16 +59,13 @@ fun CreateOrderContent(
         containerColor = Color.White,
         topBar = {
             Surface(
-                shadowElevation = 2.dp,
-                color = Color.White
+                shadowElevation = 2.dp, color = Color.White
             ) {
                 CenteredTextAppBar(
                     stringResource(R.string.order_details),
-                    onBackButtonPressed = { onNavigateBack() }
-                )
+                    onBackButtonPressed = { onNavigateBack() })
             }
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -86,7 +83,10 @@ fun CreateOrderContent(
 
                 OrderTextField(
                     value = viewState.customerPhone,
-                    onValueChange = { onAction(CreateOrderScreenActions.OnCustomerPhoneChanged(it)) },
+                    onValueChange = { input ->
+                        val filtered = input.filter { it.isDigit() }.take(11)
+                        onAction(CreateOrderScreenActions.OnCustomerPhoneChanged(filtered))
+                    },
                     label = stringResource(R.string.phone_number),
                     error = viewState.customerPhoneError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -106,7 +106,11 @@ fun CreateOrderContent(
 
                 OrderTextField(
                     value = viewState.collectionAmount,
-                    onValueChange = { onAction(CreateOrderScreenActions.OnCollectionAmountChanged(it)) },
+                    onValueChange = { input ->
+                        val filtered = input.filter { it.isDigit() || it == '.' }
+                            .take(7)
+                        onAction(CreateOrderScreenActions.OnCollectionAmountChanged(filtered))
+                    },
                     label = stringResource(R.string.collection_amount),
                     error = viewState.collectionAmountError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -117,8 +121,11 @@ fun CreateOrderContent(
 
                 OrderTextField(
                     value = viewState.deliveryFees,
-                    onValueChange = { onAction(CreateOrderScreenActions.OnDeliveryFeesChanged(it)) },
-                    label = stringResource(R.string.delivery_fees),
+                    onValueChange = { input ->
+                        val filtered = input.filter { it.isDigit() || it == '.' }
+                            .take(7)
+                        onAction(CreateOrderScreenActions.OnDeliveryFeesChanged(filtered))
+                    },                    label = stringResource(R.string.delivery_fees),
                     error = viewState.deliveryFeesError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     minLines = 1,
@@ -183,9 +190,11 @@ fun CreateOrderContent(
             onPrimaryClick = {
                 onAction(CreateOrderScreenActions.OnConfirmSubmit)
             },
+            onSecondaryClick = { onAction(CreateOrderScreenActions.OnDismissConfirmDialog) },
             onDismiss = {
                 onAction(CreateOrderScreenActions.OnDismissConfirmDialog)
             }
+
         )
     }
 }
@@ -209,9 +218,7 @@ private fun OrderTextField(
         supportingText = error?.let {
             {
                 Text(
-                    it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = xsMedium
+                    it, color = MaterialTheme.colorScheme.error, style = xsMedium
                 )
             }
         },
@@ -238,9 +245,7 @@ private fun PreviewCreateOrderContent() {
             collectionAmount = "250.00",
             deliveryFees = "20.00",
             deliveryTiming = DeliveryTiming.NOW
-        ),
-        onAction = {}
-    )
+        ), onAction = {})
 }
 
 @Preview(showBackground = true, locale = "ar")
@@ -255,7 +260,5 @@ private fun PreviewCreateOrderContentLater() {
             deliveryTiming = DeliveryTiming.LATER,
             scheduledDate = "25/12/2024",
             scheduledTime = "14:30"
-        ),
-        onAction = {}
-    )
+        ), onAction = {})
 }

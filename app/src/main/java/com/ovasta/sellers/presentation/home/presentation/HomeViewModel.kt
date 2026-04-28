@@ -1,11 +1,13 @@
 package com.ovasta.sellers.presentation.home.presentation
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
 import com.ovasta.sellers.presentation.home.data.IHomeRepository
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.ScreenDirection
 import com.ovasta.sellers.base.exception.toComposeUIException
+import com.ovasta.sellers.base.ext.makePhoneCall
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.nav.CreateOrder
 import com.ovasta.sellers.presentation.nav.Login
@@ -13,6 +15,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import com.ovasta.sellers.presentation.home.data.model.DeliveryOrder
+import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
+import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 
 class HomeViewModel(
     val homeRepository: IHomeRepository,
@@ -26,26 +31,31 @@ class HomeViewModel(
         loadHomeData()
     }
 
-    fun loadHomeData() {
+    fun loadHomeData(statusId: Int? = null, page: Int? = null, isRefresh: Boolean = false) {
         viewModelScope.launch {
-            setComposeUILoading(true)
+            if (isRefresh) {
+                updateViewState { it.copy(isRefreshing = true) }
+            } else {
+                setComposeUILoading(true)
+            }
             val pointsDeferred = async {
                 kotlin.runCatching { homeRepository.getHomeInfo() }
             }
             val ordersDeferred = async {
-                kotlin.runCatching { homeRepository.getMyOrders() }
+                kotlin.runCatching { homeRepository.getMyOrders(page) }
             }
             val pointsResult = pointsDeferred.await()
             val ordersResult = ordersDeferred.await()
 
             setComposeUILoading(false)
+            updateViewState { it.copy(isRefreshing = false) }
 
             pointsResult.onSuccess { points ->
                 updateViewState { it.copy(homeInfo = points) }
             }.onFailure { updateViewStateWithFail(it) }
 
-            ordersResult.onSuccess { orders ->
-                updateViewState { it.copy(myOrders = orders) }
+            ordersResult.onSuccess { ordersResponse ->
+                updateViewState { it.copy(deliveryOrdersResponse = ordersResponse) }
             }.onFailure { updateViewStateWithFail(it) }
         }
     }
@@ -54,12 +64,16 @@ class HomeViewModel(
         when (action) {
             is HomeScreenActions.ChangeLogoutDialogStatus ->
                 updateViewState { it.copy(isLogoutDialogVisible = action.isVisible) }
+
             is HomeScreenActions.OnLogoutClicked -> logout()
             is HomeScreenActions.CreateOrder ->
-                emitScreenDirectionEvent(ScreenDirection.Push(CreateOrder))
+                emitScreenDirectionEvent(ScreenDirection.Push(CreateOrder()))
+
             is HomeScreenActions.OrderClicked -> {
                 // TODO: navigate to order details
             }
+            is HomeScreenActions.RefreshHome -> loadHomeData(isRefresh = true)
+
             else -> Unit
         }
     }

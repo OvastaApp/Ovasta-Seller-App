@@ -224,4 +224,8 @@
     <string name="delivery_date_required">تاريخ التوصيل مطلوب</string>
     <string name="delivery_time_required">وقت التوصيل مطلوب</string>
     <string name="order_submitted_successfully">تم إنشاء الطلب بنجاح</string>
+    <string name="status_pending">قيد الانتظار</string>
+    <string name="status_assigned">تم التعيين</string>
+    <string name="status_delivered">تم التسليم</string>
+    <string name="status_cancelled">تم الإلغاء</string>
 </resources>
