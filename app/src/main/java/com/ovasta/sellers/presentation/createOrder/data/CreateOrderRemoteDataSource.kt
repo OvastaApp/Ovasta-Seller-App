@@ -1,5 +1,6 @@
 package com.ovasta.sellers.presentation.createOrder.data
 
+import com.google.gson.annotations.SerializedName
 import com.ovasta.sellers.presentation.createOrder.data.model.CreateOrderRequest
 
 
@@ -10,16 +11,16 @@ class CreateOrderRemoteDataSource(
     override suspend fun createOrder(
         destination: String,
         clientPhone: String,
-        clientName: String,
         collectionAmount: Double,
-        note: String
+        deliveryFees: Double,
+        note: String?
     ) {
         val order = CreateOrderRequest(
             destination = destination,
             clientPhone = clientPhone,
-            clientName = clientName,
-            collectionAmount =collectionAmount,
-            note = note
+            collectionAmount = collectionAmount,
+            deliveryFees = deliveryFees,
+            note = note ?: ""
         )
         createOrderApi.createOrder(order)
     }

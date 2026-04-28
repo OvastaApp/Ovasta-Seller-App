@@ -143,7 +143,6 @@
     <string name="yes">نعم</string>
     <string name="are_you_sure_you_want_to_add_products">هل أنت متأكد أنك تريد إضافة المنتجات؟</string>
     <string name="add_products">إضافة المنتجات</string>
-    <string name="task_details">تفاصيل المهمة</string>
     <string name="required_to_be_received">يجب استلامها</string>
     <string name="deleted_products">المنتجات المحذوفة</string>
     <string name="view_deleted_products">عرض المنتجات المحذوفة</string>
@@ -224,4 +223,5 @@
     <string name="valid_amount_required">مبلغ صحيح مطلوب</string>
     <string name="delivery_date_required">تاريخ التوصيل مطلوب</string>
     <string name="delivery_time_required">وقت التوصيل مطلوب</string>
+    <string name="order_submitted_successfully">تم إنشاء الطلب بنجاح</string>
 </resources>

@@ -1,28 +1,28 @@
 package com.ovasta.sellers.presentation.createOrder.presentation.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.R
 import com.ovasta.sellers.base.CenteredTextAppBar
-import com.ovasta.sellers.base.lgSemiBold
+import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.mdMedium
 import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smMedium
@@ -34,7 +34,7 @@ import com.ovasta.sellers.presentation.createOrder.presentation.isValid
 
 private val BrandColor = Color(0xFF006D98)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun CreateOrderContent(
     viewState: CreateOrderViewState,
@@ -42,6 +42,15 @@ fun CreateOrderContent(
     onNavigateBack: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // FocusRequesters for each input
+    val nameFocusRequester = remember { FocusRequester() }
+    val phoneFocusRequester = remember { FocusRequester() }
+    val addressFocusRequester = remember { FocusRequester() }
+    val collectionAmountFocusRequester = remember { FocusRequester() }
+    val deliveryFeesFocusRequester = remember { FocusRequester() }
 
     Scaffold(
         modifier = Modifier
@@ -54,7 +63,7 @@ fun CreateOrderContent(
                 color = Color.White
             ) {
                 CenteredTextAppBar(
-                    stringResource(R.string.task_details),
+                    stringResource(R.string.order_details),
                     onBackButtonPressed = { onNavigateBack() }
                 )
             }
@@ -74,26 +83,16 @@ fun CreateOrderContent(
                     .imePadding(),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Customer Information Section
-                Text(
-                    text = stringResource(R.string.customer_information),
-                    style = lgSemiBold,
-                    color = BrandColor
-                )
-
-                OrderTextField(
-                    value = viewState.customerName,
-                    onValueChange = { onAction(CreateOrderScreenActions.OnCustomerNameChanged(it)) },
-                    label = stringResource(R.string.customer_name),
-                    error = viewState.customerNameError
-                )
 
                 OrderTextField(
                     value = viewState.customerPhone,
                     onValueChange = { onAction(CreateOrderScreenActions.OnCustomerPhoneChanged(it)) },
                     label = stringResource(R.string.phone_number),
                     error = viewState.customerPhoneError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    minLines = 1,
+                    maxLines = 1,
+                    modifier = Modifier.focusRequester(phoneFocusRequester)
                 )
 
                 OrderTextField(
@@ -101,7 +100,8 @@ fun CreateOrderContent(
                     onValueChange = { onAction(CreateOrderScreenActions.OnCustomerAddressChanged(it)) },
                     label = stringResource(R.string.delivery_address),
                     error = viewState.customerAddressError,
-                    minLines = 2
+                    minLines = 2,
+                    modifier = Modifier.focusRequester(addressFocusRequester)
                 )
 
                 OrderTextField(
@@ -109,83 +109,36 @@ fun CreateOrderContent(
                     onValueChange = { onAction(CreateOrderScreenActions.OnCollectionAmountChanged(it)) },
                     label = stringResource(R.string.collection_amount),
                     error = viewState.collectionAmountError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    minLines = 1,
+                    maxLines = 1,
+                    modifier = Modifier.focusRequester(collectionAmountFocusRequester)
                 )
 
-
-                // Delivery Timing Section
-                Text(
-                    text = stringResource(R.string.when_to_deliver),
-                    style = lgSemiBold,
-                    color = BrandColor
+                OrderTextField(
+                    value = viewState.deliveryFees,
+                    onValueChange = { onAction(CreateOrderScreenActions.OnDeliveryFeesChanged(it)) },
+                    label = stringResource(R.string.delivery_fees),
+                    error = viewState.deliveryFeesError,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    minLines = 1,
+                    maxLines = 1,
+                    modifier = Modifier.focusRequester(deliveryFeesFocusRequester)
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    DeliveryTimingOption(
-                        text = stringResource(R.string.now),
-                        isSelected = viewState.deliveryTiming == DeliveryTiming.NOW,
-                        onClick = {
-                            onAction(
-                                CreateOrderScreenActions.OnDeliveryTimingChanged(
-                                    DeliveryTiming.NOW
-                                )
-                            )
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                    DeliveryTimingOption(
-                        text = stringResource(R.string.later),
-                        isSelected = viewState.deliveryTiming == DeliveryTiming.LATER,
-                        onClick = {
-                            onAction(
-                                CreateOrderScreenActions.OnDeliveryTimingChanged(
-                                    DeliveryTiming.LATER
-                                )
-                            )
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                // Show date/time pickers if LATER is selected
-                if (viewState.deliveryTiming == DeliveryTiming.LATER) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Scheduled Date
-                        OrderTextField(
-                            value = viewState.scheduledDate,
-                            onValueChange = {
-                                onAction(
-                                    CreateOrderScreenActions.OnScheduledDateChanged(
-                                        it
-                                    )
-                                )
-                            },
-                            label = stringResource(R.string.delivery_date),
-                            error = viewState.scheduledDateError,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                        )
-
-                        // Scheduled Time
-                        OrderTextField(
-                            value = viewState.scheduledTime,
-                            onValueChange = {
-                                onAction(
-                                    CreateOrderScreenActions.OnScheduledTimeChanged(
-                                        it
-                                    )
-                                )
-                            },
-                            label = stringResource(R.string.delivery_time),
-                            error = viewState.scheduledTimeError,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                        )
-                    }
-                }
+                // --- Add Note Field (not required, max 4 lines) ---
+                OrderTextField(
+                    value = viewState.note,
+                    onValueChange = {
+                        if (it.lines().size <= 4) {
+                            onAction(CreateOrderScreenActions.OnNoteChanged(it))
+                        }
+                    },
+                    label = stringResource(R.string.notes),
+                    error = null,
+                    minLines = 1,
+                    maxLines = 4,
+                )
             }
 
             // Submit Button - Fixed at bottom with background
@@ -219,69 +172,24 @@ fun CreateOrderContent(
         }
     }
 
-    // Confirmation Dialog
     if (viewState.showConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { onAction(CreateOrderScreenActions.OnDismissConfirmDialog) },
-            title = { Text(stringResource(R.string.confirm_order_title), style = lgSemiBold) },
-            text = { Text(stringResource(R.string.confirm_order_message), style = mdMedium) },
-            confirmButton = {
-                TextButton(
-                    onClick = { onAction(CreateOrderScreenActions.OnConfirmSubmit) }
-                ) {
-                    Text(stringResource(R.string.confirm), color = BrandColor, style = mdSemiBold)
-                }
+        BaseDialog(
+            icon = painterResource(R.drawable.ic_confirm),
+            title = stringResource(R.string.confirm_order_title),
+            message = stringResource(R.string.confirm_order_message),
+            dismissOnClickOutside = true, // Prevent accidental dismiss
+            primaryButtonText = stringResource(R.string.confirm),
+            secondaryButtonText = stringResource(R.string.dismiss),
+            onPrimaryClick = {
+                onAction(CreateOrderScreenActions.OnConfirmSubmit)
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { onAction(CreateOrderScreenActions.OnDismissConfirmDialog) }
-                ) {
-                    Text(stringResource(R.string.cancel), style = mdMedium)
-                }
+            onDismiss = {
+                onAction(CreateOrderScreenActions.OnDismissConfirmDialog)
             }
         )
     }
 }
 
-private fun isFormValid(viewState: CreateOrderViewState): Boolean {
-    val basicFieldsValid = viewState.customerName.isNotBlank() &&
-            viewState.customerPhone.length >= 10 &&
-            viewState.customerAddress.isNotBlank() &&
-            viewState.collectionAmount.toDoubleOrNull() != null
-
-    val scheduledFieldsValid = if (viewState.deliveryTiming == DeliveryTiming.LATER) {
-        viewState.scheduledDate.isNotBlank() && viewState.scheduledTime.isNotBlank()
-    } else {
-        true
-    }
-
-    return basicFieldsValid && scheduledFieldsValid
-}
-
-@Composable
-private fun DeliveryTimingOption(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.height(56.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = if (isSelected) BrandColor else Color.Transparent,
-            contentColor = if (isSelected) Color.White else Color.Black // ممكن تسيبها أو تشيلها
-        ),
-        border = BorderStroke(2.dp, BrandColor),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = text,
-            style = mdSemiBold,
-            color = if (isSelected) Color.White else Color.Black // 👈 ده المهم
-        )
-    }
-}
 @Composable
 private fun OrderTextField(
     value: String,
@@ -289,7 +197,9 @@ private fun OrderTextField(
     label: String,
     error: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    minLines: Int = 1
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
+    modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
@@ -307,7 +217,8 @@ private fun OrderTextField(
         },
         keyboardOptions = keyboardOptions,
         minLines = minLines,
-        modifier = Modifier.fillMaxWidth(),
+        maxLines = maxLines,
+        modifier = modifier.fillMaxWidth(),
         textStyle = mdMedium,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = BrandColor,
@@ -322,10 +233,10 @@ private fun OrderTextField(
 private fun PreviewCreateOrderContent() {
     CreateOrderContent(
         viewState = CreateOrderViewState(
-            customerName = "John Doe",
             customerPhone = "1234567890",
             customerAddress = "123 Main St, City",
             collectionAmount = "250.00",
+            deliveryFees = "20.00",
             deliveryTiming = DeliveryTiming.NOW
         ),
         onAction = {}
@@ -337,10 +248,10 @@ private fun PreviewCreateOrderContent() {
 private fun PreviewCreateOrderContentLater() {
     CreateOrderContent(
         viewState = CreateOrderViewState(
-            customerName = "John Doe",
             customerPhone = "1234567890",
             customerAddress = "123 Main St, City",
             collectionAmount = "250.00",
+            deliveryFees = "20.00",
             deliveryTiming = DeliveryTiming.LATER,
             scheduledDate = "25/12/2024",
             scheduledTime = "14:30"

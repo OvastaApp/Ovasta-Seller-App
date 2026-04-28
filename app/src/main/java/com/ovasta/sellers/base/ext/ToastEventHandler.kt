@@ -1,0 +1,26 @@
+package com.ovasta.sellers.base.ext
+
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.ovasta.sellers.base.BaseViewModel
+
+@Composable
+fun ToastEventHandler(
+    viewModel: BaseViewModel,
+    context: Context = LocalContext.current
+) {
+    LaunchedEffect(viewModel.toastEvent) {
+        viewModel.toastEvent.collect { event ->
+            when (event) {
+                is ToastEvent.ResourceToastEvent -> Toast.makeText(context, event.resId, event.duration).show()
+
+                is ToastEvent.StringToastEvent -> Toast.makeText(context, event.message, event.duration).show()
+
+                else -> {}
+            }
+        }
+    }
+}

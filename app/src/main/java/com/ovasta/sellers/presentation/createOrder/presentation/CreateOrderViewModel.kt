@@ -1,10 +1,15 @@
 package com.ovasta.sellers.presentation.createOrder.presentation
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.R
 import com.ovasta.sellers.base.BaseViewModel
+import com.ovasta.sellers.base.ScreenDirection
+import com.ovasta.sellers.base.components.sharedComposable.ToastMsg
+import com.ovasta.sellers.base.exception.toComposeUIException
+import com.ovasta.sellers.base.ext.ToastEvent
+import com.ovasta.sellers.presentation.createOrder.data.ICreateOrderRepository
+import com.ovasta.sellers.presentation.nav.Login
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +17,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateOrderViewModel(
-    private val application: Application
+    private val application: Application,
+    private val repository: ICreateOrderRepository // <-- Inject repository
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow(CreateOrderViewState())
@@ -20,9 +26,6 @@ class CreateOrderViewModel(
 
     fun onAction(action: CreateOrderScreenActions) {
         when (action) {
-            is CreateOrderScreenActions.OnCustomerNameChanged -> {
-                _viewState.update { it.copy(customerName = action.name, customerNameError = null) }
-            }
 
             is CreateOrderScreenActions.OnCustomerPhoneChanged -> {
                 val phone = action.phone
@@ -90,12 +93,20 @@ class CreateOrderViewModel(
                 val deliveryFeesValue = value.toDoubleOrNull()
                 val error = when {
                     value.isBlank() || deliveryFeesValue == null ->
-                        application.getString(R.string.delivery_fees_min_error)
+                        application.getString(R.string.delivery_fees_min_egp_error)
+
                     deliveryFeesValue < 15 ->
                         application.getString(R.string.delivery_fees_min_egp_error)
+
                     else -> null
                 }
                 _viewState.update { it.copy(deliveryFees = value, deliveryFeesError = error) }
+            }
+
+            is CreateOrderScreenActions.OnNoteChanged -> {
+                val note = action.note
+                // No error, just limit to 4 lines
+                _viewState.update { it.copy(note = note) }
             }
 
             is CreateOrderScreenActions.OnSubmitOrder -> {
@@ -118,13 +129,6 @@ class CreateOrderViewModel(
     private fun validateForm(): Boolean {
         val state = _viewState.value
         var isValid = true
-
-        if (state.customerName.isBlank()) {
-            _viewState.update {
-                it.copy(customerNameError = application.getString(R.string.customer_name_required))
-            }
-            isValid = false
-        }
 
         // Phone must be exactly 11 digits
         if (state.customerPhone.isBlank() || state.customerPhone.length != 11) {
@@ -152,7 +156,7 @@ class CreateOrderViewModel(
         val deliveryFeesValue = state.deliveryFees.toDoubleOrNull()
         if (state.deliveryFees.isBlank() || deliveryFeesValue == null) {
             _viewState.update {
-                it.copy(deliveryFeesError = application.getString(R.string.delivery_fees_min_error))
+                it.copy(deliveryFeesError = application.getString(R.string.delivery_fees_min_egp_error))
             }
             isValid = false
         } else if (deliveryFeesValue < 15) {
@@ -181,32 +185,31 @@ class CreateOrderViewModel(
         return isValid
     }
 
-    private fun createOrder() {
-
+    fun createOrder() {
         viewModelScope.launch {
-            _viewState.update { it.copy(isSubmitting = true) }
-
-            try {
+            setComposeUILoading(true)
+            kotlin.runCatching {
                 val state = _viewState.value
-                // TODO: Call your create-order POST endpoint here
-                // val orderRequest = CreateOrderRequest(
-                //     customerName = state.customerName,
-                //     customerPhone = state.customerPhone,
-                //     customerAddress = state.customerAddress,
-                //     collectionAmount = state.collectionAmount.toDouble(),
-                //     isScheduled = state.deliveryTiming == DeliveryTiming.LATER,
-                //     scheduledDate = state.scheduledDate.takeIf { state.deliveryTiming == DeliveryTiming.LATER },
-                //     scheduledTime = state.scheduledTime.takeIf { state.deliveryTiming == DeliveryTiming.LATER }
-                // )
-                // repository.createOrder(orderRequest)
-
-                // On success, navigate back or show success message
-
-            } catch (e: Exception) {
-                // Handle error
-            } finally {
-                _viewState.update { it.copy(isSubmitting = false) }
+                repository.createOrder(
+                    destination = state.customerAddress,
+                    clientPhone = state.customerPhone,
+                    collectionAmount = state.collectionAmount.toDouble(),
+                    deliveryFees = state.deliveryFees.toDouble(),
+                    note = state.note.takeIf { it.isNotBlank() }
+                )
+            }.onSuccess {
+                setComposeUILoading(false)
+                emitToastEvent(ToastEvent.ResourceToastEvent(R.string.order_submitted_successfully))
+                emitScreenDirectionEvent(ScreenDirection.Pop)
+            }.onFailure {
+                setComposeUILoading(false)
+                updateViewStateWithFail(it)
             }
         }
+    }
+
+    fun updateViewStateWithFail(throwable: Throwable) {
+        setComposeUILoading(false)
+        emitComposeUIExceptionEvent(throwable.toComposeUIException())
     }
 }

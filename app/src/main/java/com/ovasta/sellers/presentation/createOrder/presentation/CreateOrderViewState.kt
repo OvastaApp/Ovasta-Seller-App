@@ -1,7 +1,6 @@
 package com.ovasta.sellers.presentation.createOrder.presentation
 
 data class CreateOrderViewState(
-    val customerName: String = "",
     val customerPhone: String = "",
     val customerAddress: String = "",
     val collectionAmount: String = "",
@@ -15,8 +14,10 @@ data class CreateOrderViewState(
     val scheduledDate: String = "",
     val scheduledTime: String = "",
 
+    // Note (not required)
+    val note: String = "",
+
     // Validation errors
-    val customerNameError: String? = null,
     val customerPhoneError: String? = null,
     val customerAddressError: String? = null,
     val collectionAmountError: String? = null,
@@ -34,12 +35,12 @@ enum class DeliveryTiming {
 
 // Extension function for validation
 fun CreateOrderViewState.isValid(): Boolean {
-    val basicFieldsValid = customerName.isNotBlank() &&
-            customerPhone.length == 11 &&
-            customerAddress.isNotBlank() &&
-            collectionAmount.toDoubleOrNull() != null &&
-            deliveryFees.toDoubleOrNull() != null &&
-            deliveryFees.toDoubleOrNull()!! >= 15
+    val basicFieldsValid =
+        customerPhone.length == 11 &&
+                customerAddress.isNotBlank() &&
+                collectionAmount.toDoubleOrNull() != null &&
+                deliveryFees.toDoubleOrNull() != null &&
+                deliveryFees.toDoubleOrNull()!! >= 15
 
     val scheduledFieldsValid = if (deliveryTiming == DeliveryTiming.LATER) {
         scheduledDate.isNotBlank() && scheduledTime.isNotBlank()

@@ -6,8 +6,8 @@ interface ICreateOrderRepository {
     suspend fun createOrder(
         destination: String,
         clientPhone: String,
-        clientName: String,
         collectionAmount: Double,
-        note: String
+        deliveryFees: Double,
+        note: String? = null
     )
 }

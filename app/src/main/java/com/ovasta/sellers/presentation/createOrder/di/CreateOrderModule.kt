@@ -14,5 +14,5 @@ val createOrderModule = module {
     factory { get<Retrofit>().create(CreateOrderApi::class.java) }
     single<ICreateOrderRemoteDataSource> { CreateOrderRemoteDataSource(get()) }
     single<ICreateOrderRepository> { CreateOrderRepository(get()) }
-    viewModel { CreateOrderViewModel(get()) }
+    viewModel { CreateOrderViewModel(get(), get()) }
 }

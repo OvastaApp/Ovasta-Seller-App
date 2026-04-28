@@ -96,7 +96,6 @@
     <string name="Pending">Pending</string>
     <string name="preparing">Preparing</string>
     <string name="prepared">prepared</string>
-    <string name="delivery_fees_min_error">Minimum delivery fees is 15</string>
     <string name="delivery_fees_min_egp_error">Minimum delivery fees is 15 EGP</string>
 
 
@@ -146,7 +145,6 @@
     <string name="yes">Yes</string>
     <string name="are_you_sure_you_want_to_add_products">Are you sure you want to add products!</string>
     <string name="add_products">Add products</string>
-    <string name="task_details">Task details</string>
     <string name="required_to_be_received">To be received</string>
     <string name="deleted_products">Deleted products</string>
     <string name="view_deleted_products">View deleted products</string>
@@ -226,4 +224,5 @@
     <string name="valid_amount_required">Valid amount is required</string>
     <string name="delivery_date_required">Delivery date is required</string>
     <string name="delivery_time_required">Delivery time is required</string>
+    <string name="order_submitted_successfully">Order submitted successfully</string>
 </resources>

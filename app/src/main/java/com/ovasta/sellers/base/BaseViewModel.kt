@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.exception.ComposeUIException
 import com.ovasta.sellers.base.exception.toComposeUIException
+import com.ovasta.sellers.base.ext.ToastEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,6 +37,8 @@ open class BaseViewModel : ViewModel(), KoinComponent {
     private val _composeUILoadingEvent = MutableStateFlow<Boolean>(false)
     val composeUILoadingEvent = _composeUILoadingEvent.asStateFlow()
 
+    private val _toastEvent = MutableSharedFlow<ToastEvent?>()
+    val toastEvent = _toastEvent.asSharedFlow()
 
     fun emitContextEvent(event: ContextEvent) {
         viewModelScope.launch { _contextEvent.emit(event) }
@@ -66,5 +69,7 @@ open class BaseViewModel : ViewModel(), KoinComponent {
             )
         }
     }
-
+    fun emitToastEvent(toastEvent: ToastEvent) {
+        viewModelScope.launch { _toastEvent.emit(toastEvent) }
+    }
 }

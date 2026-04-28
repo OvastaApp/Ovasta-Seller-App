@@ -10,16 +10,16 @@ class CreateOrderRepository(
     override suspend fun createOrder(
         destination: String,
         clientPhone: String,
-        clientName: String,
         collectionAmount: Double,
-        note: String
+        deliveryFees: Double,
+        note: String?
     ) = withContext(Dispatchers.IO) {
         createOrderRemoteDataSource.createOrder(
-            destination,
-            clientPhone,
-            clientName,
-            collectionAmount,
-            note
+            destination = destination,
+            clientPhone = clientPhone,
+            collectionAmount = collectionAmount,
+            deliveryFees = deliveryFees,
+            note = note
         )
     }
 

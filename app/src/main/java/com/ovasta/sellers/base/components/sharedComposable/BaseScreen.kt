@@ -18,6 +18,7 @@ import com.ovasta.sellers.R
 import com.ovasta.sellers.base.BaseViewModel
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.ScreenDirectionEventHandler
+import com.ovasta.sellers.base.ext.ToastEventHandler
 import com.ovasta.sellers.data.RemoteConstants
 
 @Composable
@@ -28,6 +29,7 @@ fun BaseScreen(
     ScreenDirectionEventHandler(
         viewModel = viewModel
     )
+    ToastEventHandler(viewModel)
 
     val logoutListener = LocalActivity.current as? LogoutListener
 
