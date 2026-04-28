@@ -23,15 +23,38 @@ class CreateOrderViewModel(
             is CreateOrderScreenActions.OnCustomerNameChanged -> {
                 _viewState.update { it.copy(customerName = action.name, customerNameError = null) }
             }
+
             is CreateOrderScreenActions.OnCustomerPhoneChanged -> {
-                _viewState.update { it.copy(customerPhone = action.phone, customerPhoneError = null) }
+                val phone = action.phone
+                val error = if (phone.isBlank() || phone.length != 11)
+                    application.getString(R.string.valid_phone_required)
+                else null
+                _viewState.update {
+                    it.copy(
+                        customerPhone = phone,
+                        customerPhoneError = error
+                    )
+                }
             }
+
             is CreateOrderScreenActions.OnCustomerAddressChanged -> {
-                _viewState.update { it.copy(customerAddress = action.address, customerAddressError = null) }
+                _viewState.update {
+                    it.copy(
+                        customerAddress = action.address,
+                        customerAddressError = null
+                    )
+                }
             }
+
             is CreateOrderScreenActions.OnCollectionAmountChanged -> {
-                _viewState.update { it.copy(collectionAmount = action.amount, collectionAmountError = null) }
+                _viewState.update {
+                    it.copy(
+                        collectionAmount = action.amount,
+                        collectionAmountError = null
+                    )
+                }
             }
+
             is CreateOrderScreenActions.OnDeliveryTimingChanged -> {
                 _viewState.update {
                     it.copy(
@@ -43,21 +66,49 @@ class CreateOrderViewModel(
                     )
                 }
             }
+
             is CreateOrderScreenActions.OnScheduledDateChanged -> {
-                _viewState.update { it.copy(scheduledDate = action.date, scheduledDateError = null) }
+                _viewState.update {
+                    it.copy(
+                        scheduledDate = action.date,
+                        scheduledDateError = null
+                    )
+                }
             }
+
             is CreateOrderScreenActions.OnScheduledTimeChanged -> {
-                _viewState.update { it.copy(scheduledTime = action.time, scheduledTimeError = null) }
+                _viewState.update {
+                    it.copy(
+                        scheduledTime = action.time,
+                        scheduledTimeError = null
+                    )
+                }
             }
+
+            is CreateOrderScreenActions.OnDeliveryFeesChanged -> {
+                val value = action.fees
+                val deliveryFeesValue = value.toDoubleOrNull()
+                val error = when {
+                    value.isBlank() || deliveryFeesValue == null ->
+                        application.getString(R.string.delivery_fees_min_error)
+                    deliveryFeesValue < 15 ->
+                        application.getString(R.string.delivery_fees_min_egp_error)
+                    else -> null
+                }
+                _viewState.update { it.copy(deliveryFees = value, deliveryFeesError = error) }
+            }
+
             is CreateOrderScreenActions.OnSubmitOrder -> {
                 if (validateForm()) {
                     _viewState.update { it.copy(showConfirmDialog = true) }
                 }
             }
+
             is CreateOrderScreenActions.OnConfirmSubmit -> {
                 _viewState.update { it.copy(showConfirmDialog = false) }
                 createOrder()
             }
+
             is CreateOrderScreenActions.OnDismissConfirmDialog -> {
                 _viewState.update { it.copy(showConfirmDialog = false) }
             }
@@ -75,7 +126,8 @@ class CreateOrderViewModel(
             isValid = false
         }
 
-        if (state.customerPhone.isBlank() || state.customerPhone.length < 10) {
+        // Phone must be exactly 11 digits
+        if (state.customerPhone.isBlank() || state.customerPhone.length != 11) {
             _viewState.update {
                 it.copy(customerPhoneError = application.getString(R.string.valid_phone_required))
             }
@@ -92,6 +144,20 @@ class CreateOrderViewModel(
         if (state.collectionAmount.isBlank() || state.collectionAmount.toDoubleOrNull() == null) {
             _viewState.update {
                 it.copy(collectionAmountError = application.getString(R.string.valid_amount_required))
+            }
+            isValid = false
+        }
+
+        // Delivery Fees validation
+        val deliveryFeesValue = state.deliveryFees.toDoubleOrNull()
+        if (state.deliveryFees.isBlank() || deliveryFeesValue == null) {
+            _viewState.update {
+                it.copy(deliveryFeesError = application.getString(R.string.delivery_fees_min_error))
+            }
+            isValid = false
+        } else if (deliveryFeesValue < 15) {
+            _viewState.update {
+                it.copy(deliveryFeesError = application.getString(R.string.delivery_fees_min_egp_error))
             }
             isValid = false
         }

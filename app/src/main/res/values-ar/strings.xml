@@ -90,6 +90,7 @@
     <string name="password">كلمة المرور</string>
     <string name="items_count">عدد العناصر</string>
     <string name="delivery_fees">رسوم التوصيل</string>
+    <string name="delivery_fees_min_egp_error">أقل رسوم توصيل هي 15 جنيه</string>
     <string name="Status">الحالة</string>
     <string name="New">جديد</string>
     <string name="Pending">قيد الانتظار</string>
@@ -207,7 +208,7 @@
     <string name="customer_name">اسم العميل</string>
     <string name="phone_number">رقم الهاتف</string>
     <string name="delivery_address">عنوان التوصيل</string>
-    <string name="collection_amount">مبلغ التحصيل</string>
+    <string name="collection_amount">سعر الطلب</string>
     <string name="when_to_deliver">متى التوصيل؟</string>
     <string name="now">الآن</string>
     <string name="later">لاحقاً</string>

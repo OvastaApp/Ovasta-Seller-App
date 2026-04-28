@@ -12,8 +12,11 @@ sealed class CreateOrderScreenActions {
     data class OnScheduledDateChanged(val date: String) : CreateOrderScreenActions()
     data class OnScheduledTimeChanged(val time: String) : CreateOrderScreenActions()
 
-    // Submit
-    data object OnSubmitOrder : CreateOrderScreenActions()
-    data object OnConfirmSubmit : CreateOrderScreenActions()
-    data object OnDismissConfirmDialog : CreateOrderScreenActions()
+
+data class OnDeliveryFeesChanged(val fees: String) : CreateOrderScreenActions()
+
+// Submit
+data object OnSubmitOrder : CreateOrderScreenActions()
+data object OnConfirmSubmit : CreateOrderScreenActions()
+data object OnDismissConfirmDialog : CreateOrderScreenActions()
 }

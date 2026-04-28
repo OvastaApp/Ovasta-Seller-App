@@ -96,6 +96,8 @@
     <string name="Pending">Pending</string>
     <string name="preparing">Preparing</string>
     <string name="prepared">prepared</string>
+    <string name="delivery_fees_min_error">Minimum delivery fees is 15</string>
+    <string name="delivery_fees_min_egp_error">Minimum delivery fees is 15 EGP</string>
 
 
     <!-- Delivery Home Screen -->

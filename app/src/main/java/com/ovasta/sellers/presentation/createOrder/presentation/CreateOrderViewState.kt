@@ -6,6 +6,10 @@ data class CreateOrderViewState(
     val customerAddress: String = "",
     val collectionAmount: String = "",
 
+    // Delivery fees
+    val deliveryFees: String = "",
+    val deliveryFeesError: String? = null,
+
     // Delivery timing
     val deliveryTiming: DeliveryTiming = DeliveryTiming.NOW,
     val scheduledDate: String = "",
@@ -31,9 +35,11 @@ enum class DeliveryTiming {
 // Extension function for validation
 fun CreateOrderViewState.isValid(): Boolean {
     val basicFieldsValid = customerName.isNotBlank() &&
-            customerPhone.length >= 10 &&
+            customerPhone.length == 11 &&
             customerAddress.isNotBlank() &&
-            collectionAmount.toDoubleOrNull() != null
+            collectionAmount.toDoubleOrNull() != null &&
+            deliveryFees.toDoubleOrNull() != null &&
+            deliveryFees.toDoubleOrNull()!! >= 15
 
     val scheduledFieldsValid = if (deliveryTiming == DeliveryTiming.LATER) {
         scheduledDate.isNotBlank() && scheduledTime.isNotBlank()
