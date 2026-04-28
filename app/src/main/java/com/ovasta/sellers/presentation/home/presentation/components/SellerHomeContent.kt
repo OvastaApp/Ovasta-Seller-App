@@ -22,6 +22,7 @@ import com.ovasta.sellers.base.Gray100
 import com.ovasta.sellers.base.Gray200
 import com.ovasta.sellers.base.Gray500
 import com.ovasta.sellers.base.Primary
+import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.lgSemiBold
 import com.ovasta.sellers.base.mdRegular
 import com.ovasta.sellers.base.mdSemiBold
@@ -48,6 +49,7 @@ import com.ovasta.sellers.base.Green
 import com.ovasta.sellers.base.ext.makePhoneCall
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
+import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.toStatus
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -62,6 +64,9 @@ fun SellerHomeContent(
         refreshing = refreshing,
         onRefresh = { onAction(HomeScreenActions.RefreshHome) }
     )
+
+    var cancelOrderId by remember { mutableStateOf<Int?>(null) }
+    var showCancelDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars),
@@ -109,7 +114,7 @@ fun SellerHomeContent(
                     ) {
                         Text(
                             text = stringResource(R.string.my_orders),
-                            style = lgSemiBold.copy(color = BLACK)
+                            style = lgSemiBold // section header
                         )
                         Button(
                             onClick = { onAction(HomeScreenActions.CreateOrder) },
@@ -155,8 +160,10 @@ fun SellerHomeContent(
                         DeliveryOrderCard(
                             order = order,
                             onClick = { onAction(HomeScreenActions.OrderClicked(order.id)) },
-                            onCallCourier = { phone ->
-                                context.makePhoneCall(phone)
+                            onCallCourier = { phone -> context.makePhoneCall(phone) },
+                            onCancelOrder = {
+                                cancelOrderId = order.id
+                                showCancelDialog = true
                             }
                         )
                     }
@@ -171,6 +178,30 @@ fun SellerHomeContent(
                 modifier = Modifier.align(Alignment.TopCenter)
             )
         }
+    }
+
+    // Cancel confirmation dialog
+    if (showCancelDialog && cancelOrderId != null) {
+        BaseDialog(
+            title = stringResource(R.string.cancel_order),
+            message = stringResource(R.string.are_you_sure_you_want_to_cancel_order),
+            primaryButtonText = stringResource(R.string.yes),
+            secondaryButtonText = stringResource(R.string.no),
+            onPrimaryClick = {
+                onAction(HomeScreenActions.CancelOrder(cancelOrderId!!))
+                showCancelDialog = false
+                cancelOrderId = null
+            },
+            onSecondaryClick = {
+                showCancelDialog = false
+                cancelOrderId = null
+            },
+            onDismiss = {
+                showCancelDialog = false
+                cancelOrderId = null
+            },
+            dismissOnClickOutside = false
+        )
     }
 }
 
@@ -203,7 +234,7 @@ private fun PointsCard(homeInfo: HomeInfo?) {
                 text = "pt  ≈  ", style = smNormal.copy(color = Gray500)
             )
             Text(
-                text = "$money EGP", style = mdSemiBold.copy(color = BLACK)
+                text = "$money EGP", style = mdSemiBold
             )
             Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
             Text(
@@ -217,7 +248,8 @@ private fun PointsCard(homeInfo: HomeInfo?) {
 private fun DeliveryOrderCard(
     order: DeliveryOrder,
     onClick: () -> Unit,
-    onCallCourier: (String) -> Unit = {}
+    onCallCourier: (String) -> Unit = {},
+    onCancelOrder: (() -> Unit)? = null
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -226,128 +258,154 @@ private fun DeliveryOrderCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         onClick = onClick
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(com.intuit.sdp.R.dimen._14sdp))
         ) {
-            // Header: Order ID + Status badge area
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(com.intuit.sdp.R.dimen._14sdp))
             ) {
-                Text(
-                    text = stringResource(R.string.hash_task, order.id.toString()),
-                    style = mdSemiBold.copy(color = Primary)
-                )
-                StatusBadge(order.statusId)
-            }
-
-            Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
-
-            // Address
-            InfoRow(
-                icon = R.drawable.ic_location, value = order.toAddress
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
-
-            // Receiver phone
-            InfoRow(
-                icon = R.drawable.ic_call, value = order.receiverMobile
-            )
-
-            Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
-            HorizontalDivider(color = Gray200)
-            Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
-
-            // Pricing section
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_delivery_fees),
-                        contentDescription = null,
-                        modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._14sdp)),
-                        tint = Gray500
-                    )
-                    Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._4sdp)))
-                    Text(
-                        text = stringResource(R.string.price_currency, order.deliveryPrice),
-                        style = smSemiBold.copy(color = BLACK),
-                        maxLines = 1
-                    )
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_total_price),
-                        contentDescription = null,
-                        modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._14sdp)),
-                        tint = Gray500
-                    )
-                    Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._4sdp)))
-                    Text(
-                        text = stringResource(R.string.price_currency, order.totalPrice),
-                        style = smSemiBold.copy(color = BLACK),
-                        maxLines = 1
-                    )
-                }
-            }
-
-            // Note
-            if (!order.note.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
-                Text(
-                    text = order.note,
-                    style = xsMedium.copy(color = Gray500),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            // Courier info
-            if (order.courier != null) {
-                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
-                HorizontalDivider(color = Gray200)
-                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
-
+                // Header: Order ID + Status badge area
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.weight(1f)
-                    ) {
+                    Text(
+                        text = stringResource(R.string.hash_task, order.id.toString()),
+                        style = mdSemiBold.copy(color = Primary)
+                    )
+                    StatusBadge(order.statusId)
+                }
+
+                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
+
+                // Address
+                InfoRow(
+                    icon = R.drawable.ic_location, value = order.toAddress
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
+
+                // Receiver phone
+                InfoRow(
+                    icon = R.drawable.ic_call, value = order.receiverMobile
+                )
+
+                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
+                HorizontalDivider(color = Gray200)
+                Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
+
+                // Pricing section
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_delivery_agent),
+                            painter = painterResource(R.drawable.ic_delivery_fees),
                             contentDescription = null,
-                            modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
-                            tint = Primary
+                            modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._14sdp)),
+                            tint = Gray500
                         )
-                        Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
+                        Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._4sdp)))
                         Text(
-                            text = "${order.courier.firstName} ${order.courier.lastName}",
-                            style = smNormal.copy(color = BLACK),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            text = stringResource(R.string.price_currency, order.deliveryPrice),
+                            style = smSemiBold,
+                            maxLines = 1
                         )
                     }
-                    if (!order.courier.mobile.isNullOrEmpty()) {
-                        IconButton(
-                            onClick = { onCallCourier(order.courier.mobile) },
-                            modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._28sdp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_total_price),
+                            contentDescription = null,
+                            modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._14sdp)),
+                            tint = Gray500
+                        )
+                        Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._4sdp)))
+                        Text(
+                            text = stringResource(R.string.price_currency, order.totalPrice),
+                            style = smSemiBold,
+                            maxLines = 1
+                        )
+                    }
+                }
+
+                // Note
+                if (!order.note.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
+                    Text(
+                        text = order.note,
+                        style = xsMedium.copy(color = Gray500),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                // Courier info
+                if (order.courier != null) {
+                    Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
+                    HorizontalDivider(color = Gray200)
+                    Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_call),
+                                painter = painterResource(R.drawable.ic_delivery_agent),
                                 contentDescription = null,
                                 modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
                                 tint = Primary
                             )
+                            Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
+                            Text(
+                                text = "${order.courier.firstName} ${order.courier.lastName}",
+                                style = smNormal,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
+                        if (!order.courier.mobile.isNullOrEmpty()) {
+                            IconButton(
+                                onClick = { onCallCourier(order.courier.mobile) },
+                                modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._28sdp))
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_call),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
+                                    tint = Primary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // --- Cancel Button at the bottom, after all content ---
+                if (order.statusId < toStatus(OrderSteps.Picked) && onCancelOrder != null) {
+                    Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
+                    OutlinedButton(
+                        onClick = { onCancelOrder() },
+                        shape = RoundedCornerShape(50),
+                        border = ButtonDefaults.outlinedButtonBorder,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(32.dp)
+                            .defaultMinSize(minWidth = 0.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cancel_order),
+                            style = xsMedium.copy(color = Color.Red),
+                            maxLines = 1
+                        )
                     }
                 }
             }
@@ -391,7 +449,7 @@ private fun InfoRow(icon: Int, value: String) {
         Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
         Text(
             text = value,
-            style = smNormal.copy(color = BLACK),
+            style = smNormal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -399,7 +457,7 @@ private fun InfoRow(icon: Int, value: String) {
 }
 
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(showSystemUi = true, showBackground = true, locale = "ar")
 @Composable
 fun SellerHomeContentPreview() {
     SellerHomeContent(

@@ -42,11 +42,6 @@ fun CreateOrderContent(
     onNavigateBack: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    // FocusRequesters for each input
-    val nameFocusRequester = remember { FocusRequester() }
     val phoneFocusRequester = remember { FocusRequester() }
     val addressFocusRequester = remember { FocusRequester() }
     val collectionAmountFocusRequester = remember { FocusRequester() }
@@ -171,7 +166,7 @@ fun CreateOrderContent(
                 ) {
                     Text(
                         text = stringResource(R.string.create_order),
-                        style = mdSemiBold,
+                        style = mdSemiBold, // Button text style
                         color = Color.White
                     )
                 }
@@ -213,12 +208,12 @@ private fun OrderTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, style = smMedium) },
+        label = { Text(label, style = smMedium) }, // Field label style
         isError = error != null,
         supportingText = error?.let {
             {
                 Text(
-                    it, color = MaterialTheme.colorScheme.error, style = xsMedium
+                    it, color = MaterialTheme.colorScheme.error, style = xsMedium // Error/supporting text style
                 )
             }
         },
@@ -226,7 +221,7 @@ private fun OrderTextField(
         minLines = minLines,
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
-        textStyle = mdMedium,
+        textStyle = mdMedium, // Field text style
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = BrandColor,
             focusedLabelColor = BrandColor,

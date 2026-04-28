@@ -141,6 +141,7 @@
     <string name="delay_task">Delay task</string>
     <string name="reason_for_delay">Delay reason</string>
     <string name="cancel_order">Cancel order</string>
+    <string name="are_you_sure_you_want_to_cancel_order">Are you sure you want to cancel this order?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="are_you_sure_you_want_to_add_products">Are you sure you want to add products!</string>

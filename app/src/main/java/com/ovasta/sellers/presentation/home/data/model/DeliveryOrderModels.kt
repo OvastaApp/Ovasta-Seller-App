@@ -11,7 +11,7 @@ data class DeliveryOrdersResponse(
 )
 
 data class DeliveryOrder(
-    val id: Long,
+    val id: Int,
     @SerializedName("to_address") val toAddress: String,
     @SerializedName("receiver_mobile") val receiverMobile: String,
     @SerializedName("delivery_price") val deliveryPrice: Double,

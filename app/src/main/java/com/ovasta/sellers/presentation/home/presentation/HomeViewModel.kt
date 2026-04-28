@@ -70,6 +70,8 @@ class HomeViewModel(
 
             is HomeScreenActions.RefreshHome -> loadHomeData(isRefresh = true)
 
+            is HomeScreenActions.CancelOrder -> cancelOrder(action.orderId)
+
             else -> Unit
         }
     }

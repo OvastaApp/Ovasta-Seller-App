@@ -19,5 +19,16 @@ sealed class OrderSteps {
                 else -> throw IllegalArgumentException("Unknown statusId: $statusId")
             }
         }
+
+        fun toStatus(status: OrderSteps): Int {
+            return when (status) {
+                is Pending -> 1
+                is Assigned -> 2
+                is Picked -> 3
+                is Delivered -> 4
+                is Canceled -> 5
+            }
+        }
     }
+
 }

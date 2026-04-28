@@ -139,8 +139,9 @@
     <string name="delay_task">تأجيل المهمة</string>
     <string name="reason_for_delay">سبب التأجيل</string>
     <string name="cancel_order">إلغاء الطلب</string>
-    <string name="no">لا</string>
+    <string name="are_you_sure_you_want_to_cancel_order">هل أنت متأكد أنك تريد إلغاء هذا الطلب؟</string>
     <string name="yes">نعم</string>
+    <string name="no">لا</string>
     <string name="are_you_sure_you_want_to_add_products">هل أنت متأكد أنك تريد إضافة المنتجات؟</string>
     <string name="add_products">إضافة المنتجات</string>
     <string name="required_to_be_received">يجب استلامها</string>
