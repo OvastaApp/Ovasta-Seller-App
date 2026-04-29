@@ -1,7 +1,7 @@
 package com.ovasta.sellers.presentation.nav
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -27,7 +27,12 @@ import com.ovasta.sellers.presentation.home.presentation.HomeScreen
 import com.ovasta.sellers.presentation.home.presentation.HomeViewModel
 import com.ovasta.sellers.presentation.profile.presentation.ProfileScreen
 import com.ovasta.sellers.presentation.profile.presentation.ProfileViewModel
+import com.ovasta.sellers.base.smSemiBold
+import com.ovasta.sellers.base.xsMedium
 import org.koin.androidx.compose.koinViewModel
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
+import com.ovasta.sellers.R
 
 data object Splash
 data object Login
@@ -35,14 +40,19 @@ data object Home
 data object Profile
 data class CreateOrder(val id: Long = System.currentTimeMillis())
 
-private sealed class BottomNavItem(val route: Any, val label: String, val icon: ImageVector) {
-    object HomeBottomNav : BottomNavItem(Home, "الرئيسية", Icons.Default.Home)
-    object ProfileBottomNav : BottomNavItem(Profile, "الملف الشخصي", Icons.Default.Person)
+
+private sealed class BottomNavItem(
+    val route: Any,
+    @StringRes val labelRes: Int,
+    val icon: ImageVector
+) {
+    object HomeBottomNav : BottomNavItem(Home, R.string.home, Icons.Default.Home)
+    object ProfileBottomNav : BottomNavItem(Profile, R.string.profile, Icons.Default.Person)
+
     companion object {
         val items = listOf(HomeBottomNav, ProfileBottomNav)
     }
 }
-
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
     val backStack = remember { mutableStateListOf<Any>(Splash) }
@@ -124,17 +134,58 @@ fun AppBottomBar(
     selected: Any,
     onItemSelected: (Any) -> Unit
 ) {
-    BottomNavigation(
-        backgroundColor = Color.White,
-        contentColor = Primary
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        elevation = 8.dp
     ) {
-        BottomNavItem.items.forEach { item ->
-            BottomNavigationItem(
-                icon = { Icon(item.icon, contentDescription = item.label) },
-                label = { Text(item.label) },
-                selected = selected == item.route,
-                onClick = { onItemSelected(item.route) }
-            )
+        BottomNavigation(
+            backgroundColor = Color.White,
+            contentColor = Primary,
+            elevation = 0.dp,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .height(64.dp)
+        ) {
+            BottomNavItem.items.forEach { item ->
+                val isSelected = selected == item.route
+                BottomNavigationItem(
+                    icon = {
+                        if (isSelected) {
+                            Surface(
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                                color = Primary.copy(alpha = 0.12f),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Icon(
+                                    item.icon,
+                                    contentDescription = "home icon",
+                                    tint = Primary,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                                )
+                            }
+                        } else {
+                            Icon(
+                                item.icon,
+                                contentDescription = "profile icon",
+                                tint = Color.Gray.copy(alpha = 0.5f)
+                            )
+                        }
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(id = item.labelRes),
+                            color = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f),
+                            style = if (isSelected) smSemiBold else xsMedium
+                        )
+                    },
+                    selected = isSelected,
+                    onClick = { onItemSelected(item.route) },
+                    selectedContentColor = Primary,
+                    unselectedContentColor = Color.Gray.copy(alpha = 0.5f),
+                    alwaysShowLabel = true
+                )
+            }
         }
     }
 }
