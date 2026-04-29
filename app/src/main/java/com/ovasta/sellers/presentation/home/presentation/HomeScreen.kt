@@ -12,16 +12,6 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val viewState by viewModel.viewState.collectAsState()
 
     BaseScreen(viewModel = viewModel) {
-        LogoutDialog(
-            viewState.isLogoutDialogVisible,
-            onConfirm = {
-                viewModel.onScreenAction(HomeScreenActions.OnLogoutClicked)
-                viewModel.onScreenAction(HomeScreenActions.ChangeLogoutDialogStatus(isVisible = false))
-            },
-            onDismiss = {
-                viewModel.onScreenAction(HomeScreenActions.ChangeLogoutDialogStatus(isVisible = false))
-            }
-        )
         SellerHomeContent(
             viewState = viewState,
             onAction = viewModel::onScreenAction

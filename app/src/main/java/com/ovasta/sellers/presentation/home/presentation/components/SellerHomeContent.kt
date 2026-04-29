@@ -73,17 +73,7 @@ fun SellerHomeContent(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
-                title = stringResource(R.string.home), showBackButton = false, actions = {
-                    IconButton(onClick = {
-                        onAction(HomeScreenActions.ChangeLogoutDialogStatus(isVisible = true))
-                    }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_logout),
-                            contentDescription = "Logout",
-                            tint = Color.Black
-                        )
-                    }
-                })
+                title = stringResource(R.string.home), showBackButton = false)
         },
         floatingActionButton = {},
     ) { paddingValues ->

@@ -25,11 +25,13 @@ import com.ovasta.sellers.base.CenteredTextAppBar
 import com.ovasta.sellers.base.Gray100
 import com.ovasta.sellers.base.Gray600
 import com.ovasta.sellers.base.Primary
+import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.lgSemiBold
 import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.base.smSemiBold
+import com.ovasta.sellers.base.xsMedium
 import com.ovasta.sellers.data.User
 import com.ovasta.sellers.presentation.profile.presentation.ProfileScreenActions
 import com.ovasta.sellers.presentation.profile.presentation.ProfileViewState
@@ -41,11 +43,25 @@ fun ProfileContent(
     viewState: ProfileViewState,
     onAction: (ProfileScreenActions) -> Unit
 ) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            CenteredTextAppBar(title = stringResource(R.string.profile), showBackButton = false)
+            CenteredTextAppBar(
+                title = stringResource(R.string.profile),
+                showBackButton = false,
+                actions = {
+                    IconButton(onClick = { showLogoutDialog = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_logout),
+                            contentDescription = "Logout",
+                            tint = Color.Black
+                        )
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -70,7 +86,7 @@ fun ProfileContent(
 
             Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._12sdp)))
 
-            // Phone
+            // Name & Phone
             Text(
                 text = viewState.userInfo?.name ?: "",
                 style = smNormal,
@@ -89,7 +105,7 @@ fun ProfileContent(
             // Wallet Card
             ProfileInfoCard(
                 title = stringResource(R.string.wallet),
-                value = stringResource(R.string.price_currency,viewState.walletBalance),
+                value = stringResource(R.string.price_currency, viewState.walletBalance),
                 onClick = { onAction(ProfileScreenActions.OnWalletClicked) }
             )
 
@@ -103,8 +119,24 @@ fun ProfileContent(
             )
 
             Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._24sdp)))
-
         }
+    }
+
+    // Logout confirmation dialog
+    if (showLogoutDialog) {
+        BaseDialog(
+            title = stringResource(R.string.logout),
+            message = stringResource(R.string.logout_message),
+            primaryButtonText = stringResource(R.string.yes),
+            secondaryButtonText = stringResource(R.string.no),
+            onPrimaryClick = {
+                showLogoutDialog = false
+                onAction(ProfileScreenActions.OnLogout)
+            },
+            onSecondaryClick = { showLogoutDialog = false },
+            onDismiss = { showLogoutDialog = false },
+            dismissOnClickOutside = false
+        )
     }
 }
 

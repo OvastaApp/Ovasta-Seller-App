@@ -2,9 +2,11 @@ package com.ovasta.sellers.presentation.profile.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
+import com.ovasta.sellers.base.ScreenDirection
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
+import com.ovasta.sellers.presentation.nav.Login
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,10 +29,15 @@ class ProfileViewModel(
             is ProfileScreenActions.OnWalletClicked -> {
                 // TODO: Navigate to wallet details
             }
+
             is ProfileScreenActions.OnPointsClicked -> {
                 // TODO: Navigate to points details
             }
-            is ProfileScreenActions.OnLogout -> {}
+
+            is ProfileScreenActions.OnLogout -> {
+                logout()
+            }
+
             is ProfileScreenActions.OnNoteChanged -> {
                 _viewState.update { it.copy(note = action.note) }
             }
@@ -65,6 +72,21 @@ class ProfileViewModel(
             profileResult.onSuccess { profileResponse ->
                 updateViewState { it.copy(userInfo = profileResponse) }
             }.onFailure { updateViewStateWithFail(it) }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            kotlin.runCatching {
+                settingsRepository.logout()
+            }.onSuccess {
+                setComposeUILoading(false)
+                settingsRepository.clearUserData()
+                emitScreenDirectionEvent(ScreenDirection.Replace(Login))
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
         }
     }
 

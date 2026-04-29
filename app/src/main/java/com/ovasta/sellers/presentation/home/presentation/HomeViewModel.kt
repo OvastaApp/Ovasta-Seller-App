@@ -61,7 +61,6 @@ class HomeViewModel(
             is HomeScreenActions.ChangeLogoutDialogStatus ->
                 updateViewState { it.copy(isLogoutDialogVisible = action.isVisible) }
 
-            is HomeScreenActions.OnLogoutClicked -> logout()
             is HomeScreenActions.CreateOrder ->
                 emitScreenDirectionEvent(ScreenDirection.Push(CreateOrder()))
 
