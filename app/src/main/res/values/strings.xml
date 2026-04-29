@@ -47,9 +47,10 @@
     <string name="home">Home</string>
     <string name="orders">Orders</string>
     <string name="profile">Profile</string>
-    <string name="current_order">Current order</string>
-    <string name="courier">Courier</string>
-    <string name="picker">Picker</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="wallet">Wallet</string>
+    <string name="points">Points</string>
+    <string name="points_unit">pts</string>
     <string name="admin">Admin</string>
     <string name="pending">Pending</string>
     <string name="canceled">Canceled</string>

@@ -47,7 +47,10 @@
     <string name="home">الرئيسية</string>
     <string name="orders">الطلبات</string>
     <string name="profile">الملف الشخصي</string>
-    <string name="current_order">الطلب الحالي</string>
+    <string name="profile_image">صورة الملف الشخصي</string>
+    <string name="wallet">المحفظة</string>
+    <string name="points">النقاط</string>
+    <string name="points_unit">نقطة</string>
     <string name="courier">توصيل</string>
     <string name="picker">تحضير</string>
     <string name="admin">ادمن</string>

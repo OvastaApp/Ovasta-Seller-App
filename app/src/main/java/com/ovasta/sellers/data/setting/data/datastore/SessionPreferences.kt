@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 import android.util.Base64
+import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 
 @Serializable
 data class SessionPreferences(
@@ -23,6 +24,7 @@ data class SessionPreferences(
     val accessToken: String = "",
     val deviceId: String = "",
     val isTracking: Boolean = false,
+    val homeInfo: HomeInfo? = null,
 )
 
 object SessionPreferencesSerializer : Serializer<SessionPreferences> {

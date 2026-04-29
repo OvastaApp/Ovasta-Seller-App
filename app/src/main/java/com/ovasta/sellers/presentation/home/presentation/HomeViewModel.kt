@@ -26,7 +26,7 @@ class HomeViewModel(
         loadHomeData()
     }
 
-    fun loadHomeData(statusId: Int? = null, page: Int? = null, isRefresh: Boolean = false) {
+    fun loadHomeData(page: Int? = null, isRefresh: Boolean = false) {
         viewModelScope.launch {
             if (isRefresh) {
                 updateViewState { it.copy(isRefreshing = true) }
@@ -45,8 +45,9 @@ class HomeViewModel(
             setComposeUILoading(false)
             updateViewState { it.copy(isRefreshing = false) }
 
-            pointsResult.onSuccess { points ->
-                updateViewState { it.copy(homeInfo = points) }
+            pointsResult.onSuccess { homeResponse ->
+                updateViewState { it.copy(homeInfo = homeResponse) }
+                settingsRepository.saveHomeData(homeResponse)
             }.onFailure { updateViewStateWithFail(it) }
 
             ordersResult.onSuccess { ordersResponse ->

@@ -1,4 +1,4 @@
-package com.ovasta.sellers.presentation.home.data
+package com.ovasta.sellers.presentation.profile.data
 
 import com.ovasta.sellers.data.ApiResponse
 import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
@@ -7,10 +7,10 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface HomeApi {
+interface ProfileApi {
     @GET("delivery-orders")
     suspend fun getCurrentOrders(
-        @Query("current_orders") isCurrentOrders: Boolean? = true,
+        @Query("Current_orders") isCurrentOrders: Boolean? = true,
         @Query("page") page: Int? = null
     ): ApiResponse<DeliveryOrdersResponse>
 

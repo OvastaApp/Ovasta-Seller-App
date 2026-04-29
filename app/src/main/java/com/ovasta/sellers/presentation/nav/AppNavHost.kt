@@ -25,6 +25,8 @@ import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderScree
 import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewModel
 import com.ovasta.sellers.presentation.home.presentation.HomeScreen
 import com.ovasta.sellers.presentation.home.presentation.HomeViewModel
+import com.ovasta.sellers.presentation.profile.presentation.ProfileScreen
+import com.ovasta.sellers.presentation.profile.presentation.ProfileViewModel
 import org.koin.androidx.compose.koinViewModel
 
 data object Splash
@@ -34,8 +36,8 @@ data object Profile
 data class CreateOrder(val id: Long = System.currentTimeMillis())
 
 private sealed class BottomNavItem(val route: Any, val label: String, val icon: ImageVector) {
-    object HomeBottomNav : BottomNavItem(Home, "Home", Icons.Default.Home)
-    object ProfileBottomNav : BottomNavItem(Profile, "Profile", Icons.Default.Person)
+    object HomeBottomNav : BottomNavItem(Home, "الرئيسية", Icons.Default.Home)
+    object ProfileBottomNav : BottomNavItem(Profile, "الملف الشخصي", Icons.Default.Person)
     companion object {
         val items = listOf(HomeBottomNav, ProfileBottomNav)
     }
@@ -97,7 +99,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                         }
 
                         is Profile -> NavEntry(key) {
-                            ProfileScreen()
+                            val viewModel: ProfileViewModel = koinViewModel()
+                            ProfileScreen(viewModel)
                         }
 
                         is CreateOrder -> NavEntry(key) {
@@ -113,18 +116,6 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 }
             )
         }
-    }
-}
-
-// Simple ProfileScreen implementation
-@Composable
-fun ProfileScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "ProfileBottomNav",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(24.dp)
-        )
     }
 }
 
