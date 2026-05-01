@@ -238,5 +238,7 @@
     <string name="wallet_balance">رصيدك</string>
     <string name="empty_wallet_transactions">لا يوجد تحويلات بعد</string>
     <string name="empty_withdraw_history">لا يوجد نقاط بعد</string>
+    <string name="withdraw">سحب</string>
+    <string name="convert_to_money">تحويل نقاطك</string>
 
 </resources>

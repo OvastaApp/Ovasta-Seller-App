@@ -12,7 +12,5 @@ interface WalletApi {
     ): ApiResponse<WalletTransactionsResponse>
 
     @GET("withdrawal-requests")
-    suspend fun getWithdrawalRequests(
-        @Query("page") page: Int? = null
-    ): ApiResponse<List<WithdrawRequests>>
+    suspend fun getWithdrawalRequests(@Query("page") page: Int? = null): ApiResponse<List<WithdrawRequests>>
 }

@@ -33,6 +33,14 @@ class WalletViewModel(
                 if (action.index == 0) getWalletTransactions()
                 else getWithdrawRequests()
             }
+
+            WalletAction.RequestWithdraw -> {
+                // TODO: Navigate to withdraw request screen
+            }
+
+            WalletAction.ConvertPoints -> {
+                // TODO: Call convert points API
+            }
         }
     }
 

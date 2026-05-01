@@ -237,5 +237,7 @@
     <string name="wallet_balance">Wallet balance</string>
     <string name="empty_wallet_transactions">No transactions yet</string>
     <string name="empty_withdraw_history">No points yet</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="convert_to_money">Convert points</string>
 
 </resources>

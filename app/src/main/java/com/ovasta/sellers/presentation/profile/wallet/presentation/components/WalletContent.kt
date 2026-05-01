@@ -70,28 +70,94 @@ fun WalletContnet(
                 .padding(paddingValues)
         ) {
             viewState.walletTransactions?.let { wallet ->
-                Card(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Primary)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    // Wallet Balance Card
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Primary)
                     ) {
-                        Text(
-                            text = stringResource(R.string.wallet_balance),
-                            style = smNormal,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "${wallet.walletBalance ?: 0} EGP",
-                            style = mdSemiBold,
-                            color = Color.White
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(R.string.wallet_balance),
+                                style = xsMedium,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${wallet.walletBalance ?: 0} EGP",
+                                style = mdSemiBold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(
+                                onClick = { onAction(WalletAction.RequestWithdraw) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                    contentColor = Primary
+                                ),
+                                contentPadding = PaddingValues(vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.withdraw),
+                                    style = xsMedium
+                                )
+                            }
+                        }
+                    }
+
+                    // Points Card
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Amber.copy(alpha = 0.15f))
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(R.string.points),
+                                style = xsMedium,
+                                color = Amber
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${wallet.points ?: 0}",
+                                style = mdSemiBold,
+                                color = Amber
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(
+                                onClick = { onAction(WalletAction.ConvertPoints) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Amber,
+                                    contentColor = Color.White
+                                ),
+                                contentPadding = PaddingValues(vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.convert_to_money),
+                                    style = xsMedium
+                                )
+                            }
+                        }
                     }
                 }
             }
