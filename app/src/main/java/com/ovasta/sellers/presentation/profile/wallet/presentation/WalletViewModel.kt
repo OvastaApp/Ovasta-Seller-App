@@ -5,12 +5,14 @@ import com.ovasta.sellers.base.BaseViewModel
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.presentation.profile.orderhistory.data.IOrderHistoryRepository
+import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRepository
+import com.ovasta.sellers.presentation.profile.wallet.data.WalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class WalletViewModel(
-    val profileRepository: IOrderHistoryRepository,
+    val walletRepository: IWalletRepository
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow(WalletViewState())
@@ -18,22 +20,44 @@ class WalletViewModel(
 
     fun onScreenAction(action: WalletAction) {
         when (action) {
-            WalletAction.LoadOrderHistory -> {
-                getLastOrders()
+            WalletAction.LoadWalletTransactions -> {
+                getWalletTransactions()
+            }
+
+            WalletAction.LoadWithdrawRequests -> {
+                getWithdrawRequests()
             }
         }
     }
 
-    fun getLastOrders() {
+    fun getWalletTransactions() {
         viewModelScope.launch {
             setComposeUILoading(true)
             runCatching {
-                profileRepository.getLastOrders()
+                walletRepository.getWalletTransactions()
             }.onSuccess { response ->
                 setComposeUILoading(false)
                 updateViewState {
                     it.copy(
-                        deliveryOrdersResponse = response
+                        walletTransactions = response
+                    )
+                }
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
+        }
+    }
+
+    fun getWithdrawRequests() {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            runCatching {
+                walletRepository.getWithdrawalRequests()
+            }.onSuccess { response ->
+                setComposeUILoading(false)
+                updateViewState {
+                    it.copy(
+                        withdrawRequests = response
                     )
                 }
             }.onFailure {

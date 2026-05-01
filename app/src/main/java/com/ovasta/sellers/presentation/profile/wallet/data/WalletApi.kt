@@ -7,8 +7,12 @@ import retrofit2.http.Query
 
 interface WalletApi {
     @GET("WalletScreen")
-    suspend fun getWallet(
-        @Query("current_orders") isCurrentOrders: Boolean? = false,
+    suspend fun getWalletTransactions(
         @Query("page") page: Int? = null
-    ): ApiResponse<DeliveryOrdersResponse>
+    ): ApiResponse<WalletTransactionsResponse>
+
+    @GET("withdrawal-requests")
+    suspend fun getWithdrawalRequests(
+        @Query("page") page: Int? = null
+    ): ApiResponse<List<WithdrawRequests>>
 }

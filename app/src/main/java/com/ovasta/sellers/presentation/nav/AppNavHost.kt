@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import com.ovasta.sellers.R
 import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewModel
 import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrdersScreen
+import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletScreen
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
 
 

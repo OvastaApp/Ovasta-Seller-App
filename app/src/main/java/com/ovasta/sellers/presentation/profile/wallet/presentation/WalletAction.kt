@@ -1,5 +1,6 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation
 
 sealed interface WalletAction {
-    object LoadOrderHistory : WalletAction
+    object LoadWalletTransactions : WalletAction
+    object LoadWithdrawRequests : WalletAction
 }

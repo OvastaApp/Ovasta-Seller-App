@@ -8,6 +8,7 @@ import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.nav.LastOrders
 import com.ovasta.sellers.presentation.nav.Login
+import com.ovasta.sellers.presentation.nav.Wallet
 import com.ovasta.sellers.presentation.profile.profile.data.IProfileRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,7 @@ class ProfileViewModel(
         when (action) {
             is ProfileScreenActions.ChangeLogoutDialogStatus -> {}
             is ProfileScreenActions.OnWalletClicked -> {
-                // TODO: Navigate to wallet details
+                navWallet()
             }
 
             is ProfileScreenActions.OnLogout -> {
@@ -45,6 +46,10 @@ class ProfileViewModel(
 
     fun navLastOrders() {
         emitScreenDirectionEvent(ScreenDirection.Push(LastOrders))
+    }
+
+    fun navWallet() {
+        emitScreenDirectionEvent(ScreenDirection.Push(Wallet))
     }
 
 
