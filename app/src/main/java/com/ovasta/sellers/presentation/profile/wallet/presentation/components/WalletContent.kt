@@ -1,4 +1,4 @@
-package com.ovasta.sellers.presentation.profile.presentation.components
+package com.ovasta.sellers.presentation.profile.wallet.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -42,14 +42,16 @@ import com.ovasta.sellers.base.Green
 import com.ovasta.sellers.base.ext.makePhoneCall
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
-import com.ovasta.sellers.presentation.profile.presentation.ProfileScreenActions
-import com.ovasta.sellers.presentation.profile.presentation.ProfileViewState
+import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryAction
+import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewState
+import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletAction
+import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun OrderHistoryContent(
-    viewState: ProfileViewState,
-    onAction: (ProfileScreenActions) -> Unit,
+fun WalletContnet(
+    viewState: WalletViewState,
+    onAction: (WalletAction) -> Unit,
     onNavigateBack: () -> Unit = {}
 
 ) {
@@ -58,10 +60,10 @@ fun OrderHistoryContent(
     val refreshing = viewState.isRefreshing
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
-        onRefresh = { onAction(ProfileScreenActions.LoadOrderHistory) }
+        onRefresh = { onAction(OrderHistoryAction.LoadOrderHistory) }
     )
     LaunchedEffect(Unit) {
-        onAction(ProfileScreenActions.LoadOrderHistory)
+        onAction(OrderHistoryAction.LoadOrderHistory)
     }
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
@@ -314,7 +316,7 @@ private fun InfoRow(icon: Int, value: String) {
 @Composable
 fun OrderHistoryContentPreview() {
     OrderHistoryContent(
-        viewState = ProfileViewState(
+        viewState = OrderHistoryViewState(
             deliveryOrdersResponse =
                 DeliveryOrdersResponse(
                     currentPage = 1,

@@ -25,15 +25,17 @@ import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderScree
 import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewModel
 import com.ovasta.sellers.presentation.home.presentation.HomeScreen
 import com.ovasta.sellers.presentation.home.presentation.HomeViewModel
-import com.ovasta.sellers.presentation.profile.presentation.ProfileScreen
-import com.ovasta.sellers.presentation.profile.presentation.ProfileViewModel
+import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreen
+import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewModel
 import com.ovasta.sellers.base.smSemiBold
 import com.ovasta.sellers.base.xsMedium
 import org.koin.androidx.compose.koinViewModel
 import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import com.ovasta.sellers.R
-import com.ovasta.sellers.presentation.profile.presentation.OrdersScreen
+import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewModel
+import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrdersScreen
+import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
 
 
 private sealed class BottomNavItem(
@@ -118,8 +120,15 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                         }
 
                         is LastOrders -> NavEntry(key) {
-                            val viewModel: ProfileViewModel = koinViewModel()
+                            val viewModel: OrderHistoryViewModel = koinViewModel()
                             OrdersScreen(
+                                viewModel,
+                                onNavigateBack = { navigator.pop() })
+                        }
+
+                        is Wallet -> NavEntry(key) {
+                            val viewModel: WalletViewModel = koinViewModel()
+                            WalletScreen(
                                 viewModel,
                                 onNavigateBack = { navigator.pop() })
                         }

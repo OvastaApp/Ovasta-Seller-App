@@ -1,4 +1,4 @@
-package com.ovasta.sellers.presentation.profile.presentation
+package com.ovasta.sellers.presentation.profile.profile.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
@@ -8,7 +8,7 @@ import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.nav.LastOrders
 import com.ovasta.sellers.presentation.nav.Login
-import com.ovasta.sellers.presentation.profile.data.IProfileRepository
+import com.ovasta.sellers.presentation.profile.profile.data.IProfileRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,16 +37,8 @@ class ProfileViewModel(
                 logout()
             }
 
-            is ProfileScreenActions.OnNoteChanged -> {
-                _viewState.update { it.copy(note = action.note) }
-            }
-
             ProfileScreenActions.OnOrderHistoryTabClicked -> {
                 navLastOrders()
-            }
-
-            ProfileScreenActions.LoadOrderHistory -> {
-                getLastOrders()
             }
         }
     }
@@ -55,28 +47,11 @@ class ProfileViewModel(
         emitScreenDirectionEvent(ScreenDirection.Push(LastOrders))
     }
 
-    fun getLastOrders() {
-        viewModelScope.launch {
-            setComposeUILoading(true)
-            kotlin.runCatching {
-                profileRepository.getLastOrders()
-            }.onSuccess { response ->
-                setComposeUILoading(false)
-                updateViewState {
-                    it.copy(
-                        deliveryOrdersResponse = response
-                    )
-                }
-            }.onFailure {
-                updateViewStateWithFail(it)
-            }
-        }
-    }
 
     fun logout() {
         viewModelScope.launch {
             setComposeUILoading(true)
-            kotlin.runCatching {
+            runCatching {
                 settingsRepository.logout()
             }.onSuccess {
                 setComposeUILoading(false)
@@ -92,16 +67,15 @@ class ProfileViewModel(
         viewModelScope.launch {
             setComposeUILoading(true)
             val homeInfoDeferred = async {
-                kotlin.runCatching { settingsRepository.getHomeInfo() }
+                runCatching { settingsRepository.getHomeInfo() }
             }
             val userInfoDeferred = async {
-                kotlin.runCatching { settingsRepository.getUseData() }
+                runCatching { settingsRepository.getUseData() }
             }
             val homeResult = homeInfoDeferred.await()
             val profileResult = userInfoDeferred.await()
 
             setComposeUILoading(false)
-            updateViewState { it.copy(isRefreshing = false) }
 
             homeResult.onSuccess { homeResponse ->
                 updateViewState {

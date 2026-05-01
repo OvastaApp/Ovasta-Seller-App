@@ -1,10 +1,10 @@
-package com.ovasta.sellers.presentation.profile.presentation
+package com.ovasta.sellers.presentation.profile.profile.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
-import com.ovasta.sellers.presentation.profile.presentation.components.ProfileContent
+import com.ovasta.sellers.presentation.profile.profile.presentation.components.ProfileContent
 
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel) {

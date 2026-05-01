@@ -1,4 +1,4 @@
-package com.ovasta.sellers.presentation.profile.presentation.components
+package com.ovasta.sellers.presentation.profile.orderhistory.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,8 +29,8 @@ import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.data.User
-import com.ovasta.sellers.presentation.profile.presentation.ProfileScreenActions
-import com.ovasta.sellers.presentation.profile.presentation.ProfileViewState
+import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreenActions
+import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewState
 
 
 @OptIn(ExperimentalMaterial3Api::class)

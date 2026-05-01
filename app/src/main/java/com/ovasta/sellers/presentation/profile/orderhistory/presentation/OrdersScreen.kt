@@ -1,14 +1,14 @@
-package com.ovasta.sellers.presentation.profile.presentation
+package com.ovasta.sellers.presentation.profile.orderhistory.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
-import com.ovasta.sellers.presentation.profile.presentation.components.OrderHistoryContent
+import com.ovasta.sellers.presentation.profile.orderhistory.presentation.components.OrderHistoryContent
 
 @Composable
 fun OrdersScreen(
-    viewModel: ProfileViewModel,
+    viewModel: OrderHistoryViewModel,
     onNavigateBack: () -> Unit
 ) {
     val viewState by viewModel.viewState.collectAsState()
