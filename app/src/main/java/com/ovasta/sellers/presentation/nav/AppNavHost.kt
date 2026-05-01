@@ -119,7 +119,9 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
                         is LastOrders -> NavEntry(key) {
                             val viewModel: ProfileViewModel = koinViewModel()
-                            OrdersScreen(viewModel)
+                            OrdersScreen(
+                                viewModel,
+                                onNavigateBack = { navigator.pop() })
                         }
 
                         else -> NavEntry(Unit) { Text("Unknown route") }

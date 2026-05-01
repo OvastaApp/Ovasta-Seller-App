@@ -49,7 +49,9 @@ import com.ovasta.sellers.presentation.profile.presentation.ProfileViewState
 @Composable
 fun OrderHistoryContent(
     viewState: ProfileViewState,
-    onAction: (ProfileScreenActions) -> Unit
+    onAction: (ProfileScreenActions) -> Unit,
+    onNavigateBack: () -> Unit = {}
+
 ) {
     val context = LocalContext.current
 
@@ -63,12 +65,14 @@ fun OrderHistoryContent(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            CenteredTextAppBar(
-                title = stringResource(R.string.last_orders), showBackButton = false
-            )
-        },
-        floatingActionButton = {},
-    ) { paddingValues ->
+            Surface(
+                shadowElevation = 2.dp, color = Color.White
+            ) {
+                CenteredTextAppBar(
+                    stringResource(R.string.order_details),
+                    onBackButtonPressed = { onNavigateBack() })
+            }
+        }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

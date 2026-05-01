@@ -7,13 +7,18 @@ import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
 import com.ovasta.sellers.presentation.profile.presentation.components.OrderHistoryContent
 
 @Composable
-fun OrdersScreen(viewModel: ProfileViewModel) {
+fun OrdersScreen(
+    viewModel: ProfileViewModel,
+    onNavigateBack: () -> Unit
+) {
     val viewState by viewModel.viewState.collectAsState()
 
     BaseScreen(viewModel = viewModel) {
         OrderHistoryContent(
             viewState = viewState,
-            onAction = viewModel::onScreenAction
+            onAction = viewModel::onScreenAction,
+            onNavigateBack = onNavigateBack
+
         )
     }
 }

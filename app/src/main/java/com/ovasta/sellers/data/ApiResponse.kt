@@ -13,14 +13,6 @@ data class ApiResponse<T>(
     @SerializedName("data")
     @Expose
     var data: T,
-    @SerializedName("last_page")
-    val lastPage: Int,
-    @SerializedName("page")
-    val page: Int,
-    @SerializedName("per_page")
-    val perPage: Int,
-    @SerializedName("total")
-    val total: Int,
     @SerializedName("token")
     val token: String,
 ) {

@@ -9,6 +9,7 @@ import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.nav.LastOrders
 import com.ovasta.sellers.presentation.nav.Login
 import com.ovasta.sellers.presentation.profile.data.IProfileRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,7 +23,7 @@ class ProfileViewModel(
     val viewState = _viewState.asStateFlow()
 
     init {
-        getLastOrders()
+        loadHomeData()
     }
 
     fun onScreenAction(action: ProfileScreenActions) {
@@ -81,6 +82,37 @@ class ProfileViewModel(
             }.onFailure {
                 updateViewStateWithFail(it)
             }
+        }
+    }
+
+    fun loadHomeData() {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            val homeInfoDeferred = async {
+                kotlin.runCatching { settingsRepository.getHomeInfo() }
+            }
+            val userInfoDeferred = async {
+                kotlin.runCatching { settingsRepository.getUseData() }
+            }
+            val homeResult = homeInfoDeferred.await()
+            val profileResult = userInfoDeferred.await()
+
+            setComposeUILoading(false)
+            updateViewState { it.copy(isRefreshing = false) }
+
+            homeResult.onSuccess { homeResponse ->
+                updateViewState {
+                    it.copy(
+                        homeInfo = homeResponse,
+                        walletBalance = homeResponse?.walletBalance ?: 0.0,
+                        points = homeResponse?.pointsCount ?: 0.0
+                    )
+                }
+            }.onFailure { updateViewStateWithFail(it) }
+
+            profileResult.onSuccess { profileResponse ->
+                updateViewState { it.copy(userInfo = profileResponse) }
+            }.onFailure { updateViewStateWithFail(it) }
         }
     }
 

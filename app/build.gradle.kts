@@ -134,4 +134,6 @@ dependencies {
 
     implementation (libs.play.services.location)
 
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
 }
