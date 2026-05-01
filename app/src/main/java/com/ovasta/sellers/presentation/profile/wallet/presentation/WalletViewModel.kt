@@ -27,6 +27,12 @@ class WalletViewModel(
             WalletAction.LoadWithdrawRequests -> {
                 getWithdrawRequests()
             }
+
+            is WalletAction.SelectTab -> {
+                updateViewState { it.copy(selectedTab = action.index) }
+                if (action.index == 0) getWalletTransactions()
+                else getWithdrawRequests()
+            }
         }
     }
 
