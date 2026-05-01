@@ -41,9 +41,12 @@ class ProfileViewModel(
                 _viewState.update { it.copy(note = action.note) }
             }
 
-            ProfileScreenActions.RefreshOrders -> TODO()
-            ProfileScreenActions.OnLastOrdersClicked -> {
+            ProfileScreenActions.OnOrderHistoryTabClicked -> {
                 navLastOrders()
+            }
+
+            ProfileScreenActions.LoadOrderHistory -> {
+                getLastOrders()
             }
         }
     }

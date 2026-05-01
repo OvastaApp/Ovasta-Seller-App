@@ -58,9 +58,11 @@ fun OrderHistoryContent(
     val refreshing = viewState.isRefreshing
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
-        onRefresh = { onAction(ProfileScreenActions.RefreshOrders) }
+        onRefresh = { onAction(ProfileScreenActions.LoadOrderHistory) }
     )
-
+    LaunchedEffect(Unit) {
+        onAction(ProfileScreenActions.LoadOrderHistory)
+    }
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -69,7 +71,7 @@ fun OrderHistoryContent(
                 shadowElevation = 2.dp, color = Color.White
             ) {
                 CenteredTextAppBar(
-                    stringResource(R.string.order_details),
+                    stringResource(R.string.last_orders),
                     onBackButtonPressed = { onNavigateBack() })
             }
         }) { paddingValues ->

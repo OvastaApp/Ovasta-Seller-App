@@ -110,7 +110,7 @@ fun ProfileContent(
             // order history
             ProfileInfoCard(
                 title = stringResource(R.string.last_orders),
-                onClick = { onAction(ProfileScreenActions.OnLastOrdersClicked) }
+                onClick = { onAction(ProfileScreenActions.OnOrderHistoryTabClicked) }
             )
 
         }
