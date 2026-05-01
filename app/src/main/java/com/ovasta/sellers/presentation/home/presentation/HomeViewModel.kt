@@ -94,21 +94,6 @@ class HomeViewModel(
         }
     }
 
-    fun logout() {
-        viewModelScope.launch {
-            setComposeUILoading(true)
-            kotlin.runCatching {
-                settingsRepository.logout()
-            }.onSuccess {
-                setComposeUILoading(false)
-                settingsRepository.clearUserData()
-                emitScreenDirectionEvent(ScreenDirection.Replace(Login))
-            }.onFailure {
-                updateViewStateWithFail(it)
-            }
-        }
-    }
-
 
     fun updateViewStateWithFail(throwable: Throwable) {
         setComposeUILoading(false)

@@ -6,13 +6,15 @@ import com.ovasta.sellers.base.ScreenDirection
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
+import com.ovasta.sellers.presentation.nav.LastOrders
 import com.ovasta.sellers.presentation.nav.Login
-import kotlinx.coroutines.async
+import com.ovasta.sellers.presentation.profile.data.IProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class ProfileViewModel(
+    val profileRepository: IProfileRepository,
     val settingsRepository: ISettingsRepository
 ) : BaseViewModel() {
 
@@ -20,7 +22,7 @@ class ProfileViewModel(
     val viewState = _viewState.asStateFlow()
 
     init {
-        loadHomeData()
+        getLastOrders()
     }
 
     fun onScreenAction(action: ProfileScreenActions) {
@@ -30,10 +32,6 @@ class ProfileViewModel(
                 // TODO: Navigate to wallet details
             }
 
-            is ProfileScreenActions.OnPointsClicked -> {
-                // TODO: Navigate to points details
-            }
-
             is ProfileScreenActions.OnLogout -> {
                 logout()
             }
@@ -41,37 +39,33 @@ class ProfileViewModel(
             is ProfileScreenActions.OnNoteChanged -> {
                 _viewState.update { it.copy(note = action.note) }
             }
+
+            ProfileScreenActions.RefreshOrders -> TODO()
+            ProfileScreenActions.OnLastOrdersClicked -> {
+                navLastOrders()
+            }
         }
     }
 
-    fun loadHomeData() {
+    fun navLastOrders() {
+        emitScreenDirectionEvent(ScreenDirection.Push(LastOrders))
+    }
+
+    fun getLastOrders() {
         viewModelScope.launch {
             setComposeUILoading(true)
-            val homeInfoDeferred = async {
-                kotlin.runCatching { settingsRepository.getHomeInfo() }
-            }
-            val userInfoDeferred = async {
-                kotlin.runCatching { settingsRepository.getUseData() }
-            }
-            val homeResult = homeInfoDeferred.await()
-            val profileResult = userInfoDeferred.await()
-
-            setComposeUILoading(false)
-            updateViewState { it.copy(isRefreshing = false) }
-
-            homeResult.onSuccess { homeResponse ->
+            kotlin.runCatching {
+                profileRepository.getLastOrders()
+            }.onSuccess { response ->
+                setComposeUILoading(false)
                 updateViewState {
                     it.copy(
-                        homeInfo = homeResponse,
-                        walletBalance = homeResponse?.walletBalance ?: 0.0,
-                        points = homeResponse?.pointsCount ?: 0.0
+                        deliveryOrdersResponse = response
                     )
                 }
-            }.onFailure { updateViewStateWithFail(it) }
-
-            profileResult.onSuccess { profileResponse ->
-                updateViewState { it.copy(userInfo = profileResponse) }
-            }.onFailure { updateViewStateWithFail(it) }
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
         }
     }
 

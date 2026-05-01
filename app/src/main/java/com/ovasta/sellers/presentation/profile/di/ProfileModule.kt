@@ -14,5 +14,5 @@ val profileModule = module {
     factory { get<Retrofit>().create(ProfileApi::class.java) }
     single<IProfileRemoteDataSource> { ProfileRemoteDataSource(get()) }
     single<IProfileRepository> { ProfileRepository(get()) }
-    viewModel { ProfileViewModel(get()) }
+    viewModel { ProfileViewModel(get(),get()) }
 }

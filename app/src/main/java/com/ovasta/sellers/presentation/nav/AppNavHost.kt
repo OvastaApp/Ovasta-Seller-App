@@ -33,12 +33,7 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import com.ovasta.sellers.R
-
-data object Splash
-data object Login
-data object Home
-data object Profile
-data class CreateOrder(val id: Long = System.currentTimeMillis())
+import com.ovasta.sellers.presentation.profile.presentation.OrdersScreen
 
 
 private sealed class BottomNavItem(
@@ -53,6 +48,7 @@ private sealed class BottomNavItem(
         val items = listOf(HomeBottomNav, ProfileBottomNav)
     }
 }
+
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
     val backStack = remember { mutableStateListOf<Any>(Splash) }
@@ -108,17 +104,22 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                             HomeScreen(viewModel)
                         }
 
-                        is Profile -> NavEntry(key) {
-                            val viewModel: ProfileViewModel = koinViewModel()
-                            ProfileScreen(viewModel)
-                        }
-
                         is CreateOrder -> NavEntry(key) {
                             val viewModel: CreateOrderViewModel =
                                 koinViewModel(key = key.id.toString())
                             CreateOrderScreen(
                                 viewModel = viewModel,
                                 onNavigateBack = { navigator.pop() })
+                        }
+
+                        is Profile -> NavEntry(key) {
+                            val viewModel: ProfileViewModel = koinViewModel()
+                            ProfileScreen(viewModel)
+                        }
+
+                        is LastOrders -> NavEntry(key) {
+                            val viewModel: ProfileViewModel = koinViewModel()
+                            OrdersScreen(viewModel)
                         }
 
                         else -> NavEntry(Unit) { Text("Unknown route") }

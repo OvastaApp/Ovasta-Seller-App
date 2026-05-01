@@ -46,6 +46,7 @@
     <string name="estimated_delivery">Estimated Delivery</string>
     <string name="home">Home</string>
     <string name="orders">Orders</string>
+    <string name="last_orders">orders</string>
     <string name="profile">Profile</string>
     <string name="profile_image">Profile Image</string>
     <string name="wallet">Wallet</string>

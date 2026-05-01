@@ -1,12 +1,10 @@
 package com.ovasta.sellers.presentation.profile.data
 
+import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
 
 class ProfileRemoteDataSource(
-    private val homeApi: ProfileApi
+    private val profileApi: ProfileApi
 ) : IProfileRemoteDataSource {
-    override suspend fun getCurrentOrders(page: Int?) =
-        homeApi.getCurrentOrders(page = page).data
-
-    override suspend fun getHomeInfo() = homeApi.getHome().data
-    override suspend fun cancelOrder(orderId: Int) = homeApi.cancelOrder(orderId)
+    override suspend fun getLastOrders(page: Int?): DeliveryOrdersResponse =
+        profileApi.getLastOrders(page = page).data
 }

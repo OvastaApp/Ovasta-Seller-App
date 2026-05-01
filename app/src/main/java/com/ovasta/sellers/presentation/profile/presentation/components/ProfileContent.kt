@@ -26,12 +26,8 @@ import com.ovasta.sellers.base.Gray100
 import com.ovasta.sellers.base.Gray600
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
-import com.ovasta.sellers.base.lgSemiBold
-import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.smNormal
-import com.ovasta.sellers.base.smSemiBold
-import com.ovasta.sellers.base.xsMedium
 import com.ovasta.sellers.data.User
 import com.ovasta.sellers.presentation.profile.presentation.ProfileScreenActions
 import com.ovasta.sellers.presentation.profile.presentation.ProfileViewState
@@ -111,14 +107,12 @@ fun ProfileContent(
 
             Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._12sdp)))
 
-            // Points Card
+            // order history
             ProfileInfoCard(
-                title = stringResource(R.string.points),
-                value = "${viewState.points} ${stringResource(R.string.points_unit)}",
-                onClick = { onAction(ProfileScreenActions.OnPointsClicked) }
+                title = stringResource(R.string.last_orders),
+                onClick = { onAction(ProfileScreenActions.OnLastOrdersClicked) }
             )
 
-            Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._24sdp)))
         }
     }
 
@@ -143,7 +137,7 @@ fun ProfileContent(
 @Composable
 fun ProfileInfoCard(
     title: String,
-    value: String,
+    value: String? = null,
     onClick: () -> Unit
 ) {
     Card(
@@ -171,7 +165,7 @@ fun ProfileInfoCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = value,
+                    text = value ?: "",
                     style = smMedium,
                     color = Primary
                 )
