@@ -33,7 +33,11 @@ import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletAction
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewState
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.smMedium
+import com.ovasta.sellers.base.xsRegular
 import com.ovasta.sellers.presentation.profile.wallet.data.PointsHistory
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -233,11 +237,11 @@ fun WalletContent(
                     .animateContentSize()
             ) {
                 when (viewState.selectedTab) {
-                    0 -> WithdrawRequestsList(
+                    0 -> PointsHistoryList(
                         requests = viewState.wallet?.pointsHistory ?: emptyList()
                     )
 
-                    1 -> WalletTransactionsList(
+                    1 -> WalletWithdrawList(
                         transactions = viewState.withdrawRequests
                     )
                 }
@@ -247,7 +251,7 @@ fun WalletContent(
 }
 
 @Composable
-fun WalletTransactionsList(transactions: List<WithdrawRequests>) {
+fun WalletWithdrawList(transactions: List<WithdrawRequests>) {
     if (transactions.isEmpty()) {
         EmptyState(text = stringResource(R.string.empty_wallet_transactions))
     } else {
@@ -257,14 +261,14 @@ fun WalletTransactionsList(transactions: List<WithdrawRequests>) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(transactions) { _, transaction ->
-                TransactionItem(transaction)
+                WithdrawItem(transaction)
             }
         }
     }
 }
 
 @Composable
-fun TransactionItem(transaction: WithdrawRequests) {
+fun PointsItem(transaction: PointsHistory) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
@@ -278,22 +282,30 @@ fun TransactionItem(transaction: WithdrawRequests) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "#${transaction.id}",
                     style = smSemiBold,
                     color = Color.Black
                 )
+                if (!transaction.description.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = transaction.description ?: "",
+                        style = xsRegular,
+                        color = Color.Black.copy(alpha = 0.7f)
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = transaction.createdAt ?: "",
-                    style = xsMedium,
+                    text = formatDate(transaction.createdAt),
+                    style = xsRegular,
                     color = Gray500
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${transaction.amount ?: 0} EGP",
+                    text = "${transaction.amount ?: 0} ${stringResource(R.string.point)}",
                     style = smSemiBold,
                     color = Primary
                 )
@@ -305,7 +317,7 @@ fun TransactionItem(transaction: WithdrawRequests) {
 }
 
 @Composable
-fun WithdrawRequestsList(requests: List<PointsHistory>) {
+fun PointsHistoryList(requests: List<PointsHistory>) {
     if (requests.isEmpty()) {
         EmptyState(text = stringResource(R.string.empty_withdraw_history))
     } else {
@@ -315,14 +327,14 @@ fun WithdrawRequestsList(requests: List<PointsHistory>) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(requests) { _, request ->
-                WithdrawItem(request)
+                PointsItem(request)
             }
         }
     }
 }
 
 @Composable
-fun WithdrawItem(request: PointsHistory) {
+fun WithdrawItem(request: WithdrawRequests) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
@@ -344,7 +356,7 @@ fun WithdrawItem(request: PointsHistory) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = request.createdAt ?: "", style = smMedium, color = Gray500)
+                Text(text = formatDate(request.createdAt), style = smMedium, color = Gray500)
                 StatusChip(status = request.status)
             }
             if (!request.rejectionReason.isNullOrEmpty()) {
@@ -382,6 +394,33 @@ fun StatusChip(status: Int) {
 fun EmptyState(text: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(text = text, style = smNormal, color = Gray500, textAlign = TextAlign.Center)
+    }
+}
+
+fun formatDate(isoDate: String?): String {
+    if (isoDate.isNullOrEmpty()) return ""
+
+    return try {
+        val inputFormat = SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
+            Locale.US
+        )
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+        val arabicLocale = Locale("ar")
+
+        val date = inputFormat.parse(isoDate) ?: return isoDate
+
+        val dayMonthFormat = SimpleDateFormat("dd-MMM", arabicLocale)
+        val timeFormat = SimpleDateFormat("hh:mm a", arabicLocale)
+
+        val dayMonth = dayMonthFormat.format(date)
+        val time = timeFormat.format(date)
+
+        "$dayMonth\n$time"
+
+    } catch (e: Exception) {
+        isoDate
     }
 }
 

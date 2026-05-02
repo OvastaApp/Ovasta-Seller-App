@@ -51,6 +51,7 @@
     <string name="profile_image">Profile Image</string>
     <string name="wallet">Wallet</string>
     <string name="points">Points</string>
+    <string name="point">Point</string>
     <string name="points_unit">pts</string>
     <string name="admin">Admin</string>
     <string name="pending">Pending</string>
