@@ -234,11 +234,15 @@
     <string name="status_picked">تم الاستلام</string>
     <string name="status_delivered">تم التسليم</string>
     <string name="status_cancelled">تم الإلغاء</string>
-    <string name="withdraw_requests">طلبات السحب</string>
+    <string name="withdraw_requests">السحوبات</string>
     <string name="wallet_balance">رصيدك</string>
     <string name="empty_wallet_transactions">لا يوجد تحويلات بعد</string>
     <string name="empty_withdraw_history">لا يوجد نقاط بعد</string>
     <string name="withdraw">سحب</string>
     <string name="convert_to_money">تحويل نقاطك</string>
+    <string name="withdraw_confirmation_message">هل أنت متأكد من سحب %d جنيه؟</string>
+    <string name="success">تم بنجاح</string>
+    <string name="withdraw_request_success">تم تقديم طلب السحب بنجاح</string>
+    <string name="ok">حسناً</string>
 
 </resources>

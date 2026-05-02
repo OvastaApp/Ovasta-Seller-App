@@ -27,17 +27,17 @@ import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.base.smSemiBold
 import com.ovasta.sellers.base.xsMedium
-import com.ovasta.sellers.presentation.home.data.model.OrderSteps
-import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
 import com.ovasta.sellers.presentation.profile.wallet.data.TransactionsSteps
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletTransactions
 import com.ovasta.sellers.presentation.profile.wallet.data.WithdrawRequests
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletAction
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewState
+import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
+import com.ovasta.sellers.base.smMedium
+import com.ovasta.sellers.presentation.profile.wallet.data.PointsHistory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WalletContnet(
+fun WalletContent(
     viewState: WalletViewState,
     onAction: (WalletAction) -> Unit,
     onNavigateBack: () -> Unit = {}
@@ -45,11 +45,39 @@ fun WalletContnet(
 
     LaunchedEffect(Unit) {
         onAction(WalletAction.LoadWalletTransactions)
+//        onAction(WalletAction.LoadWithdrawRequests)
+    }
+
+    // Withdraw Confirmation Dialog
+    if (viewState.showWithdrawConfirmDialog) {
+        BaseDialog(
+            title = stringResource(R.string.withdraw),
+            message = stringResource(
+                R.string.withdraw_confirmation_message,
+                viewState.wallet?.walletBalance ?: 0
+            ),
+            primaryButtonText = stringResource(R.string.confirm),
+            secondaryButtonText = stringResource(R.string.back),
+            onPrimaryClick = { onAction(WalletAction.ConfirmWithdraw) },
+            onSecondaryClick = { onAction(WalletAction.DismissWithdrawDialog) },
+            onDismiss = { onAction(WalletAction.DismissWithdrawDialog) }
+        )
+    }
+
+    // Withdraw Success Dialog
+    if (viewState.showWithdrawSuccessDialog) {
+        BaseDialog(
+            title = stringResource(R.string.success),
+            message = stringResource(R.string.withdraw_request_success),
+            primaryButtonText = stringResource(R.string.ok),
+            onPrimaryClick = { onAction(WalletAction.DismissSuccessDialog) },
+            onDismiss = { onAction(WalletAction.DismissSuccessDialog) }
+        )
     }
 
     val tabs = listOf(
-        stringResource(R.string.wallet),
-        stringResource(R.string.points)
+        stringResource(R.string.points),
+        stringResource(R.string.wallet)
     )
 
     Scaffold(
@@ -69,37 +97,85 @@ fun WalletContnet(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            viewState.walletTransactions?.let { wallet ->
+            viewState.wallet?.let { wallet ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    // Points Card
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Amber)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.points),
+                                style = xsMedium,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "${wallet.points ?: 0}",
+                                style = mdSemiBold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Button(
+                                onClick = { onAction(WalletAction.ConvertPoints) },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                    contentColor = Amber
+                                ),
+                                contentPadding = PaddingValues(vertical = 8.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.convert_to_money),
+                                    style = xsMedium
+                                )
+                            }
+                        }
+                    }
                     // Wallet Balance Card
                     Card(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         shape = RoundedCornerShape(12.dp),
                         colors = CardDefaults.cardColors(containerColor = Primary)
                     ) {
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxSize()
                                 .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = stringResource(R.string.wallet_balance),
                                 style = xsMedium,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "${wallet.walletBalance ?: 0} EGP",
                                 style = mdSemiBold,
                                 color = Color.White
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.weight(1f))
                             Button(
                                 onClick = { onAction(WalletAction.RequestWithdraw) },
                                 modifier = Modifier.fillMaxWidth(),
@@ -112,48 +188,6 @@ fun WalletContnet(
                             ) {
                                 Text(
                                     text = stringResource(R.string.withdraw),
-                                    style = xsMedium
-                                )
-                            }
-                        }
-                    }
-
-                    // Points Card
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Amber.copy(alpha = 0.15f))
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = stringResource(R.string.points),
-                                style = xsMedium,
-                                color = Amber
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "${wallet.points ?: 0}",
-                                style = mdSemiBold,
-                                color = Amber
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(
-                                onClick = { onAction(WalletAction.ConvertPoints) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Amber,
-                                    contentColor = Color.White
-                                ),
-                                contentPadding = PaddingValues(vertical = 8.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.convert_to_money),
                                     style = xsMedium
                                 )
                             }
@@ -199,12 +233,12 @@ fun WalletContnet(
                     .animateContentSize()
             ) {
                 when (viewState.selectedTab) {
-                    0 -> WalletTransactionsList(
-                        transactions = viewState.walletTransactions?.transactions ?: emptyList()
+                    0 -> WithdrawRequestsList(
+                        requests = viewState.wallet?.pointsHistory ?: emptyList()
                     )
 
-                    1 -> WithdrawRequestsList(
-                        requests = viewState.withdrawRequests
+                    1 -> WalletTransactionsList(
+                        transactions = viewState.withdrawRequests
                     )
                 }
             }
@@ -213,7 +247,7 @@ fun WalletContnet(
 }
 
 @Composable
-fun WalletTransactionsList(transactions: List<WalletTransactions>) {
+fun WalletTransactionsList(transactions: List<WithdrawRequests>) {
     if (transactions.isEmpty()) {
         EmptyState(text = stringResource(R.string.empty_wallet_transactions))
     } else {
@@ -230,7 +264,7 @@ fun WalletTransactionsList(transactions: List<WalletTransactions>) {
 }
 
 @Composable
-fun TransactionItem(transaction: WalletTransactions) {
+fun TransactionItem(transaction: WithdrawRequests) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
@@ -271,7 +305,7 @@ fun TransactionItem(transaction: WalletTransactions) {
 }
 
 @Composable
-fun WithdrawRequestsList(requests: List<WithdrawRequests>) {
+fun WithdrawRequestsList(requests: List<PointsHistory>) {
     if (requests.isEmpty()) {
         EmptyState(text = stringResource(R.string.empty_withdraw_history))
     } else {
@@ -288,7 +322,7 @@ fun WithdrawRequestsList(requests: List<WithdrawRequests>) {
 }
 
 @Composable
-fun WithdrawItem(request: WithdrawRequests) {
+fun WithdrawItem(request: PointsHistory) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
@@ -310,14 +344,14 @@ fun WithdrawItem(request: WithdrawRequests) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = request.createdAt ?: "", style = xsMedium, color = Gray500)
+                Text(text = request.createdAt ?: "", style = smMedium, color = Gray500)
                 StatusChip(status = request.status)
             }
             if (!request.rejectionReason.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = request.rejectionReason ?: "",
-                    style = xsMedium,
+                    style = smMedium,
                     color = Color.Red.copy(alpha = 0.7f)
                 )
             }
@@ -351,27 +385,27 @@ fun EmptyState(text: String) {
     }
 }
 
-@Preview
+@Preview(showBackground = true, locale = "ar")
 @Composable
 fun WalletContentPreview() {
-    WalletContnet(
+    WalletContent(
         viewState = WalletViewState(
-            walletTransactions = com.ovasta.sellers.presentation.profile.wallet.data.WalletTransactionsResponse(
-                walletBalance = 1500,
-                transactions = listOf(
-                    WalletTransactions(
+            wallet = com.ovasta.sellers.presentation.profile.wallet.data.WalletResponse(
+                walletBalance = 1500.0,
+                pointsHistory = listOf(
+                    PointsHistory(
                         id = 1,
                         amount = 500.0,
                         status = 1,
                         createdAt = "2024-06-01"
                     ),
-                    WalletTransactions(
+                    PointsHistory(
                         id = 2,
                         amount = 300.0,
-                        status = 0,
+                        status = 2,
                         createdAt = "2024-06-05"
                     ),
-                    WalletTransactions(
+                    PointsHistory(
                         id = 3,
                         amount = 200.0,
                         status = 2,
@@ -381,11 +415,11 @@ fun WalletContentPreview() {
                 )
             ),
             withdrawRequests = listOf(
-                WithdrawRequests(id = 1, amount = 400, status = 0, createdAt = "2024-06-02"),
-                WithdrawRequests(id = 2, amount = 600, status = 1, createdAt = "2024-06-06"),
+                WithdrawRequests(id = 1, amount = 400.0, status = 0, createdAt = "2024-06-02"),
+                WithdrawRequests(id = 2, amount = 600.0, status = 1, createdAt = "2024-06-06"),
                 WithdrawRequests(
                     id = 3,
-                    amount = 300,
+                    amount = 300.0,
                     status = 2,
                     rejectionReason = "Account verification failed",
                     createdAt = "2024-06-11"

@@ -9,9 +9,9 @@ sealed class TransactionsSteps {
     companion object {
         fun fromStatusId(statusId: Int): TransactionsSteps {
             return when (statusId) {
-                1 -> Pending
-                2 -> Approved
-                3 -> Rejected
+                0 -> Pending
+                1 -> Approved
+                2 -> Rejected
 
                 else -> throw IllegalArgumentException("Unknown statusId: $statusId")
             }
@@ -19,9 +19,9 @@ sealed class TransactionsSteps {
 
         fun toStatus(status: TransactionsSteps): Int {
             return when (status) {
-                is Pending -> 1
-                is Approved -> 2
-                is Rejected -> 3
+                is Pending -> 0
+                is Approved -> 1
+                is Rejected -> 2
             }
         }
     }

@@ -4,9 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
-import com.ovasta.sellers.presentation.profile.orderhistory.data.IOrderHistoryRepository
 import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRepository
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -34,12 +32,40 @@ class WalletViewModel(
                 else getWithdrawRequests()
             }
 
-            WalletAction.RequestWithdraw -> {
-                // TODO: Navigate to withdraw request screen
+            is WalletAction.RequestWithdraw -> {
+                updateViewState { it.copy(showWithdrawConfirmDialog = true) }
+            }
+
+            is WalletAction.DismissWithdrawDialog -> {
+                updateViewState { it.copy(showWithdrawConfirmDialog = false) }
+            }
+
+            is WalletAction.ConfirmWithdraw -> {
+                updateViewState { it.copy(showWithdrawConfirmDialog = false) }
+                requestWithdraw()
+            }
+
+            is WalletAction.DismissSuccessDialog -> {
+                updateViewState { it.copy(showWithdrawSuccessDialog = false) }
             }
 
             WalletAction.ConvertPoints -> {
-                // TODO: Call convert points API
+
+            }
+        }
+    }
+
+    private fun requestWithdraw() {
+//        val amount = viewState.value.walletTransactions?.walletBalance ?: return
+        viewModelScope.launch {
+            runCatching {
+                walletRepository.requestWithdraw()
+            }.onSuccess {
+                updateViewState { it.copy(showWithdrawSuccessDialog = true, selectedTab = 1) }
+                onScreenAction(WalletAction.LoadWalletTransactions)
+                onScreenAction(WalletAction.LoadWithdrawRequests)
+            }.onFailure {
+                // handle error
             }
         }
     }
@@ -53,7 +79,7 @@ class WalletViewModel(
                 setComposeUILoading(false)
                 updateViewState {
                     it.copy(
-                        walletTransactions = response
+                        wallet = response
                     )
                 }
             }.onFailure {
@@ -74,6 +100,32 @@ class WalletViewModel(
                         withdrawRequests = response
                     )
                 }
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
+        }
+    }
+
+    fun redeemPoints() {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            runCatching {
+                walletRepository.redeemPoints(points = viewState.value.pointsToRedeem)
+            }.onSuccess { response ->
+                setComposeUILoading(false)
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
+        }
+    }
+
+    fun withDraw() {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            runCatching {
+                walletRepository.requestWithdraw()
+            }.onSuccess { response ->
+                setComposeUILoading(false)
             }.onFailure {
                 updateViewStateWithFail(it)
             }

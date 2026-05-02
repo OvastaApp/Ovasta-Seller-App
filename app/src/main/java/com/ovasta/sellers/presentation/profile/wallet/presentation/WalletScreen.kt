@@ -4,8 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
-import com.ovasta.sellers.presentation.profile.orderhistory.presentation.components.OrderHistoryContent
-import com.ovasta.sellers.presentation.profile.wallet.presentation.components.WalletContnet
+import com.ovasta.sellers.presentation.profile.wallet.presentation.components.WalletContent
 
 @Composable
 fun WalletScreen(
@@ -15,7 +14,7 @@ fun WalletScreen(
     val viewState by viewModel.viewState.collectAsState()
 
     BaseScreen(viewModel = viewModel) {
-        WalletContnet(
+        WalletContent(
             viewState = viewState,
             onAction = viewModel::onScreenAction,
             onNavigateBack = onNavigateBack

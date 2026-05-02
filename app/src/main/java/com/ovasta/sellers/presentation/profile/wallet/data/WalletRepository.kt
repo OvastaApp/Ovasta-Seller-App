@@ -8,4 +8,10 @@ class WalletRepository(
 
     override suspend fun getWithdrawalRequests(page: Int?) =
         walletRemoteDataSource.getWithdrawalRequests(page = page)
+
+    override suspend fun redeemPoints(points: Int) =
+        walletRemoteDataSource.redeemPoints(points = points)
+
+    override suspend fun requestWithdraw() =
+        walletRemoteDataSource.requestWithdraw()
 }

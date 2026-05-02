@@ -2,13 +2,13 @@ package com.ovasta.sellers.presentation.profile.wallet.data
 
 import com.google.gson.annotations.SerializedName
 
-data class WalletTransactionsResponse(
-    @SerializedName("wallet_balance") var walletBalance: Int? = null,
-    @SerializedName("points") var points: Int? = null,
-    @SerializedName("transactions") var transactions: List<WalletTransactions> = arrayListOf()
+data class WalletResponse(
+    @SerializedName("wallet_balance") var walletBalance: Double? = null,
+    @SerializedName("points") var points: Double? = null,
+    @SerializedName("transactions") var pointsHistory: List<PointsHistory> = arrayListOf()
 )
 
-data class WalletTransactions(
+data class PointsHistory(
     @SerializedName("id") var id: Int,
     @SerializedName("amount") var amount: Double? = null,
     @SerializedName("status") var status: Int,

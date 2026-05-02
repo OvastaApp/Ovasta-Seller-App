@@ -1,11 +1,13 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation
 
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletTransactions
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletTransactionsResponse
+import com.ovasta.sellers.presentation.profile.wallet.data.WalletResponse
 import com.ovasta.sellers.presentation.profile.wallet.data.WithdrawRequests
 
 data class WalletViewState(
-    val walletTransactions: WalletTransactionsResponse? = null,
+    val wallet: WalletResponse? = null,
     val withdrawRequests: List<WithdrawRequests> = emptyList(),
-    val selectedTab: Int = 0
+    val selectedTab: Int = 0,
+    val pointsToRedeem: Int = 0,
+    val showWithdrawConfirmDialog: Boolean = false,
+    val showWithdrawSuccessDialog: Boolean = false,
 )
