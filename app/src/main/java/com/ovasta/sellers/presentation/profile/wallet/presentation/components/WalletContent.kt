@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,8 +59,9 @@ fun WalletContent(
             title = stringResource(R.string.withdraw),
             message = stringResource(
                 R.string.withdraw_confirmation_message,
-                viewState.wallet?.walletBalance ?: 0
+                "${viewState.wallet?.walletBalance ?: 0.0}"
             ),
+            icon = painterResource(R.drawable.ic_confirm),
             primaryButtonText = stringResource(R.string.confirm),
             secondaryButtonText = stringResource(R.string.back),
             onPrimaryClick = { onAction(WalletAction.ConfirmWithdraw) },
@@ -81,7 +83,7 @@ fun WalletContent(
 
     val tabs = listOf(
         stringResource(R.string.points),
-        stringResource(R.string.wallet)
+        stringResource(R.string.withdraw_requests)
     )
 
     Scaffold(

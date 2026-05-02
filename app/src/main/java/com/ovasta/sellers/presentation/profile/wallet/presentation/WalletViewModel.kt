@@ -56,16 +56,16 @@ class WalletViewModel(
     }
 
     private fun requestWithdraw() {
-//        val amount = viewState.value.walletTransactions?.walletBalance ?: return
+        val amount = viewState.value.wallet?.walletBalance ?: return
         viewModelScope.launch {
             runCatching {
-                walletRepository.requestWithdraw()
+                walletRepository.requestWithdraw(amount)
             }.onSuccess {
                 updateViewState { it.copy(showWithdrawSuccessDialog = true, selectedTab = 1) }
                 onScreenAction(WalletAction.LoadWalletTransactions)
                 onScreenAction(WalletAction.LoadWithdrawRequests)
             }.onFailure {
-                // handle error
+                updateViewStateWithFail(it)
             }
         }
     }
@@ -119,18 +119,6 @@ class WalletViewModel(
         }
     }
 
-    fun withDraw() {
-        viewModelScope.launch {
-            setComposeUILoading(true)
-            runCatching {
-                walletRepository.requestWithdraw()
-            }.onSuccess { response ->
-                setComposeUILoading(false)
-            }.onFailure {
-                updateViewStateWithFail(it)
-            }
-        }
-    }
 
     fun updateViewState(update: (WalletViewState) -> WalletViewState) {
         _viewState.update(update)

@@ -7,5 +7,5 @@ interface IWalletRepository {
 
     suspend fun redeemPoints(points: Int)
 
-    suspend fun requestWithdraw()
+    suspend fun requestWithdraw(amount: Double)
 }

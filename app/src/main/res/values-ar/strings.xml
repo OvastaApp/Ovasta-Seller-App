@@ -241,7 +241,7 @@
     <string name="empty_withdraw_history">لا يوجد نقاط بعد</string>
     <string name="withdraw">سحب</string>
     <string name="convert_to_money">تحويل نقاطك</string>
-    <string name="withdraw_confirmation_message">هل أنت متأكد من سحب %d جنيه؟</string>
+    <string name="withdraw_confirmation_message">هل أنت متأكد من سحب %s جنيه؟</string>
     <string name="success">تم بنجاح</string>
     <string name="withdraw_request_success">تم تقديم طلب السحب بنجاح</string>
     <string name="ok">حسناً</string>

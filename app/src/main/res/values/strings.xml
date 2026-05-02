@@ -240,7 +240,7 @@
     <string name="empty_withdraw_history">No points yet</string>
     <string name="withdraw">Withdraw</string>
     <string name="convert_to_money">Convert points</string>
-    <string name="withdraw_confirmation_message">Are you sure you want to withdraw %d EGP?</string>
+    <string name="withdraw_confirmation_message">Are you sure you want to withdraw %s EGP?</string>
     <string name="success">Success</string>
     <string name="withdraw_request_success">Your withdraw request has been submitted successfully</string>
     <string name="ok">OK</string>
