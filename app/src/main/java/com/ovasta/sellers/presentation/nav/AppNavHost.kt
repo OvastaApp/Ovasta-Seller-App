@@ -104,6 +104,9 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
                         is Home -> NavEntry(key) {
                             val viewModel: HomeViewModel = koinViewModel()
+                            LaunchedEffect(backStack.size) {
+                                viewModel.loadHomeData(isRefresh = true)
+                            }
                             HomeScreen(viewModel)
                         }
 

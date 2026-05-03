@@ -1,6 +1,7 @@
 package com.ovasta.sellers.presentation.createOrder.presentation
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.R
 import com.ovasta.sellers.base.BaseViewModel
@@ -8,6 +9,8 @@ import com.ovasta.sellers.base.ScreenDirection
 import com.ovasta.sellers.base.components.sharedComposable.ToastMsg
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.base.ext.ToastEvent
+import com.ovasta.sellers.data.setting.data.ISettingsRepository
+import com.ovasta.sellers.data.setting.data.SettingsRepository
 import com.ovasta.sellers.presentation.createOrder.data.ICreateOrderRepository
 import com.ovasta.sellers.presentation.nav.Login
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +21,16 @@ import kotlinx.coroutines.launch
 
 class CreateOrderViewModel(
     private val application: Application,
-    private val repository: ICreateOrderRepository // <-- Inject repository
+    private val repository: ICreateOrderRepository,
+    private val settingsRepository: ISettingsRepository
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow(CreateOrderViewState())
     val viewState: StateFlow<CreateOrderViewState> = _viewState.asStateFlow()
+
+    init {
+        getMinRedeemPoints()
+    }
 
     fun onAction(action: CreateOrderScreenActions) {
         when (action) {
@@ -91,12 +99,13 @@ class CreateOrderViewModel(
             is CreateOrderScreenActions.OnDeliveryFeesChanged -> {
                 val value = action.fees
                 val deliveryFeesValue = value.toDoubleOrNull()
+                val minPrice = viewState.value.minOrderDeliveryPrice
                 val error = when {
                     value.isBlank() || deliveryFeesValue == null ->
-                        application.getString(R.string.delivery_fees_min_egp_error)
+                        application.getString(R.string.delivery_fees_min_egp_error, minPrice)
 
-                    deliveryFeesValue < 15 ->
-                        application.getString(R.string.delivery_fees_min_egp_error)
+                    deliveryFeesValue < minPrice ->
+                        application.getString(R.string.delivery_fees_min_egp_error, minPrice)
 
                     else -> null
                 }
@@ -154,14 +163,25 @@ class CreateOrderViewModel(
 
         // Delivery Fees validation
         val deliveryFeesValue = state.deliveryFees.toDoubleOrNull()
+        val minPrice = viewState.value.minOrderDeliveryPrice.toDouble()
         if (state.deliveryFees.isBlank() || deliveryFeesValue == null) {
             _viewState.update {
-                it.copy(deliveryFeesError = application.getString(R.string.delivery_fees_min_egp_error))
+                it.copy(
+                    deliveryFeesError = application.getString(
+                        R.string.delivery_fees_min_egp_error,
+                        minPrice
+                    )
+                )
             }
             isValid = false
-        } else if (deliveryFeesValue < 15) {
+        } else if (deliveryFeesValue < viewState.value.minOrderDeliveryPrice) {
             _viewState.update {
-                it.copy(deliveryFeesError = application.getString(R.string.delivery_fees_min_egp_error))
+                it.copy(
+                    deliveryFeesError = application.getString(
+                        R.string.delivery_fees_min_egp_error,
+                        minPrice
+                    )
+                )
             }
             isValid = false
         }
@@ -205,6 +225,23 @@ class CreateOrderViewModel(
                 emitScreenDirectionEvent(ScreenDirection.Pop)
             }.onFailure {
                 setComposeUILoading(false)
+                updateViewStateWithFail(it)
+            }
+        }
+    }
+
+    private fun getMinRedeemPoints(onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            runCatching {
+                settingsRepository.getHomeInfo()
+            }.onSuccess { response ->
+                setComposeUILoading(false)
+                _viewState.update {
+                    it.copy(minOrderDeliveryPrice = response?.minOrderDeliveryPrice ?: 0.0)
+                }
+                onSuccess()
+            }.onFailure {
                 updateViewStateWithFail(it)
             }
         }

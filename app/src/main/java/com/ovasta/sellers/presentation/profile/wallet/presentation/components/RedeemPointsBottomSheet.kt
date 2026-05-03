@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.R
 import com.ovasta.sellers.base.Primary
@@ -52,7 +53,7 @@ fun RedeemPointsBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "${stringResource(R.string.mini_redeem_message)} $min",
+                text = stringResource(R.string.mini_redeem_message, min.toString()),
                 style = xsMedium,
                 color = Color.Gray
             )
@@ -61,7 +62,7 @@ fun RedeemPointsBottomSheet(
 
             // Selected points display
             Text(
-                text = "$currentValue ${stringResource(R.string.the_points)}",
+                text = "$currentValue ${stringResource(R.string.point)}",
                 style = smSemiBold,
                 color = Primary
             )
@@ -126,4 +127,17 @@ fun RedeemPointsBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewRedeemPointsBottomSheet(){
+    RedeemPointsBottomSheet(
+        viewState = WalletViewState(
+            wallet = null,
+            redeemPointsInput = "50",
+            minimumRedeemPoints = 10.0
+        ),
+        onAction = {}
+    )
 }

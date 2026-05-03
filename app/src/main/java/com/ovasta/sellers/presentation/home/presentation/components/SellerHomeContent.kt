@@ -389,7 +389,7 @@ private fun DeliveryOrderCard(
                             Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
                             Text(
                                 text = "${order.courier.firstName} ${order.courier.lastName}",
-                                style = smNormal,
+                                style = smSemiBold,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -411,7 +411,7 @@ private fun DeliveryOrderCard(
                 }
 
                 // --- Cancel Button at the bottom, after all content ---
-                if (order.statusId < toStatus(OrderSteps.Picked) && onCancelOrder != null) {
+                if (order.canCancelOrder==true && onCancelOrder != null) {
                     Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
                     OutlinedButton(
                         onClick = { onCancelOrder() },

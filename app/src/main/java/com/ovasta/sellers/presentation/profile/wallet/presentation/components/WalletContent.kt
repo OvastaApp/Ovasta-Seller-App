@@ -300,7 +300,7 @@ fun PointsItem(transaction: PointsHistory) {
                 .fillMaxWidth()
                 .padding(14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -316,12 +316,6 @@ fun PointsItem(transaction: PointsHistory) {
                         color = Color.Black.copy(alpha = 0.7f)
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = formatDate(transaction.createdAt),
-                    style = xsRegular,
-                    color = Gray500
-                )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
@@ -330,7 +324,11 @@ fun PointsItem(transaction: PointsHistory) {
                     color = Primary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                StatusChip(status = transaction.status)
+                Text(
+                    text = formatDate(transaction.createdAt),
+                    style = xsRegular,
+                    color = Gray500
+                )
             }
         }
     }
@@ -396,8 +394,8 @@ fun StatusChip(status: Int) {
     val stepId = TransactionsSteps.fromStatusId(status)
     val (text, color) = when (stepId) {
         TransactionsSteps.Pending -> Pair(stringResource(R.string.status_pending), Amber)
-        TransactionsSteps.Approved -> Pair(stringResource(R.string.status_pending), Green)
-        TransactionsSteps.Rejected -> Pair(stringResource(R.string.status_pending), Color.Red)
+        TransactionsSteps.Approved -> Pair(stringResource(R.string.approved), Green)
+        TransactionsSteps.Rejected -> Pair(stringResource(R.string.rejected), Color.Red)
         else -> "Unknown" to Gray500
     }
     Box(
@@ -455,19 +453,16 @@ fun WalletContentPreview() {
                     PointsHistory(
                         id = 1,
                         amount = 500.0,
-                        status = 1,
                         createdAt = "2024-06-01"
                     ),
                     PointsHistory(
                         id = 2,
                         amount = 300.0,
-                        status = 2,
                         createdAt = "2024-06-05"
                     ),
                     PointsHistory(
                         id = 3,
                         amount = 200.0,
-                        status = 2,
                         rejectionReason = "Insufficient documents",
                         createdAt = "2024-06-10"
                     )

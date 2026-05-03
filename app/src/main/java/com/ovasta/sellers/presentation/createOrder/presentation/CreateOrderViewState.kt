@@ -7,6 +7,7 @@ data class CreateOrderViewState(
 
     // Delivery fees
     val deliveryFees: String = "",
+    val minOrderDeliveryPrice: Double = 0.0,
     val deliveryFeesError: String? = null,
 
     // Delivery timing
@@ -27,6 +28,8 @@ data class CreateOrderViewState(
     // UI states
     val isSubmitting: Boolean = false,
     val showConfirmDialog: Boolean = false
+
+
 )
 
 enum class DeliveryTiming {

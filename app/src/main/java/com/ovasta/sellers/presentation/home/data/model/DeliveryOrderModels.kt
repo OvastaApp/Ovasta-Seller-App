@@ -22,7 +22,8 @@ data class DeliveryOrder(
     @SerializedName("note") val note: String?,
     @SerializedName("total_price") val totalPrice: Double,
     @SerializedName("created_at") val createdAt: String,
-    @SerializedName("courier") val courier: CourierInfo?
+    @SerializedName("courier") val courier: CourierInfo?,
+    @SerializedName("can_cancel") val canCancelOrder: Boolean?=true
 )
 
 data class CourierInfo(

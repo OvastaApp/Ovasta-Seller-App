@@ -100,9 +100,9 @@
     <string name="Pending">Pending</string>
     <string name="preparing">Preparing</string>
     <string name="prepared">prepared</string>
-    <string name="delivery_fees_min_egp_error">Minimum delivery fees is 15 EGP</string>
-
-
+    <string name="delivery_fees_min_egp_error">
+    Minimum delivery fees is %1$.2f EGP
+</string>
     <!-- Delivery Home Screen -->
     <string name="search_by_task_id">Search by Task ID</string>
     <string name="enter_task_id">Enter Task ID</string>
@@ -249,4 +249,8 @@
     <string name="no_wallet_balance_to_withdraw">No wallet balance available to withdraw</string>
     <string name="egp">EGP</string>
     <string name="points_rate_format">Every %1$s %2$s = 1.0 %3$s</string>
+    <string name="order_cancelled_successfully">Order cancelled successfully</string>
+    <string name="approved">Approved</string>
+    <string name="rejected">Rejected</string>
+
 </resources>

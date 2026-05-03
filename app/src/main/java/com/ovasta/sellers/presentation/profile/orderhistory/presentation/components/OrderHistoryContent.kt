@@ -244,6 +244,12 @@ private fun DeliveryOrderCard(
                                 tint = Primary
                             )
                             Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
+                            Text(
+                                text = "${order.courier.firstName} ${order.courier.lastName}",
+                                style = smSemiBold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                         if (!order.courier.mobile.isNullOrEmpty()) {
                             IconButton(

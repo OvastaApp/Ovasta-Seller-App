@@ -79,7 +79,6 @@ class WalletViewModel(
                                 redeemPointsError = null
                             )
                         }
-//                    }
                     }
                 }
             }
@@ -135,7 +134,7 @@ class WalletViewModel(
                 walletRepository.getWalletTransactions()
             }.onSuccess { response ->
                 setComposeUILoading(false)
-//                response.points=1000.0
+                response.points=1000.0
                 updateViewState {
                     it.copy(
                         wallet = response

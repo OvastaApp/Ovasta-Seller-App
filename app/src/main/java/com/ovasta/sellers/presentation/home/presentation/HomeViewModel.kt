@@ -14,6 +14,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import com.ovasta.sellers.R
+import com.ovasta.sellers.base.ext.ToastEvent
 
 class HomeViewModel(
     val homeRepository: IHomeRepository,
@@ -91,6 +93,9 @@ class HomeViewModel(
                 homeRepository.cancelOrder(orderId)
             }.onSuccess {
                 setComposeUILoading(false)
+                emitToastEvent(
+                    ToastEvent.ResourceToastEvent(R.string.order_cancelled_successfully)
+                )
                 loadHomeData(isRefresh = true)
             }.onFailure {
                 updateViewStateWithFail(it)

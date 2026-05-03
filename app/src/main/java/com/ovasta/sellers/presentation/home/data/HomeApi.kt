@@ -4,6 +4,7 @@ import com.ovasta.sellers.data.ApiResponse
 import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
 import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -18,6 +19,6 @@ interface HomeApi {
     suspend fun getHome(): ApiResponse<HomeInfo>
 
 
-    @GET("cancel-order/{order_id}")
+    @POST("delivery-orders/{order_id}/cancel")
     suspend fun cancelOrder(@Path("order_id") orderId: Int)
 }
