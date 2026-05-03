@@ -14,5 +14,5 @@ val walletModule = module {
     factory { get<Retrofit>().create(WalletApi::class.java) }
     single<IWalletRemoteDataSource> { WalletRemoteDataSource(get()) }
     single<IWalletRepository> { WalletRepository(get()) }
-    viewModel { WalletViewModel(get()) }
+    viewModel { WalletViewModel(get(), get()) }
 }

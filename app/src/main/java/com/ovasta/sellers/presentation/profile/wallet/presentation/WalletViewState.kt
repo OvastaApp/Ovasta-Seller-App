@@ -11,4 +11,8 @@ data class WalletViewState(
     val showWithdrawConfirmDialog: Boolean = false,
     val showWithdrawSuccessDialog: Boolean = false,
     val minimumRedeemPoints: Double = 0.0,
+    val showRedeemBottomSheet: Boolean = false,
+    val redeemPointsInput: String = "",
+    val redeemPointsError: String? = null,
+    val toastMessage: String? = null,
 )

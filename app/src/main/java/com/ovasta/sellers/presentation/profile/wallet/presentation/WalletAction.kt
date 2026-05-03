@@ -9,4 +9,8 @@ sealed interface WalletAction {
     object DismissWithdrawDialog : WalletAction
     object DismissSuccessDialog : WalletAction
     object ConvertPoints : WalletAction
+    object DismissRedeemBottomSheet : WalletAction
+    data class UpdateRedeemPoints(val points: String) : WalletAction
+    object ConfirmRedeemPoints : WalletAction
+    object DismissToast : WalletAction
 }

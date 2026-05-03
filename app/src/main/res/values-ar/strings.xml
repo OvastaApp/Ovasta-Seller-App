@@ -245,5 +245,6 @@
     <string name="success">تم بنجاح</string>
     <string name="withdraw_request_success">تم تقديم طلب السحب بنجاح</string>
     <string name="ok">حسناً</string>
+    <string name="mini_redeem_message">اقل نقاط يمكن تحويلها:</string>
 
 </resources>

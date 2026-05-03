@@ -1,6 +1,8 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation
 
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewModelScope
+import com.ovasta.sellers.R
 import com.ovasta.sellers.base.BaseViewModel
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
@@ -53,7 +55,50 @@ class WalletViewModel(
             }
 
             WalletAction.ConvertPoints -> {
+                getMinRedeemPoints {
+                    val availablePoints = viewState.value.wallet?.points ?: 0.0
+                    val min = viewState.value.minimumRedeemPoints
+//                    if (availablePoints < min) {
+//                        updateViewState {
+//                            it.copy(toastMessage = "${stringResource(R.string.mini_redeem_message)}${min.toInt()}")
+//                        }
+//                    } else {
+                        updateViewState {
+                            it.copy(
+                                showRedeemBottomSheet = true,
+                                redeemPointsInput = "",
+                                redeemPointsError = null
+                            )
+                        }
+//                    }
+                }
+            }
 
+            WalletAction.DismissRedeemBottomSheet -> {
+                updateViewState {
+                    it.copy(
+                        showRedeemBottomSheet = false,
+                        redeemPointsInput = "",
+                        redeemPointsError = null
+                    )
+                }
+            }
+
+            is WalletAction.UpdateRedeemPoints -> {
+                updateViewState {
+                    it.copy(
+                        redeemPointsInput = action.points,
+                        redeemPointsError = null
+                    )
+                }
+            }
+
+            WalletAction.ConfirmRedeemPoints -> {
+                validateAndRedeemPoints()
+            }
+
+            WalletAction.DismissToast -> {
+                updateViewState { it.copy(toastMessage = null) }
             }
         }
     }
@@ -109,7 +154,36 @@ class WalletViewModel(
         }
     }
 
-    fun getMinRedeemPoints() {
+    private fun validateAndRedeemPoints() {
+        val input = viewState.value.redeemPointsInput.toIntOrNull()
+        val min = viewState.value.minimumRedeemPoints.toInt()
+
+        if (input == null || input <= 0) {
+            updateViewState { it.copy(redeemPointsError = "Please enter valid points") }
+            return
+        }
+
+        if (input < min) {
+            updateViewState { it.copy(redeemPointsError = "Minimum points to redeem is $min") }
+            return
+        }
+
+        if (input % min != 0) {
+            updateViewState { it.copy(redeemPointsError = "Points must be a multiple of $min") }
+            return
+        }
+
+        val availablePoints: Double = viewState.value.wallet?.points ?: 0.0
+        if (input > availablePoints) {
+            updateViewState { it.copy(redeemPointsError = "You don't have enough points") }
+            return
+        }
+
+        updateViewState { it.copy(pointsToRedeem = input, showRedeemBottomSheet = false) }
+        redeemPoints()
+    }
+
+    private fun getMinRedeemPoints(onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
             setComposeUILoading(true)
             runCatching {
@@ -117,10 +191,9 @@ class WalletViewModel(
             }.onSuccess { response ->
                 setComposeUILoading(false)
                 updateViewState {
-                    it.copy(
-                        minimumRedeemPoints = response?.minRedeemPoints ?: 0.0
-                    )
+                    it.copy(minimumRedeemPoints = response?.minRedeemPoints ?: 0.0)
                 }
+                onSuccess()
             }.onFailure {
                 updateViewStateWithFail(it)
             }

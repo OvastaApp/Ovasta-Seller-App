@@ -1,5 +1,6 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation.components
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,10 +49,26 @@ fun WalletContent(
     onAction: (WalletAction) -> Unit,
     onNavigateBack: () -> Unit = {}
 ) {
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         onAction(WalletAction.LoadWalletTransactions)
-//        onAction(WalletAction.LoadWithdrawRequests)
+    }
+
+    // Show toast message
+    LaunchedEffect(viewState.toastMessage) {
+        viewState.toastMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            onAction(WalletAction.DismissToast)
+        }
+    }
+
+    // Redeem Points Bottom Sheet
+    if (viewState.showRedeemBottomSheet) {
+        RedeemPointsBottomSheet(
+            viewState = viewState,
+            onAction = onAction
+        )
     }
 
     // Withdraw Confirmation Dialog

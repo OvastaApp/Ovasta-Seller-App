@@ -244,5 +244,6 @@
     <string name="success">Success</string>
     <string name="withdraw_request_success">Your withdraw request has been submitted successfully</string>
     <string name="ok">OK</string>
+    <string name="mini_redeem_message">Minimum redeem points:</string>
 
 </resources>
