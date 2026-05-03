@@ -44,8 +44,6 @@ import com.ovasta.sellers.presentation.home.data.model.OrderSteps
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
 import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryAction
 import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewState
-import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreenActions
-import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable

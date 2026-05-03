@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.ovasta.sellers.base.Amber
 import com.ovasta.sellers.base.Green
 import com.ovasta.sellers.base.ext.makePhoneCall
+import com.ovasta.sellers.base.xsRegular
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.toStatus
@@ -73,7 +74,8 @@ fun SellerHomeContent(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
-                title = stringResource(R.string.home), showBackButton = false)
+                title = stringResource(R.string.home), showBackButton = false
+            )
         },
         floatingActionButton = {},
     ) { paddingValues ->
@@ -92,7 +94,10 @@ fun SellerHomeContent(
             ) {
                 // Points card
                 item(key = "points") {
-                    PointsCard(homeInfo = viewState.homeInfo)
+                    PointsCard(
+                        homeInfo = viewState.homeInfo,
+                        onClick = { onAction(HomeScreenActions.NavigateToWallet) }
+                    )
                 }
 
                 // Orders header + Create order button
@@ -196,39 +201,65 @@ fun SellerHomeContent(
 }
 
 @Composable
-private fun PointsCard(homeInfo: HomeInfo?) {
+private fun PointsCard(homeInfo: HomeInfo?, onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(dimensionResource(com.intuit.sdp.R.dimen._12sdp)),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
-        Row(
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     horizontal = dimensionResource(com.intuit.sdp.R.dimen._14sdp),
                     vertical = dimensionResource(com.intuit.sdp.R.dimen._10sdp)
                 ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val points = homeInfo?.pointsCount ?: 0
-            val money = String.format("%.0f", homeInfo?.walletBalance ?: 0.0)
-            val rate = String.format("%.1f", homeInfo?.pointsPerPound ?: 0.0)
+
+            val points = homeInfo?.pointsCount ?: 0.0
+            val rate = homeInfo?.pointsPerPound ?: 0.0
+
+            val moneyValue = if (rate > 0) points / rate else 0.0
+
+            val money = String.format("%.2f", moneyValue)
+            val formattedPoints = String.format("%.0f", points)
+            val formattedRate = String.format("%.1f", rate)
+
+            // الصف الأول
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "$formattedPoints ",
+                    style = lgSemiBold.copy(color = Primary)
+                )
+
+                Text(
+                    text = "${stringResource(R.string.points)} = ",
+                    style = smNormal.copy(color = Gray500)
+                )
+
+                Text(
+                    text = "$money ${stringResource(R.string.egp)}",
+                    style = mdSemiBold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "$points ", style = lgSemiBold.copy(color = Primary)
-            )
-            Text(
-                text = "pt  ≈  ", style = smNormal.copy(color = Gray500)
-            )
-            Text(
-                text = "$money EGP", style = mdSemiBold
-            )
-            Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
-            Text(
-                text = "(1pt = $rate)", style = xsMedium.copy(color = Gray500)
+                text = stringResource(
+                    R.string.points_rate_format,
+                    formattedRate,
+                    stringResource(R.string.points),
+                    stringResource(R.string.egp)
+                ),
+                style = xsRegular.copy(color = Gray500)
             )
         }
     }

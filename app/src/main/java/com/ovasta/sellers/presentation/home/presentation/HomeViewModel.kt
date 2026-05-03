@@ -9,6 +9,7 @@ import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.nav.CreateOrder
 import com.ovasta.sellers.presentation.nav.Login
+import com.ovasta.sellers.presentation.nav.Wallet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,6 +72,9 @@ class HomeViewModel(
             is HomeScreenActions.RefreshHome -> loadHomeData(isRefresh = true)
 
             is HomeScreenActions.CancelOrder -> cancelOrder(action.orderId)
+
+            is HomeScreenActions.NavigateToWallet ->
+                emitScreenDirectionEvent(ScreenDirection.Push(Wallet))
 
             else -> Unit
         }

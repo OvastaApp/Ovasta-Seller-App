@@ -199,7 +199,9 @@ class CreateOrderViewModel(
                 )
             }.onSuccess {
                 setComposeUILoading(false)
-                emitToastEvent(ToastEvent.ResourceToastEvent(R.string.order_submitted_successfully))
+                emitToastEvent(
+                    ToastEvent.ResourceToastEvent(R.string.order_submitted_successfully)
+                )
                 emitScreenDirectionEvent(ScreenDirection.Pop)
             }.onFailure {
                 setComposeUILoading(false)

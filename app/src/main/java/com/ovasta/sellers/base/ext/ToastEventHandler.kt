@@ -15,7 +15,10 @@ fun ToastEventHandler(
     LaunchedEffect(viewModel.toastEvent) {
         viewModel.toastEvent.collect { event ->
             when (event) {
-                is ToastEvent.ResourceToastEvent -> Toast.makeText(context, event.resId, event.duration).show()
+                is ToastEvent.ResourceToastEvent -> {
+                    val message = context.getString(event.resId, *event.args)
+                    Toast.makeText(context, message, event.duration).show()
+                }
 
                 is ToastEvent.StringToastEvent -> Toast.makeText(context, event.message, event.duration).show()
 

@@ -50,7 +50,9 @@
     <string name="profile">الملف الشخصي</string>
     <string name="profile_image">صورة الملف الشخصي</string>
     <string name="wallet">المحفظة</string>
-    <string name="points">النقاط</string>
+    <string name="the_points">النقاط</string>
+    <string name="points">نقاط</string>
+
     <string name="point">نقطه</string>
     <string name="points_unit">نقطة</string>
     <string name="courier">توصيل</string>
@@ -245,6 +247,9 @@
     <string name="success">تم بنجاح</string>
     <string name="withdraw_request_success">تم تقديم طلب السحب بنجاح</string>
     <string name="ok">حسناً</string>
-    <string name="mini_redeem_message">اقل نقاط يمكن تحويلها:</string>
+    <string name="mini_redeem_message">أقل عدد نقاط يمكن تحويلها هو %1$s نقطه</string>
+    <string name="no_wallet_balance_to_withdraw">لا يوجد رصيد متاح للسحب</string>
+    <string name="egp">ج.م</string>
+    <string name="points_rate_format">كل %1$s %2$s = 1.0 %3$s</string>
 
 </resources>

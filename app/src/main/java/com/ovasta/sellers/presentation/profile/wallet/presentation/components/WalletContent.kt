@@ -100,7 +100,7 @@ fun WalletContent(
     }
 
     val tabs = listOf(
-        stringResource(R.string.points),
+        stringResource(R.string.the_points),
         stringResource(R.string.withdraw_requests)
     )
 
@@ -145,7 +145,7 @@ fun WalletContent(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = stringResource(R.string.points),
+                                text = stringResource(R.string.the_points),
                                 style = xsMedium,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -195,7 +195,7 @@ fun WalletContent(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "${wallet.walletBalance ?: 0} EGP",
+                                text = "${wallet.walletBalance ?: 0} ${stringResource(R.string.egp)}",
                                 style = mdSemiBold,
                                 color = Color.White
                             )

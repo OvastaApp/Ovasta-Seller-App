@@ -1,13 +1,12 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation
 
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.R
 import com.ovasta.sellers.base.BaseViewModel
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
+import com.ovasta.sellers.base.ext.ToastEvent
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
-import com.ovasta.sellers.data.setting.data.SettingsRepository
 import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,7 +37,14 @@ class WalletViewModel(
             }
 
             is WalletAction.RequestWithdraw -> {
-                updateViewState { it.copy(showWithdrawConfirmDialog = true) }
+                val balance = viewState.value.wallet?.walletBalance ?: 0.0
+                if (balance <= 0.0) {
+                    emitToastEvent(
+                        ToastEvent.ResourceToastEvent(R.string.no_wallet_balance_to_withdraw)
+                    )
+                } else {
+                    updateViewState { it.copy(showWithdrawConfirmDialog = true) }
+                }
             }
 
             is WalletAction.DismissWithdrawDialog -> {
@@ -58,11 +64,14 @@ class WalletViewModel(
                 getMinRedeemPoints {
                     val availablePoints = viewState.value.wallet?.points ?: 0.0
                     val min = viewState.value.minimumRedeemPoints
-//                    if (availablePoints < min) {
-//                        updateViewState {
-//                            it.copy(toastMessage = "${stringResource(R.string.mini_redeem_message)}${min.toInt()}")
-//                        }
-//                    } else {
+                    if (availablePoints < min) {
+                        emitToastEvent(
+                            ToastEvent.ResourceToastEvent(
+                                R.string.mini_redeem_message,
+                                min.toString()
+                            )
+                        )
+                    } else {
                         updateViewState {
                             it.copy(
                                 showRedeemBottomSheet = true,
@@ -71,6 +80,7 @@ class WalletViewModel(
                             )
                         }
 //                    }
+                    }
                 }
             }
 
@@ -125,6 +135,7 @@ class WalletViewModel(
                 walletRepository.getWalletTransactions()
             }.onSuccess { response ->
                 setComposeUILoading(false)
+//                response.points=1000.0
                 updateViewState {
                     it.copy(
                         wallet = response
@@ -155,29 +166,8 @@ class WalletViewModel(
     }
 
     private fun validateAndRedeemPoints() {
-        val input = viewState.value.redeemPointsInput.toIntOrNull()
-        val min = viewState.value.minimumRedeemPoints.toInt()
-
-        if (input == null || input <= 0) {
-            updateViewState { it.copy(redeemPointsError = "Please enter valid points") }
-            return
-        }
-
-        if (input < min) {
-            updateViewState { it.copy(redeemPointsError = "Minimum points to redeem is $min") }
-            return
-        }
-
-        if (input % min != 0) {
-            updateViewState { it.copy(redeemPointsError = "Points must be a multiple of $min") }
-            return
-        }
-
-        val availablePoints: Double = viewState.value.wallet?.points ?: 0.0
-        if (input > availablePoints) {
-            updateViewState { it.copy(redeemPointsError = "You don't have enough points") }
-            return
-        }
+        val input = viewState.value.redeemPointsInput.toIntOrNull() ?: 0
+        if (input <= 0) return
 
         updateViewState { it.copy(pointsToRedeem = input, showRedeemBottomSheet = false) }
         redeemPoints()
