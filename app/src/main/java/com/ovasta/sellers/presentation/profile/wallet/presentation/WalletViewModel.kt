@@ -4,13 +4,16 @@ import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
+import com.ovasta.sellers.data.setting.data.ISettingsRepository
+import com.ovasta.sellers.data.setting.data.SettingsRepository
 import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class WalletViewModel(
-    val walletRepository: IWalletRepository
+    val walletRepository: IWalletRepository,
+    val settingsRepository: ISettingsRepository
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow(WalletViewState())
@@ -98,6 +101,24 @@ class WalletViewModel(
                 updateViewState {
                     it.copy(
                         withdrawRequests = response
+                    )
+                }
+            }.onFailure {
+                updateViewStateWithFail(it)
+            }
+        }
+    }
+
+    fun getMinRedeemPoints() {
+        viewModelScope.launch {
+            setComposeUILoading(true)
+            runCatching {
+                settingsRepository.getHomeInfo()
+            }.onSuccess { response ->
+                setComposeUILoading(false)
+                updateViewState {
+                    it.copy(
+                        minimumRedeemPoints = response?.minRedeemPoints ?: 0.0
                     )
                 }
             }.onFailure {
