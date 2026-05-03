@@ -119,8 +119,8 @@ class WalletViewModel(
                 walletRepository.requestWithdraw(amount)
             }.onSuccess {
                 updateViewState { it.copy(showWithdrawSuccessDialog = true, selectedTab = 1) }
-                onScreenAction(WalletAction.LoadWalletTransactions)
-                onScreenAction(WalletAction.LoadWithdrawRequests)
+                getWalletTransactions()
+                getWithdrawRequests()
             }.onFailure {
                 updateViewStateWithFail(it)
             }
@@ -134,7 +134,7 @@ class WalletViewModel(
                 walletRepository.getWalletTransactions()
             }.onSuccess { response ->
                 setComposeUILoading(false)
-                response.points=1000.0
+//                response.points=1000.0
                 updateViewState {
                     it.copy(
                         wallet = response
@@ -196,6 +196,7 @@ class WalletViewModel(
                 walletRepository.redeemPoints(points = viewState.value.pointsToRedeem)
             }.onSuccess { response ->
                 setComposeUILoading(false)
+                getWalletTransactions()
             }.onFailure {
                 updateViewStateWithFail(it)
             }
