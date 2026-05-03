@@ -231,6 +231,7 @@
     <string name="delivery_date_required">تاريخ التوصيل مطلوب</string>
     <string name="delivery_time_required">وقت التوصيل مطلوب</string>
     <string name="order_submitted_successfully">تم إنشاء الطلب بنجاح</string>
+    <string name="request_submitted_successfully">تم تقديم الطلب بنجاح</string>
     <string name="status_pending">قيد الانتظار</string>
     <string name="status_assigned">جاري الاستلام</string>
     <string name="status_picked">تم الاستلام</string>

@@ -230,6 +230,7 @@
     <string name="delivery_date_required">Delivery date is required</string>
     <string name="delivery_time_required">Delivery time is required</string>
     <string name="order_submitted_successfully">Order submitted successfully</string>
+    <string name="request_submitted_successfully">Request submitted successfully</string>
     <string name="status_pending">Pending</string>
     <string name="status_assigned">Assigned</string>
     <string name="status_picked">Picked</string>

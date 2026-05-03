@@ -119,6 +119,7 @@ class WalletViewModel(
                 walletRepository.requestWithdraw(amount)
             }.onSuccess {
                 updateViewState { it.copy(showWithdrawSuccessDialog = true, selectedTab = 1) }
+                emitToastEvent(ToastEvent.ResourceToastEvent(R.string.request_submitted_successfully))
                 getWalletTransactions()
                 getWithdrawRequests()
             }.onFailure {
@@ -196,6 +197,7 @@ class WalletViewModel(
                 walletRepository.redeemPoints(points = viewState.value.pointsToRedeem)
             }.onSuccess { response ->
                 setComposeUILoading(false)
+                emitToastEvent(ToastEvent.ResourceToastEvent(R.string.request_submitted_successfully))
                 getWalletTransactions()
             }.onFailure {
                 updateViewStateWithFail(it)
