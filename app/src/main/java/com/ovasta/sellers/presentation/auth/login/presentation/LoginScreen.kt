@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,6 +85,9 @@ fun LoginScreen(
             viewState = viewState,
             onAction = viewModel::onAction
         )
+    }
+    LaunchedEffect(Unit) {
+        viewModel.onAction(LoginAction.ResetState)
     }
     ContextEventHandler(viewModel)
 }
@@ -265,6 +270,7 @@ private fun LoginContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .background(Base_white)
                     .border(
                         width = dimensionResource(com.intuit.sdp.R.dimen._1sdp),

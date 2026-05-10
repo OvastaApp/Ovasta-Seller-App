@@ -1,12 +1,11 @@
 package com.ovasta.sellers.presentation.auth.login.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.ovasta.sellers.base.BaseViewModel
 import com.ovasta.sellers.base.ScreenDirection
+
+import com.ovasta.sellers.base.BaseViewModel
 import com.ovasta.sellers.base.UserType
-import com.ovasta.sellers.base.exception.APIException
 import com.ovasta.sellers.base.exception.toComposeUIException
-import com.ovasta.sellers.base.ext.ToastHelper
 import com.ovasta.sellers.data.RemoteConstants
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.presentation.auth.login.data.ILoginRepository
@@ -31,7 +30,12 @@ class LoginViewModel(
 
     fun updateViewStateWithFail(throwable: Throwable) {
         setComposeUILoading(false)
-        emitComposeUIExceptionEvent(throwable.toComposeUIException())
+        val exception = throwable.toComposeUIException().also {
+            if (it.code == RemoteConstants.UNAUTHORIZED_CODE) {
+                it.code = 0
+            }
+        }
+        emitComposeUIExceptionEvent(exception)
     }
 
 
@@ -39,7 +43,6 @@ class LoginViewModel(
         when (action) {
             is LoginAction.PhoneNumberChanged -> onPhoneNumberChanged(action.phoneNumber)
             is LoginAction.PasswordChanged -> onPasswordChanged(action.password)
-            is LoginAction.UserTypeChanged -> onUserTypeChanged(action.type)
             is LoginAction.Login -> with(viewState.value) {
                 login(
                     this.phoneNumber,
@@ -47,15 +50,12 @@ class LoginViewModel(
                     this.selectedUserType
                 )
             }
+            is LoginAction.ResetState -> resetState()
         }
     }
 
-    private fun onUserTypeChanged(type: UserType) {
-        updateViewState { state ->
-            state.copy(
-                selectedUserType = type
-            )
-        }
+    private fun resetState() {
+        _viewState.value = LoginViewState()
     }
 
     private fun onPhoneNumberChanged(phoneNumber: String) = viewModelScope.launch {
@@ -90,20 +90,7 @@ class LoginViewModel(
 
     private fun login(phone: String, password: String, userType: UserType) {
         val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-            setComposeUILoading(false)
-            if (throwable is APIException) {
-                if (throwable.code == RemoteConstants.UNAUTHORIZED_CODE) {
-                    emitContextEvent { context ->
-                        ToastHelper.showLongToaster(
-                            context, throwable.errorMessage
-                        )
-                    }
-                } else {
-                    error.value = throwable
-                }
-            } else {
-                error.value = throwable
-            }
+            updateViewStateWithFail(throwable)
         }
 
         viewModelScope.launch(dispatcher + coroutineExceptionHandler) {
@@ -115,16 +102,8 @@ class LoginViewModel(
                 user.token = response.token
                 settingsRepository.saveUserData(user)
                 setComposeUILoading(false)
-//                loginRepository.authenticateWithFirebase(user.firebaseToken, onSuccess = {
-//                    setComposeUILoading(false)
                 emitScreenDirectionEvent(ScreenDirection.Replace(Home))
-//                }, onFailure = {
-//                    setComposeUILoading(false)
-//                })
             }.onFailure {
-                if (it is APIException) {
-                    updateViewState { state -> state.copy(isPhoneValid = false) }
-                }
                 updateViewStateWithFail(it)
             }
         }

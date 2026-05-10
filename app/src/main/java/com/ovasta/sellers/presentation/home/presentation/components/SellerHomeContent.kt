@@ -411,7 +411,7 @@ private fun DeliveryOrderCard(
                 }
 
                 // --- Cancel Button at the bottom, after all content ---
-                if (order.canCancelOrder==true && onCancelOrder != null) {
+                if (order.canCancelOrder == true && onCancelOrder != null) {
                     Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._10sdp)))
                     OutlinedButton(
                         onClick = { onCancelOrder() },
@@ -420,8 +420,6 @@ private fun DeliveryOrderCard(
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(32.dp)
-                            .defaultMinSize(minWidth = 0.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.cancel_order),
