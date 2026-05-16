@@ -1,8 +1,10 @@
 package com.ovasta.sellers.data
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
+@Keep
 @Serializable
 class User(
     @SerializedName("id") val id: Int,

@@ -1,8 +1,10 @@
 package com.ovasta.sellers.presentation.home.data.model
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
+@Keep
 @Serializable
 data class HomeInfo(
     @SerializedName("wallet_balance") var walletBalance: Double? = null,

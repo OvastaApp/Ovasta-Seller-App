@@ -1,12 +1,14 @@
 package com.ovasta.sellers.base.exception
 
 import android.content.Context
+import androidx.annotation.Keep
 import androidx.annotation.StringRes
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.ovasta.sellers.R
 import java.io.IOException
 
+@Keep
 data class ComposeUIException(
     @StringRes val exceptionTitleResource: Int? = null,
     @SerializedName("msg", alternate = ["message"]) var errorMessage: String?,

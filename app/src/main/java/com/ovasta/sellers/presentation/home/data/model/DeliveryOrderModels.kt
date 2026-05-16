@@ -1,7 +1,9 @@
 package com.ovasta.sellers.presentation.home.data.model
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class DeliveryOrdersResponse(
     @SerializedName("current_page") val currentPage: Int,
     @SerializedName("data") val orders: List<DeliveryOrder>,
@@ -10,6 +12,7 @@ data class DeliveryOrdersResponse(
     @SerializedName("last_page") val lastPage: Int
 )
 
+@Keep
 data class DeliveryOrder(
     val id: Int,
     @SerializedName("to_address") val toAddress: String,
@@ -26,6 +29,7 @@ data class DeliveryOrder(
     @SerializedName("can_cancel") val canCancelOrder: Boolean?=true
 )
 
+@Keep
 data class CourierInfo(
     @SerializedName("first_name") val firstName: String,
     @SerializedName("last_name") val lastName: String,

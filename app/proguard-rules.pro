@@ -1,21 +1,161 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ============================================================================
+# ProGuard Rules for Ovasta Seller App
+# ============================================================================
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ---------- General / Debugging ----------
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+-keepattributes *Annotation*
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes InnerClasses,EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations,AnnotationDefault
+-keepattributes RuntimeVisibleParameterAnnotations
+-keepattributes RuntimeInvisibleAnnotations
+-keepattributes RuntimeInvisibleParameterAnnotations
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ---------- Kotlin ----------
+-dontwarn kotlin.**
+-keep class kotlin.Metadata { *; }
+-keepclassmembers class **$WhenMappings {
+    <fields>;
+}
+-keepclassmembers class kotlin.Lazy {
+    public *;
+}
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ---------- Gson ----------
+# Gson ships its own consumer rules; only keep app-specific model classes
+-dontwarn sun.misc.**
+
+# Keep all model/data classes used with @SerializedName
+-keep class com.ovasta.sellers.data.** { *; }
+-keep class com.ovasta.sellers.data.setting.model.** { *; }
+-keep class com.ovasta.sellers.data.setting.data.datastore.** { *; }
+-keep class com.ovasta.sellers.presentation.auth.login.data.model.** { *; }
+-keep class com.ovasta.sellers.presentation.createOrder.data.model.** { *; }
+-keep class com.ovasta.sellers.presentation.home.data.model.** { *; }
+-keep class com.ovasta.sellers.presentation.profile.wallet.data.** { *; }
+-keep class com.ovasta.sellers.presentation.profile.orderhistory.data.** { *; }
+-keep class com.ovasta.sellers.base.exception.** { *; }
+
+# Keep any class with @SerializedName fields
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Keep any class with @Expose fields
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.Expose <fields>;
+}
+
+# Keep any class with @Keep annotation
+-keep @androidx.annotation.Keep class * { *; }
+-keepclassmembers class * {
+    @androidx.annotation.Keep *;
+}
+
+# ---------- Kotlinx Serialization ----------
+-keep,includedescriptorclasses class com.ovasta.sellers.**$$serializer { *; }
+-keepclassmembers class com.ovasta.sellers.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.ovasta.sellers.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-dontwarn kotlinx.serialization.**
+
+# ---------- Navigation3 Route Objects ----------
+-keep class com.ovasta.sellers.presentation.nav.** { *; }
+
+# ---------- Retrofit ----------
+# Retrofit ships its own consumer rules; only keep app-specific interfaces
+-dontwarn retrofit2.**
+
+# Keep Retrofit service interfaces
+-keep,allowobfuscation interface com.ovasta.sellers.presentation.auth.login.data.LoginApi
+-keep,allowobfuscation interface com.ovasta.sellers.presentation.home.data.HomeApi
+-keep,allowobfuscation interface com.ovasta.sellers.presentation.createOrder.data.CreateOrderApi
+-keep,allowobfuscation interface com.ovasta.sellers.presentation.profile.wallet.data.WalletApi
+-keep,allowobfuscation interface com.ovasta.sellers.presentation.profile.orderhistory.data.OrderHistoryApi
+-keep,allowobfuscation interface com.ovasta.sellers.data.setting.data.SettingsApi
+-keep,allowobfuscation interface com.ovasta.sellers.presentation.profile.profile.data.ProfileApi
+
+# Keep all methods in Retrofit interfaces
+-keepclassmembernames,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
+# ---------- OkHttp ----------
+# OkHttp/Okio ship their own consumer rules; only suppress warnings
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+
+# ---------- Koin ----------
+# Koin ships its own consumer rules; only suppress warnings and keep annotations
+-dontwarn org.koin.**
+-keepclassmembers class * {
+    @org.koin.core.annotation.* <methods>;
+}
+
+# Keep ViewModels (Koin uses reflection to instantiate)
+-keep class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+
+# Keep Koin modules
+-keep class com.ovasta.sellers.di.** { *; }
+
+# Keep classes injected by Koin
+-keep class com.ovasta.sellers.**Repository* { *; }
+-keep class com.ovasta.sellers.**UseCase* { *; }
+-keep class com.ovasta.sellers.**DataSource* { *; }
+
+# ---------- Firebase ----------
+# Firebase/GMS ship their own consumer rules; only suppress warnings
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+
+# Firebase Crashlytics - keep for readable stack traces
+-keep public class * extends java.lang.Exception
+
+# ---------- Parcelize ----------
+-keep class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+
+# ---------- Jetpack Compose ----------
+# Compose ships its own consumer rules; only suppress warnings
+-dontwarn androidx.compose.**
+
+# ---------- AndroidX Security Crypto ----------
+# Security Crypto ships its own consumer rules; only suppress warnings
+-dontwarn androidx.security.crypto.**
+-dontwarn com.google.crypto.tink.**
+
+# ---------- AndroidX DataStore ----------
+# DataStore ships its own consumer rules; only suppress warnings
+-dontwarn androidx.datastore.**
+
+# ---------- Paging ----------
+# Paging ships its own consumer rules; only suppress warnings
+-dontwarn androidx.paging.**
+
+# ---------- Coil ----------
+# Coil ships its own consumer rules; only suppress warnings
+-dontwarn coil.**
+
+# ---------- Play Services Location ----------
+-dontwarn com.google.android.gms.location.**

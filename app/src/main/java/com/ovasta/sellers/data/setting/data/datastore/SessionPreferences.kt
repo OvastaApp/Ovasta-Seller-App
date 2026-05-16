@@ -7,6 +7,7 @@ import com.ovasta.sellers.base.encryption.Crypto
 import com.ovasta.sellers.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.InputStream
@@ -14,6 +15,7 @@ import java.io.OutputStream
 import android.util.Base64
 import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 
+@Keep
 @Serializable
 data class SessionPreferences(
     val userLang: String = LANGUAGE_AR_ISO,

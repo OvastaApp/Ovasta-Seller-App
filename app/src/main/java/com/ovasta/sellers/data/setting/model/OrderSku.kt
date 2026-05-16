@@ -1,7 +1,9 @@
 package com.ovasta.sellers.data.setting.model
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class OrderSku(
     @SerializedName("unit") val unit: String,
     @SerializedName("name") val name: String,

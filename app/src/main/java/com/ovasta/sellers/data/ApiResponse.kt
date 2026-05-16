@@ -1,8 +1,10 @@
 package com.ovasta.sellers.data
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class ApiResponse<T>(
     @SerializedName("status")
     @Expose

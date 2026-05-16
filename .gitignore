@@ -11,3 +11,6 @@
 app/google-services.json
 /google-services.json
 /.kotlin/sessions/*
+
+# Build artifacts
+app/release/
