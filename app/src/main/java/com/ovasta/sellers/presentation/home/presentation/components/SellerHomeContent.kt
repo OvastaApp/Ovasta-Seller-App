@@ -151,7 +151,10 @@ fun SellerHomeContent(
                         }
                     }
                 } else {
-                    itemsIndexed(orders, key = { _, order -> order.id }) { _, order ->
+                    itemsIndexed(
+                        items = orders,
+                        key = { index, order -> "${order.id}_$index" }
+                    ) { _, order ->
                         DeliveryOrderCard(
                             order = order,
                             onClick = { onAction(HomeScreenActions.OrderClicked(order.id)) },
