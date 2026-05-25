@@ -25,6 +25,7 @@ data class SessionPreferences(
     val deviceRam: String = "",
     val accessToken: String = "",
     val deviceId: String = "",
+    val fcmToken: String = "",
     val isTracking: Boolean = false,
     val homeInfo: HomeInfo? = null,
 )

@@ -1,5 +1,6 @@
 package com.ovasta.sellers.presentation.auth.login.presentation
 
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.ScreenDirection
 
@@ -8,17 +9,20 @@ import com.ovasta.sellers.base.UserType
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.RemoteConstants
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
+import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import com.ovasta.sellers.presentation.auth.login.data.ILoginRepository
 import com.ovasta.sellers.presentation.nav.Home
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val loginRepository: ILoginRepository,
-    private val settingsRepository: ISettingsRepository
+    private val settingsRepository: ISettingsRepository,
+    private val sessionDataStore: DataStore<SessionPreferences>,
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow(LoginViewState())
@@ -95,8 +99,9 @@ class LoginViewModel(
 
         viewModelScope.launch(dispatcher + coroutineExceptionHandler) {
             setComposeUILoading(true)
+            val fcmToken = sessionDataStore.data.first().fcmToken.ifEmpty { null }
             runCatching {
-                loginRepository.login(phone, password, userType.typeId)
+                loginRepository.login(phone, password, userType.typeId, fcmToken)
             }.onSuccess { response ->
                 val user = response.data
                 user.token = response.token

@@ -9,6 +9,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.ovasta.sellers.BuildConfig
+import com.ovasta.sellers.data.notification.FcmTokenApi
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
@@ -52,5 +53,7 @@ val remoteModule = module {
             .client(get())
             .build()
     }
+
+    factory { get<Retrofit>().create(FcmTokenApi::class.java) }
 
 }
