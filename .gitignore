@@ -14,3 +14,25 @@ app/google-services.json
 
 # Build artifacts
 app/release/
+
+# Kotlin Multiplatform - Shared module build
+/shared/build/
+
+# iOS app build artifacts
+/iosApp/iosApp.xcworkspace/xcuserdata/
+/iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
+/iosApp/iosApp.xcodeproj/xcuserdata/
+/iosApp/Pods/
+/iosApp/*.framework
+/iosApp/*.dSYM
+/iosApp/build/
+
+# Kotlin/Native cache
+.kotlin/
+**/build/
+
+# Compose Multiplatform generated files
+**/generated/compose/
+
+# Local configuration
+*.local.properties
