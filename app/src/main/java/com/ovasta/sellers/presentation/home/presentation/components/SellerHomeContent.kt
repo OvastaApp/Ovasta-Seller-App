@@ -123,7 +123,8 @@ fun SellerHomeContent(
                             Icon(
                                 painter = painterResource(R.drawable.ic_add),
                                 contentDescription = null,
-                                modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp))
+                                modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
+                                tint = Color.White
                             )
                             Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._4sdp)))
                             Text(

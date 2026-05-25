@@ -105,7 +105,10 @@ fun WalletContent(
     )
 
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .background(Color.White),
+        containerColor = Color.White,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {
