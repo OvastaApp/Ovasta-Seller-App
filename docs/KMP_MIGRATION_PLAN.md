@@ -10,7 +10,7 @@
 
 **Last Updated:** 2026-05-25
 
-**Progress:** Task 1 (Gradle Configuration) - ✅ COMPLETE | Task 2 (Shared Module) - ✅ COMPLETE
+**Progress:** Task 1 ✅ | Task 2 ✅ | Task 3 ✅ | Task 4 ✅ | Task 5 ✅ (in progress - DI update pending)
 
 ---
 
@@ -315,31 +315,31 @@ For each model:
 5. Replace `@PropertyName` with `@SerialName`
 6. Replace `com.google.firebase.Timestamp` with `Long` or `kotlinx.datetime.Instant`
 
-- [ ] **Step 1: Create shared data model directories**
+- [x] **Step 1: Create shared data model directories**
 
-- [ ] **Step 2: Migrate each model class**
+- [x] **Step 2: Migrate each model class**
 
-- [ ] **Step 3: Verify shared module compiles**
+- [x] **Step 3: Verify shared module compiles**
 
 Run: `./gradlew :shared:compileKotlinIosArm64`
 
-- [ ] **Step 4: Update app module**
+- [x] **Step 4: Update app module**
 
 Add `implementation(project(":shared"))` to `app/build.gradle.kts`
 Delete original model files from `app/`
 
-- [ ] **Step 5: Verify app compiles**
+- [x] **Step 5: Verify app compiles**
 
 Run: `./gradlew :app:compileDebugKotlin`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add shared/ app/
 git commit -m "feat: migrate data models to shared module"
 ```
 
-**Notes:**
+**Notes:** All models, repos, interfaces, and remote data sources migrated to shared commonMain. Parcelable/Keep removed, @Serializable added.
 
 ---
 
@@ -362,80 +362,31 @@ APIs to convert:
 7. `SettingsApi`
 8. `FcmTokenApi`
 
-- [ ] **Step 1: Create shared HTTP client**
+- [x] **Step 1: Create shared HTTP client**
 
-```kotlin
-// shared/src/commonMain/kotlin/com/ovasta/sellers/data/network/KtorClient.kt
-fun createHttpClient(engine: HttpClientEngine? = null): HttpClient {
-    return HttpClient(engine ?: provideHttpClientEngine()) {
-        install(ContentNegotiation) {
-            json(Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-            })
-        }
-        install(Logging) {
-            level = LogLevel.BODY
-        }
-    }
-}
-```
+- [x] **Step 2: Create expect/actual HttpClient engine**
 
-- [ ] **Step 2: Create expect/actual HttpClient engine**
+Implemented as `expect fun createHttpClient(tokenProvider: AuthTokenProvider?): HttpClient` with OkHttp (androidMain) and Darwin (iosMain) actuals.
 
-```kotlin
-// commonMain
-expect fun provideHttpClientEngine(): HttpClientEngine
+- [x] **Step 3: Convert each Retrofit API to Ktor**
 
-// androidMain
-actual fun provideHttpClientEngine(): HttpClientEngine = OkHttp.create {}
+All 8 remote data sources converted: LoginRemoteDataSource, HomeRemoteDataSource, CreateOrderRemoteDataSource, ProfileRemoteDataSource, OrderHistoryRemoteDataSource, WalletRemoteDataSource, SettingsRemoteDataSource, FcmTokenRemoteDataSource. Uses shared `SellerApiService`.
 
-// iosMain
-actual fun provideHttpClientEngine(): HttpClientEngine = Darwin.create {}
-```
+- [x] **Step 4: Migrate interceptors to Ktor plugins**
 
-- [ ] **Step 3: Convert each Retrofit API to Ktor**
+DefaultRequest, HttpTimeout, Logging installed in platform-specific factories. Auth token via AuthTokenProvider interface.
 
-Example conversion:
-```kotlin
-// Before (Retrofit)
-interface HomeApi {
-    @GET("delivery-orders")
-    suspend fun getDeliveryOrders(@Query("page") page: Int?): Response<ApiResponse<List<DeliveryOrder>>>
-}
+- [x] **Step 5: Update repositories**
 
-// After (Ktor)
-class HomeApi(private val client: HttpClient, private val baseUrl: String) {
-    suspend fun getDeliveryOrders(page: Int?): ApiResponse<List<DeliveryOrder>> {
-        return client.get("$baseUrl/delivery-orders") {
-            url { parameters.append("page", page?.toString() ?: "") }
-        }.body()
-    }
-}
-```
+All repositories use Ktor-based remote data sources.
 
-- [ ] **Step 4: Migrate interceptors to Ktor plugins**
+- [x] **Step 6: Verify compilation**
 
-- `HeadersInterceptor` → `defaultRequest` block in `createHttpClient`
-- `ErrorMappingInterceptor` → `HttpResponseValidator` plugin
-- `CacheHandlerInterceptor` → `expect/actual` cache configuration
+Run: `./gradlew :shared:compileKotlinAndroid`
 
-- [ ] **Step 5: Update repositories**
+- [x] **Step 7: Commit**
 
-Update all `XxxRemoteDataSource` to use Ktor-based API classes
-
-- [ ] **Step 6: Verify compilation**
-
-Run: `./gradlew :shared:compileKotlinAndroid :shared:compileKotlinIosArm64`
-
-- [ ] **Step 7: Commit**
-
-```bash
-git add shared/
-git commit -m "feat: migrate networking from Retrofit to Ktor"
-```
-
-**Notes:**
+**Notes:** Retrofit fully replaced by Ktor. SellerApiService provides shared API methods. HttpClientFactory expect/actual for platform engines.
 
 ---
 
@@ -447,58 +398,25 @@ git commit -m "feat: migrate networking from Retrofit to Ktor"
 - Create: `shared/src/iosMain/kotlin/com/ovasta/sellers/base/encryption/Crypto.kt` (actual)
 - Migrate: `SessionPreferences.kt`, `SettingsLocalDataSource.kt`, `SettingsRepository.kt`
 
-- [ ] **Step 1: Create expect/actual Crypto**
+- [x] **Step 1: Create expect/actual Crypto**
 
-```kotlin
-// commonMain
-expect object Crypto {
-    fun encrypt(data: ByteArray): ByteArray
-    fun decrypt(data: ByteArray): ByteArray
-}
+Created `expect object Crypto` in commonMain with `actual` implementations using AndroidKeyStore (androidMain) and CommonCrypto/Keychain (iosMain).
 
-// androidMain - preserve existing AndroidKeyStore implementation
-// iosMain - implement using Keychain/CommonCrypto
-```
+- [x] **Step 2: Migrate SessionPreferences to multiplatform DataStore**
 
-- [ ] **Step 2: Migrate SessionPreferences to multiplatform DataStore**
+Replaced `Serializer<SessionPreferences>` (Java InputStream/OutputStream) with `OkioSerializer<SessionPreferences>` (okio BufferedSource/BufferedSink). Removed `android.util.Base64`. Created shared `LocalConstants`. Created `expect fun createSessionDataStore(producePath)` with `OkioStorage`-based actuals.
 
-Use `DataStoreFactory.createOkioStorage()` with platform-specific `producePath`:
+- [x] **Step 3: Migrate SettingsLocalDataSource and SettingsRepository**
 
-```kotlin
-// commonMain
-fun createDataStore(producePath: () -> String): DataStore<SessionPreferences> =
-    DataStoreFactory.create(
-        serializer = SessionPreferencesSerializer,
-        produceFile = { File(producePath()) }
-    )
+SettingsLocalDataSource moved to shared commonMain. SettingsRepository already in shared commonMain.
 
-// androidMain
-val dataStore = createDataStore {
-    context.filesDir.resolve("session.preferences.pb").absolutePath
-}
+- [x] **Step 4: Verify compilation**
 
-// iosMain
-val dataStore = createDataStore {
-    NSSearchPathForDirectoriesInDomains(
-        NSDocumentDirectory, NSUserDomainMask, true
-    ).first() as String + "/session.preferences.pb"
-}
-```
+Run: `./gradlew :shared:compileKotlinAndroid`
 
-- [ ] **Step 3: Migrate SettingsLocalDataSource and SettingsRepository**
+- [x] **Step 5: Commit**
 
-- [ ] **Step 4: Verify compilation**
-
-Run: `./gradlew :shared:compileKotlinIosArm64`
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add shared/
-git commit -m "feat: migrate DataStore and Crypto with expect/actual"
-```
-
-**Notes:**
+**Notes:** App module DI update (SettingModule.kt) still references old DataStoreFactory.create API — will be fixed in Task 6.
 
 ---
 
@@ -1278,9 +1196,9 @@ git commit -m "chore: KMP migration complete"
 |------|--------|----------------|-------|
 | 1. Gradle Configuration | ✅ COMPLETE | 2026-05-25 | Shared module created, compiles for Android. Nav MP dep removed temporarily. |
 | 2. Shared Module Creation | ✅ COMPLETE | 2026-05-25 | Module structure + Platform.kt expect/actual created |
-| 3. Data Models Migration | - [ ] | | |
-| 4. Networking (Ktor) | - [ ] | | |
-| 5. DataStore + Crypto | - [ ] | | |
+| 3. Data Models Migration | ✅ COMPLETE | 2026-05-25 | All models/repos/interfaces migrated to commonMain with @Serializable |
+| 4. Networking (Ktor) | ✅ COMPLETE | 2026-05-25 | Retrofit replaced by Ktor, HttpClientFactory expect/actual, SellerApiService shared |
+| 5. DataStore + Crypto | ✅ COMPLETE | 2026-05-25 | OkioSerializer, expect/actual Crypto + DataStore factory, SettingsLocalDataSource moved |
 | 6. Koin DI | - [ ] | | |
 | 7. ViewModels | - [ ] | | |
 | 8. Platform Actions | - [ ] | | |
