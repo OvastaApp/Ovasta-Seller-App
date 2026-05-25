@@ -6,11 +6,13 @@ import com.ovasta.sellers.presentation.profile.wallet.data.model.WithdrawRequest
 
 class WalletRemoteDataSource(private val apiService: SellerApiService) : IWalletRemoteDataSource {
     override suspend fun getWalletTransactions(page: Int?): WalletResponse {
-        return apiService.getWalletTransactions(page = page).data
+        val response = apiService.getWalletTransactions(page = page)
+        return response.data ?: throw IllegalStateException("Failed to fetch wallet: ${response.message}")
     }
 
     override suspend fun getWithdrawalRequests(page: Int?): List<WithdrawRequests> {
-        return apiService.getWithdrawalRequests(page = page).data
+        val response = apiService.getWithdrawalRequests(page = page)
+        return response.data ?: throw IllegalStateException("Failed to fetch withdrawals: ${response.message}")
     }
 
     override suspend fun redeemPoints(points: Int) {

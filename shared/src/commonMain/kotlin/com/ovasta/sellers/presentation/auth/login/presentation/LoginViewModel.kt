@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+import com.ovasta.sellers.presentation.nav.AppRoute
+
 class LoginViewModel(
     private val loginRepository: ILoginRepository,
     private val settingsRepository: ISettingsRepository,
@@ -90,11 +92,11 @@ class LoginViewModel(
             runCatching {
                 loginRepository.login(phone, password, userType.typeId, fcmToken)
             }.onSuccess { response ->
-                val user = response.data
-                user.token = response.token
+                val user = response.data ?: throw IllegalStateException("Login failed: ${response.message}")
+                user.token = response.token ?: ""
                 settingsRepository.saveUserData(user)
                 setComposeUILoading(false)
-                emitScreenDirectionEvent(ScreenDirection.Replace(Screens.Home))
+                emitScreenDirectionEvent(ScreenDirection.Replace(AppRoute.Home))
             }.onFailure {
                 updateViewStateWithFail(it)
             }
@@ -107,9 +109,5 @@ class LoginViewModel(
 
     private fun isValidPassword(password: String): Boolean {
         return password.isNotEmpty() && password.length >= 4
-    }
-
-    object Screens {
-        object Home
     }
 }

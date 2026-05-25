@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import com.ovasta.sellers.base.di.startKoin
 import com.ovasta.sellers.base.notification.NotificationHelper
-import com.ovasta.sellers.data.notification.FcmTokenRemoteDataSource
+import com.ovasta.sellers.data.notification.IFcmTokenRemoteDataSource
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import com.ovasta.sellers.platform.FirebaseProvider
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +21,7 @@ class SellersApp : Application() {
         NotificationHelper.createNotificationChannel(this)
 
         val sessionDataStore: DataStore<SessionPreferences> by inject()
-        val fcmTokenDataSource: FcmTokenRemoteDataSource by inject()
+        val fcmTokenDataSource: IFcmTokenRemoteDataSource by inject()
         val firebaseProvider: FirebaseProvider by inject()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -31,7 +31,7 @@ class SellersApp : Application() {
 
     private suspend fun fetchAndSendFcmToken(
         dataStore: DataStore<SessionPreferences>,
-        fcmTokenDataSource: FcmTokenRemoteDataSource,
+        fcmTokenDataSource: IFcmTokenRemoteDataSource,
         firebaseProvider: FirebaseProvider
     ) {
         try {
@@ -46,7 +46,7 @@ class SellersApp : Application() {
 
     private suspend fun handleTokenRetrieval(
         dataStore: DataStore<SessionPreferences>,
-        fcmTokenDataSource: FcmTokenRemoteDataSource,
+        fcmTokenDataSource: IFcmTokenRemoteDataSource,
         cachedToken: String,
         newToken: String
     ) {

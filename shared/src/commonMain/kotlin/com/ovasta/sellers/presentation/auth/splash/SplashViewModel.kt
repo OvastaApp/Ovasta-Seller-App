@@ -7,6 +7,8 @@ import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+import com.ovasta.sellers.presentation.nav.AppRoute
+
 class SplashViewModel(
     private val settingsRepository: ISettingsRepository
 ) : BaseViewModel() {
@@ -20,15 +22,10 @@ class SplashViewModel(
             delay(500)
             val loggedIn = settingsRepository.getUseData()?.deliveryId != null
             if (loggedIn) {
-                emitScreenDirectionEvent(ScreenDirection.Replace(Screens.Home))
+                emitScreenDirectionEvent(ScreenDirection.Replace(AppRoute.Home))
             } else {
-                emitScreenDirectionEvent(ScreenDirection.Replace(Screens.Login))
+                emitScreenDirectionEvent(ScreenDirection.Replace(AppRoute.Login))
             }
         }
-    }
-
-    object Screens {
-        object Home
-        object Login
     }
 }

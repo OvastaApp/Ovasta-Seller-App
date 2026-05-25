@@ -6,11 +6,13 @@ import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 
 class HomeRemoteDataSource(private val apiService: SellerApiService) : IHomeRemoteDataSource {
     override suspend fun getCurrentOrders(page: Int?): DeliveryOrdersResponse {
-        return apiService.getCurrentOrders(page = page).data
+        val response = apiService.getCurrentOrders(page = page)
+        return response.data ?: throw IllegalStateException("Failed to fetch orders: ${response.message}")
     }
 
     override suspend fun getHomeInfo(): HomeInfo {
-        return apiService.getHomeInfo().data
+        val response = apiService.getHomeInfo()
+        return response.data ?: throw IllegalStateException("Failed to fetch home info: ${response.message}")
     }
 
     override suspend fun cancelOrder(orderId: Int) {

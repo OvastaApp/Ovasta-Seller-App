@@ -5,6 +5,7 @@ import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
 
 class OrderHistoryRemoteDataSource(private val apiService: SellerApiService) : IOrderHistoryRemoteDataSource {
     override suspend fun getLastOrders(page: Int?): DeliveryOrdersResponse {
-        return apiService.getPastOrders(page = page).data
+        val response = apiService.getPastOrders(page = page)
+        return response.data ?: throw IllegalStateException("Failed to fetch orders: ${response.message}")
     }
 }

@@ -13,6 +13,8 @@ import io.ktor.http.headers
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import com.ovasta.sellers.data.RemoteConstants
+import okhttp3.Interceptor
+import okhttp3.Response
 
 actual fun createHttpClient(tokenProvider: AuthTokenProvider?): HttpClient = HttpClient(OkHttp) {
     install(ContentNegotiation) {
@@ -35,21 +37,33 @@ actual fun createHttpClient(tokenProvider: AuthTokenProvider?): HttpClient = Htt
             append(RemoteConstants.HeadersConst.ACCEPT, "application/json")
             append(RemoteConstants.HeadersConst.IDENTIFIER, RemoteConstants.IDENTIFIER_HASH)
             append(RemoteConstants.HeadersConst.LANG, "ar")
-            tokenProvider?.let { provider ->
-                if (provider.token.isNotEmpty()) {
-                    append(RemoteConstants.HeadersConst.AUTHORIZATION, "Bearer ${provider.token}")
-                }
-            }
         }
     }
 
     install(Logging) {
-        level = LogLevel.INFO
+        level = LogLevel.ALL
+        logger = object : io.ktor.client.plugins.logging.Logger {
+            override fun log(message: String) {
+                android.util.Log.d("HttpLogger", message)
+            }
+        }
     }
 
     engine {
         config {
             followRedirects(true)
+            addInterceptor(Interceptor { chain ->
+                tokenProvider?.let { provider ->
+                    val token = provider.token
+                    if (token.isNotEmpty()) {
+                        val newRequest = chain.request().newBuilder()
+                            .addHeader(RemoteConstants.HeadersConst.AUTHORIZATION, "Bearer $token")
+                            .build()
+                        return@Interceptor chain.proceed(newRequest)
+                    }
+                }
+                chain.proceed(chain.request())
+            })
         }
     }
 }

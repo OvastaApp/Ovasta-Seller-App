@@ -36,9 +36,15 @@ actual fun createHttpClient(tokenProvider: AuthTokenProvider?): HttpClient = Htt
             append(RemoteConstants.HeadersConst.ACCEPT, "application/json")
             append(RemoteConstants.HeadersConst.IDENTIFIER, RemoteConstants.IDENTIFIER_HASH)
             append(RemoteConstants.HeadersConst.LANG, "ar")
-            tokenProvider?.let { provider ->
-                if (provider.token.isNotEmpty()) {
-                    append(RemoteConstants.HeadersConst.AUTHORIZATION, "Bearer ${provider.token}")
+        }
+    }
+
+    tokenProvider?.let { provider ->
+        engine {
+            requestBuilder {
+                val token = provider.token
+                if (token.isNotEmpty()) {
+                    setValue("Bearer $token", "Authorization")
                 }
             }
         }
@@ -50,6 +56,6 @@ actual fun createHttpClient(tokenProvider: AuthTokenProvider?): HttpClient = Htt
                 println(message)
             }
         }
-        level = LogLevel.INFO
+        level = LogLevel.ALL
     }
 }

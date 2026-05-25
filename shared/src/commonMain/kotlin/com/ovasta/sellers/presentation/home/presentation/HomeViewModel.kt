@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+import com.ovasta.sellers.presentation.nav.AppRoute
+
 class HomeViewModel(
     val homeRepository: IHomeRepository,
     val settingsRepository: ISettingsRepository
@@ -62,7 +64,7 @@ class HomeViewModel(
                 updateViewState { it.copy(isLogoutDialogVisible = action.isVisible) }
 
             is HomeScreenActions.CreateOrder ->
-                emitScreenDirectionEvent(ScreenDirection.Push(Screens.CreateOrder))
+                emitScreenDirectionEvent(ScreenDirection.Push(AppRoute.CreateOrder()))
 
             is HomeScreenActions.OrderClicked -> {
                 // TODO: navigate to order details
@@ -73,7 +75,7 @@ class HomeViewModel(
             is HomeScreenActions.CancelOrder -> cancelOrder(action.orderId)
 
             is HomeScreenActions.NavigateToWallet ->
-                emitScreenDirectionEvent(ScreenDirection.Push(Screens.Wallet))
+                emitScreenDirectionEvent(ScreenDirection.Push(AppRoute.Wallet))
 
             else -> Unit
         }
@@ -103,10 +105,5 @@ class HomeViewModel(
     fun updateViewStateWithFail(throwable: Throwable) {
         setComposeUILoading(false)
         emitComposeUIExceptionEvent(throwable.toComposeUIException())
-    }
-
-    object Screens {
-        object CreateOrder
-        object Wallet
     }
 }

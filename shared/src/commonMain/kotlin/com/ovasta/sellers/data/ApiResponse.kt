@@ -6,13 +6,13 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class ApiResponse<T>(
     @JsonNames("status")
-    val status: Int,
+    val status: Int? = null,
     @JsonNames("message")
-    val message: String,
+    val message: String = "",
     @JsonNames("data")
-    val data: T,
+    val data: T? = null,
     @JsonNames("token")
-    val token: String,
+    val token: String? = null,
 ) {
     override fun toString(): String {
         return "ApiResponse(success=$status, message=$message, data=$data)"

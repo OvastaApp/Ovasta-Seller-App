@@ -1,5 +1,6 @@
 package com.ovasta.sellers
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -56,12 +57,8 @@ fun App() {
 
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier) {
-    val backStack: SnapshotStateList<AppRoute> = remember { mutableStateListOf(AppRoute.Splash) }
-    val navigator = remember {
-        Navigator(backStack.map { it as Any }.toMutableList().let { list ->
-            mutableStateListOf<Any>().apply { addAll(list) }
-        })
-    }
+    val backStack: SnapshotStateList<Any> = remember { mutableStateListOf<Any>(AppRoute.Splash) }
+    val navigator = remember { Navigator(backStack) }
 
     val currentScreen = backStack.lastOrNull()
     var selectedBottomNav by remember { mutableStateOf<AppRoute>(AppRoute.Home) }
@@ -105,53 +102,55 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 @Composable
 private fun AppScreenContent(
     modifier: Modifier = Modifier,
-    route: AppRoute?,
-    backStack: MutableList<AppRoute>,
+    route: Any?,
+    backStack: SnapshotStateList<Any>,
     navigator: Navigator
 ) {
-    when (route) {
-        is AppRoute.Splash -> {
-            val viewModel: SplashViewModel = koinViewModel()
-            SplashScreen(viewModel)
-        }
-        is AppRoute.Login -> {
-            val viewModel: LoginViewModel = koinViewModel()
-            LoginScreen(viewModel)
-        }
-        is AppRoute.Home -> {
-            val viewModel: HomeViewModel = koinViewModel()
-            LaunchedEffect(backStack.size) {
-                viewModel.loadHomeData(isRefresh = true)
+    Box(modifier = modifier) {
+        when (route) {
+            is AppRoute.Splash -> {
+                val viewModel: SplashViewModel = koinViewModel()
+                SplashScreen(viewModel)
             }
-            HomeScreen(viewModel)
-        }
-        is AppRoute.CreateOrder -> {
-            val viewModel: CreateOrderViewModel = koinViewModel(key = route.id.toString())
-            CreateOrderScreen(
-                viewModel = viewModel,
-                onNavigateBack = { navigator.pop() }
-            )
-        }
-        is AppRoute.Profile -> {
-            val viewModel: ProfileViewModel = koinViewModel()
-            ProfileScreen(viewModel)
-        }
-        is AppRoute.LastOrders -> {
-            val viewModel: OrderHistoryViewModel = koinViewModel()
-            OrdersScreen(
-                viewModel,
-                onNavigateBack = { navigator.pop() }
-            )
-        }
-        is AppRoute.Wallet -> {
-            val viewModel: WalletViewModel = koinViewModel()
-            WalletScreen(
-                viewModel,
-                onNavigateBack = { navigator.pop() }
-            )
-        }
-        null -> {
-            Text("Unknown route", modifier = modifier)
+            is AppRoute.Login -> {
+                val viewModel: LoginViewModel = koinViewModel()
+                LoginScreen(viewModel)
+            }
+            is AppRoute.Home -> {
+                val viewModel: HomeViewModel = koinViewModel()
+                LaunchedEffect(backStack.size) {
+                    viewModel.loadHomeData(isRefresh = true)
+                }
+                HomeScreen(viewModel)
+            }
+            is AppRoute.CreateOrder -> {
+                val viewModel: CreateOrderViewModel = koinViewModel(key = route.id.toString())
+                CreateOrderScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = { navigator.pop() }
+                )
+            }
+            is AppRoute.Profile -> {
+                val viewModel: ProfileViewModel = koinViewModel()
+                ProfileScreen(viewModel)
+            }
+            is AppRoute.LastOrders -> {
+                val viewModel: OrderHistoryViewModel = koinViewModel()
+                OrdersScreen(
+                    viewModel,
+                    onNavigateBack = { navigator.pop() }
+                )
+            }
+            is AppRoute.Wallet -> {
+                val viewModel: WalletViewModel = koinViewModel()
+                WalletScreen(
+                    viewModel,
+                    onNavigateBack = { navigator.pop() }
+                )
+            }
+            null -> {
+                Text("Unknown route")
+            }
         }
     }
 }
@@ -161,36 +160,30 @@ fun AppBottomBar(
     selected: AppRoute,
     onItemSelected: (AppRoute) -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.White,
-        shadowElevation = 8.dp
+    NavigationBar(
+        containerColor = Color.White,
+        contentColor = Primary,
+        tonalElevation = 0.dp
     ) {
-        NavigationBar(
-            containerColor = Color.White,
-            contentColor = Primary,
-            tonalElevation = 0.dp
-        ) {
-            BottomNavItem.items.forEach { item ->
-                val isSelected = selected == item.route
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            item.icon,
-                            contentDescription = null,
-                            tint = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f)
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = item.label,
-                            color = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f)
-                        )
-                    },
-                    selected = isSelected,
-                    onClick = { onItemSelected(item.route) }
-                )
-            }
+        BottomNavItem.items.forEach { item ->
+            val isSelected = selected == item.route
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        item.icon,
+                        contentDescription = null,
+                        tint = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f)
+                    )
+                },
+                label = {
+                    Text(
+                        text = item.label,
+                        color = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f)
+                    )
+                },
+                selected = isSelected,
+                onClick = { onItemSelected(item.route) }
+            )
         }
     }
 }

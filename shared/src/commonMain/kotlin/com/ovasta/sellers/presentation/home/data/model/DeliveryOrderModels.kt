@@ -20,12 +20,12 @@ data class DeliveryOrder(
     @JsonNames("delivery_price") val deliveryPrice: Double,
     @JsonNames("collection_amount") val collectionAmount: Double,
     @JsonNames("status_id") val statusId: Int,
-    @JsonNames("delivered_at") val deliveredAt: String?,
+    @JsonNames("delivered_at") val deliveredAt: String? = null,
     @JsonNames("cashback_awarded") val cashbackAwarded: Boolean,
-    @JsonNames("note") val note: String?,
+    @JsonNames("note") val note: String? = null,
     @JsonNames("total_price") val totalPrice: Double,
     @JsonNames("created_at") val createdAt: String,
-    @JsonNames("courier") val courier: CourierInfo?,
+    @JsonNames("courier") val courier: CourierInfo? = null,
     @JsonNames("can_cancel") val canCancelOrder: Boolean = true
 )
 

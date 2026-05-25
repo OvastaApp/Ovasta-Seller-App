@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+import com.ovasta.sellers.presentation.nav.AppRoute
+
 class ProfileViewModel(
     val profileRepository: IProfileRepository,
     val settingsRepository: ISettingsRepository
@@ -34,11 +36,11 @@ class ProfileViewModel(
     }
 
     fun navLastOrders() {
-        emitScreenDirectionEvent(ScreenDirection.Push(Screens.LastOrders))
+        emitScreenDirectionEvent(ScreenDirection.Push(AppRoute.LastOrders))
     }
 
     fun navWallet() {
-        emitScreenDirectionEvent(ScreenDirection.Push(Screens.Wallet))
+        emitScreenDirectionEvent(ScreenDirection.Push(AppRoute.Wallet))
     }
 
     fun logout() {
@@ -49,7 +51,7 @@ class ProfileViewModel(
             }.onSuccess {
                 setComposeUILoading(false)
                 settingsRepository.clearUserData()
-                emitScreenDirectionEvent(ScreenDirection.Replace(Screens.Login))
+                emitScreenDirectionEvent(ScreenDirection.Replace(AppRoute.Login))
             }.onFailure {
                 updateViewStateWithFail(it)
             }
@@ -93,11 +95,5 @@ class ProfileViewModel(
     fun updateViewStateWithFail(throwable: Throwable) {
         setComposeUILoading(false)
         emitComposeUIExceptionEvent(throwable.toComposeUIException())
-    }
-
-    object Screens {
-        object LastOrders
-        object Wallet
-        object Login
     }
 }

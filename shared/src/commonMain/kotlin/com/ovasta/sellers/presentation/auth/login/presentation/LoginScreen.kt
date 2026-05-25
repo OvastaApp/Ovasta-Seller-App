@@ -37,18 +37,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.base.Base_white
 import com.ovasta.sellers.base.Gray100
 import com.ovasta.sellers.base.Gray200
-import com.ovasta.sellers.base.Gray800
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
 import com.ovasta.sellers.base.mdMedium
 import com.ovasta.sellers.base.mdRegular
 import com.ovasta.sellers.base.smMedium
-import com.ovasta.sellers.presentation.auth.login.presentation.components.UserTypeOption
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object LoginContentTestTag {
 
@@ -262,7 +260,7 @@ private fun LoginContent(
 }
 
 @Composable
-@Preview(showBackground = true)
+@Preview()
 private fun LoginContentPreview() {
     LoginContent(
         LoginViewState(
