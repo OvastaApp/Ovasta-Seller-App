@@ -37,7 +37,7 @@ actual fun showPlatformToast(message: String) {
     )
     val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
     rootViewController?.presentViewController(alert, animated = true, completion = null)
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (2 * NSEC_PER_SEC).toLong()), dispatch_get_main_queue()) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue()) {
         alert.dismissViewControllerAnimated(true, null)
     }
 }
