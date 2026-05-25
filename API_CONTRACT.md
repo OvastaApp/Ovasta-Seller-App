@@ -164,3 +164,52 @@ _No parameters_
 - `token` field in wrapper can be empty string when not relevant.
 - `money` field in `PointsInfo` is serialized as `"money"` on the wire but represents delivery profit sum on the client side.
 
+---
+
+## 4. Update FCM Token
+
+**`POST /fcm-token`**
+
+### Request Body
+
+```json
+{
+  "fcm_token": "string"
+}
+```
+
+| Field       | Type   | Required | Description          |
+|-------------|--------|----------|----------------------|
+| `fcm_token` | string | Yes      | FCM device token     |
+
+### Response
+
+```json
+{
+  "status": 200,
+  "message": "Token updated successfully",
+  "data": null,
+  "token": ""
+}
+```
+
+---
+
+## Login FCM Token
+
+The `POST /login` endpoint accepts an optional `fcm_token` field in the request body:
+
+```json
+{
+  "mobile": "string",
+  "password": "string",
+  "fcm_token": "string (optional)"
+}
+```
+
+| Field       | Type   | Required | Description                |
+|-------------|--------|----------|----------------------------|
+| `mobile`    | string | Yes      | User phone number          |
+| `password`  | string | Yes      | User password              |
+| `fcm_token` | string | No       | FCM device token for push notifications |
+
