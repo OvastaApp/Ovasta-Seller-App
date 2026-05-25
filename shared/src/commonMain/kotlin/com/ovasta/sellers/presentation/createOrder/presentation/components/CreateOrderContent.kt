@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.base.CenteredTextAppBar
+import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.mdMedium
 import com.ovasta.sellers.base.mdSemiBold
@@ -39,8 +40,6 @@ import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewS
 import com.ovasta.sellers.presentation.createOrder.data.model.DeliveryTiming
 import com.ovasta.sellers.presentation.createOrder.presentation.isValid
 import org.jetbrains.compose.resources.stringResource
-
-private val BrandColor = Color(0xFF006D98)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -167,8 +166,8 @@ fun CreateOrderContent(
                         .padding(8.dp),
                     enabled = viewState.isValid() && !viewState.isSubmitting,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BrandColor,
-                        disabledContainerColor = BrandColor.copy(alpha = 0.5f)
+                        containerColor = Primary,
+                        disabledContainerColor = Primary.copy(alpha = 0.5f)
                     ),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -230,9 +229,9 @@ private fun OrderTextField(
         modifier = modifier.fillMaxWidth(),
         textStyle = mdMedium,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = BrandColor,
-            focusedLabelColor = BrandColor,
-            cursorColor = BrandColor
+            focusedBorderColor = Primary,
+            focusedLabelColor = Primary,
+            cursorColor = Primary
         )
     )
 }
