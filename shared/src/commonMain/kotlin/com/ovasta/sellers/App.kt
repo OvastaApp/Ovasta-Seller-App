@@ -1,15 +1,24 @@
 package com.ovasta.sellers
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,10 +34,13 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.LocalNavigator
 import com.ovasta.sellers.base.components.sharedComposable.Navigator
+import com.ovasta.sellers.platform.PlatformBackHandler
 import com.ovasta.sellers.presentation.auth.login.presentation.LoginScreen
 import com.ovasta.sellers.presentation.auth.login.presentation.LoginViewModel
 import com.ovasta.sellers.presentation.auth.splash.SplashScreen
@@ -43,16 +55,21 @@ import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrdersS
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreen
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewModel
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletScreen
-import com.ovasta.sellers.platform.PlatformBackHandler
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.home
+import com.ovasta.sellers.resources.profile
 import com.ovasta.sellers.ui.theme.OvastaSellersTheme
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App() {
     OvastaSellersTheme {
-        AppNavHost()
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            AppNavHost()
+        }
     }
 }
 
@@ -112,8 +129,16 @@ private fun AppScreenContent(
     backStack: SnapshotStateList<Any>,
     navigator: Navigator
 ) {
-    Box(modifier = modifier) {
-        when (route) {
+    AnimatedContent(
+        targetState = route,
+        transitionSpec = {
+            slideInHorizontally { width -> width } + fadeIn() togetherWith
+                slideOutHorizontally { width -> -width } + fadeOut()
+        },
+        label = "screen_transition",
+        modifier = modifier.fillMaxSize()
+    ) { currentRoute ->
+        when (currentRoute) {
             is AppRoute.Splash -> {
                 val viewModel: SplashViewModel = koinViewModel()
                 SplashScreen(viewModel)
@@ -124,13 +149,13 @@ private fun AppScreenContent(
             }
             is AppRoute.Home -> {
                 val viewModel: HomeViewModel = koinViewModel()
-                LaunchedEffect(backStack.size) {
+                LaunchedEffect(currentRoute) {
                     viewModel.loadHomeData(isRefresh = true)
                 }
                 HomeScreen(viewModel)
             }
             is AppRoute.CreateOrder -> {
-                val viewModel: CreateOrderViewModel = koinViewModel(key = route.id.toString())
+                val viewModel: CreateOrderViewModel = koinViewModel(key = currentRoute.id.toString())
                 CreateOrderScreen(
                     viewModel = viewModel,
                     onNavigateBack = { navigator.pop() }
@@ -167,42 +192,68 @@ fun AppBottomBar(
     onItemSelected: (AppRoute) -> Unit
 ) {
     NavigationBar(
+        modifier = Modifier
+            .height(64.dp)
+            .navigationBarsPadding(),
         containerColor = Color.White,
         contentColor = Primary,
         tonalElevation = 0.dp
     ) {
-        BottomNavItem.items.forEach { item ->
+        BottomNavItem.entries.forEach { item ->
             val isSelected = selected == item.route
             NavigationBarItem(
                 icon = {
-                    Icon(
-                        item.icon,
-                        contentDescription = null,
-                        tint = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f)
-                    )
+                    if (isSelected) {
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Primary.copy(alpha = 0.12f),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                item.icon,
+                                contentDescription = null,
+                                tint = Primary,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    } else {
+                        Icon(
+                            item.icon,
+                            contentDescription = null,
+                            tint = Color.Gray.copy(alpha = 0.5f)
+                        )
+                    }
                 },
                 label = {
                     Text(
-                        text = item.label,
+                        text = item.resolveLabel(),
                         color = if (isSelected) Primary else Color.Gray.copy(alpha = 0.5f)
                     )
                 },
                 selected = isSelected,
-                onClick = { onItemSelected(item.route) }
+                onClick = { onItemSelected(item.route) },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                )
             )
         }
     }
 }
 
-private sealed class BottomNavItem(
+private enum class BottomNavItem(
     val route: AppRoute,
-    val label: String,
     val icon: ImageVector
 ) {
-    object HomeBottomNav : BottomNavItem(AppRoute.Home, "Home", Icons.Default.Home)
-    object ProfileBottomNav : BottomNavItem(AppRoute.Profile, "Profile", Icons.Default.Person)
+    HOME(AppRoute.Home, Icons.Default.Home),
+    PROFILE(AppRoute.Profile, Icons.Default.Person);
 
     companion object {
-        val items = listOf(HomeBottomNav, ProfileBottomNav)
+        val entries = listOf(HOME, PROFILE)
     }
+}
+
+@Composable
+private fun BottomNavItem.resolveLabel(): String = when (this) {
+    BottomNavItem.HOME -> stringResource(Res.string.home)
+    BottomNavItem.PROFILE -> stringResource(Res.string.profile)
 }

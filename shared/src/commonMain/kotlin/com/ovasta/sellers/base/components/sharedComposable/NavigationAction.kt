@@ -18,6 +18,11 @@ import com.ovasta.sellers.base.Base_white
 import com.ovasta.sellers.base.Gray300
 import com.ovasta.sellers.base.Gray700
 import com.ovasta.sellers.base.smMedium
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.contact
+import com.ovasta.sellers.resources.directions
+import com.ovasta.sellers.resources.whatsapp
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NavigationAction(
@@ -34,21 +39,21 @@ fun NavigationAction(
             modifier = Modifier
                 .weight(1f)
                 .testTag("directionsButton_${clickedTaskId}"),
-            text = "",
+            text = stringResource(Res.string.directions),
             onClick = onDirectionClick
         )
         ActionButton(
             modifier = Modifier
                 .weight(1f)
                 .testTag("contactButton_${clickedTaskId}"),
-            text = "",
+            text = stringResource(Res.string.contact),
             onClick = onContactClick
         )
         ActionButton(
             modifier = Modifier
                 .weight(1f)
-                .testTag("contactButton_${clickedTaskId}"),
-            text = "",
+                .testTag("whatsappButton_${clickedTaskId}"),
+            text = stringResource(Res.string.whatsapp),
             onClick = onWhatsAppClick
         )
     }
