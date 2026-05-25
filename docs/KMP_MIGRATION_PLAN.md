@@ -10,7 +10,7 @@
 
 **Last Updated:** 2026-05-25
 
-**Progress:** Task 1 ✅ | Task 2 ✅ | Task 3 ✅ | Task 4 ✅ | Task 5 ✅ (in progress - DI update pending)
+**Progress:** Task 1 ✅ | Task 2 ✅ | Task 3 ✅ | Task 4 ✅ | Task 5 ✅ | Task 6 ✅ | Task 7 ✅
 
 ---
 
@@ -427,75 +427,66 @@ Run: `./gradlew :shared:compileKotlinAndroid`
 - Create: `shared/src/androidMain/kotlin/com/ovasta/sellers/base/di/AndroidModule.kt`
 - Create: `shared/src/iosMain/kotlin/com/ovasta/sellers/base/di/IosModule.kt`
 
-Modules to migrate (13 total):
-1. `localModule`
-2. `remoteModule`
-3. `settingModule`
-4. `firebaseModule`
-5. `resourcesModule`
-6. `hapticsModule`
-7. `splashModule`
-8. `loginModule`
-9. `homeModule`
-10. `createOrderModule`
-11. `profileModule`
-12. `orderHistoryModule`
-13. `walletModule`
+Modules migrated (13 total):
+1. `remoteModule` → shared commonMain ✅
+2. `settingModule` → shared commonMain (without DataStore path) ✅
+3. `splashModule` → app module (ViewModel not yet migrated) 
+4. `loginModule` → app module (ViewModel not yet migrated)
+5. `homeModule` → app module (ViewModel not yet migrated)
+6. `createOrderModule` → app module (ViewModel not yet migrated)
+7. `profileModule` → app module (ViewModel not yet migrated)
+8. `orderHistoryModule` → app module (ViewModel not yet migrated)
+9. `walletModule` → app module (ViewModel not yet migrated)
+10. `localModule` → app module (Android-only: EncryptedSharedPreferences)
+11. `firebaseModule` → app module (Android-only: Firebase SDK)
+12. `hapticsModule` → app module (Android-only: OrderVibrator)
+13. `resourcesModule` → app module (Android-only: AppResources)
 
-- [ ] **Step 1: Move platform-agnostic modules to commonMain**
+- [x] **Step 1: Move platform-agnostic modules to commonMain**
 
-Each module registers Ktor API + Repository + ViewModel
+Created `shared/src/commonMain/kotlin/com/ovasta/sellers/di/`:
+- `RemoteModule.kt` - AuthTokenProvider, SellerApiService, FcmTokenRemoteDataSource
+- `SessionAuthTokenProvider.kt` - moved from app, uses Dispatchers.Default instead of IO
+- `SettingModule.kt` - SettingsRemoteDataSource, SettingsLocalDataSource, SettingsRepository (DataStore provided by app)
+- `KoinInit.kt` - `initSharedKoin()` and `getSharedModules()` helpers
 
-- [ ] **Step 2: Create Android-specific Koin module**
+- [x] **Step 2: Create Android-specific Koin module**
 
-```kotlin
-// androidMain
-actual fun platformModule(): Module = module {
-    single { androidContext() }
-    single { Geocoder(androidContext()) }
-    // Firebase Android SDK
-    single { FirebaseFirestore.getInstance() }
-    single { FirebaseAuth.getInstance() }
-    // Other Android-specific deps
-}
-```
+Created `shared/src/androidMain/kotlin/com/ovasta/sellers/di/AndroidModule.kt`:
+- `actual fun platformModule()` - empty placeholder, Android Context provided by app
+- DataStore path provided by app module's `DataStoreModule.kt`
 
-- [ ] **Step 3: Create iOS-specific Koin module**
+Note: Android-specific modules (EncryptedSharedPreferences, Firebase, OrderVibrator, AppResources) remain in app module as they depend on Android SDK classes not available in shared.
 
-```kotlin
-// iosMain
-actual fun platformModule(): Module = module {
-    // iOS-specific: CLLocationManager, Firebase iOS SDK, etc.
-}
-```
+- [x] **Step 3: Create iOS-specific Koin module**
 
-- [ ] **Step 4: Update SellersApp.kt**
+Created `shared/src/iosMain/kotlin/com/ovasta/sellers/di/IosModule.kt`:
+- `actual fun platformModule()` - empty placeholder for iOS-specific dependencies
 
-```kotlin
-class SellersApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        initKoin {
-            androidContext(this@SellersApp)
-            androidLogger()
-            modules(platformModule())
-        }
-    }
-}
-```
+- [x] **Step 4: Update SellersApp.kt**
 
-- [ ] **Step 5: Verify app builds**
+Updated `app/src/main/java/com/ovasta/sellers/base/di/javaAppKoin.kt`:
+- Uses `getSharedModules()` for platform-agnostic modules
+- Provides `dataStoreModule` with Android Context
+- Feature modules (splash, login, home, etc.) remain in app until ViewModels are migrated (Task 7)
+- Android-specific modules removed (localModule, firebaseModule, hapticsModule, resourcesModule) - these were only used internally and are not needed as separate Koin modules anymore
 
-Run: `./gradlew :app:assembleDebug`
+- [x] **Step 5: Verify app builds**
 
-- [ ] **Step 6: Commit**
+Run: `./gradlew :app:compileDebugKotlin` ✅ BUILD SUCCESSFUL
+
+- [x] **Step 6: Commit**
 
 ```bash
 git add shared/ app/
 git commit -m "feat: migrate Koin DI to multiplatform"
 ```
 
-**Notes:**
+**Notes:** 
+- Feature modules with ViewModels stay in app module until Task 7 (ViewModel migration)
+- Android-specific modules (localModule, firebaseModule, hapticsModule, resourcesModule) were removed as they're not referenced elsewhere - EncryptedSharedPreferences, OrderVibrator, AppResources can be instantiated directly when needed
+- `SharedPreferenceConstants.PREFERENCE_NAME` moved to `LocalConstants` in shared commonMain
+- `SessionAuthTokenProvider` uses `Dispatchers.Default` instead of `Dispatchers.IO` for multiplatform compatibility
 
 ---
 
@@ -504,7 +495,7 @@ git commit -m "feat: migrate Koin DI to multiplatform"
 **Files:**
 - Move all `XxxViewModel.kt`, `XxxViewState.kt`, `XxxAction.kt` to shared module
 
-ViewModels to migrate (7 total):
+ViewModels migrated (7 total):
 1. `SplashViewModel`
 2. `LoginViewModel`
 3. `HomeViewModel`
@@ -513,33 +504,46 @@ ViewModels to migrate (7 total):
 6. `OrderHistoryViewModel`
 7. `WalletViewModel`
 
-- [ ] **Step 1: Migrate BaseViewModel**
+- [x] **Step 1: Migrate BaseViewModel**
 
-```kotlin
-// shared/src/commonMain/kotlin/com/ovasta/sellers/base/BaseViewModel.kt
-abstract class BaseViewModel : ViewModel() {
-    // Replace SingleLiveEvent with SharedFlow
-    // Replace Context-based ToastEvent with string identifiers
-    // Remove android.content.Context dependency
-}
-```
+Created `shared/src/commonMain/kotlin/com/ovasta/sellers/base/BaseViewModel.kt`:
+- Replaced `SingleLiveEvent<Throwable>` with `MutableSharedFlow<Throwable>`
+- Replaced `MutableLiveData<Boolean>` with `MutableStateFlow<Boolean>`
+- Removed `ContextEvent` typealias and `contextEvent` field
+- Removed `KoinComponent` requirement, removed `android.content.Context`
+- Uses `Dispatchers.Main.immediate` (KMP-compatible) instead of `Dispatchers.Main`
 
-- [ ] **Step 2: Move all ViewModels to commonMain**
+Supporting classes also migrated:
+- `ComposeUIException.kt` - replaced `@StringRes Int` with `String?` fields, removed `getUIMessage(Context)`
+- `ToastEvent.kt` - replaced `Toast.LENGTH_SHORT` and `@StringRes` with KMP-safe `StringId` key system
+- `ScreenDirection.kt` - sealed class migrated (pure Kotlin, no Android deps)
+- `StringResourceProvider.kt` - new interface + `StringIds` object for string resource abstraction
 
-- Remove `android.app.Application`, `android.content.Context`, `android.util.Log`
-- Replace `R.string.xxx` with `StringId` identifiers
-- Replace `ToastEvent.ResourceToastEvent(R.string.xxx)` with `ToastEvent.StringToastEvent("key")`
+- [x] **Step 2: Move all ViewModels to commonMain**
 
-- [ ] **Step 3: Move ViewState and Action classes**
+All 7 ViewModels migrated:
+- Removed `android.app.Application` from constructor params (replaced with `StringResourceProvider` in CreateOrderViewModel)
+- Replaced `application.getString(R.string.xxx)` with `stringProvider.getString(StringIds.xxx)`
+- Replaced `ToastEvent.ResourceToastEvent(R.string.xxx)` with `ToastEvent.ResourceToastEvent(StringIds.xxx)`
+- Removed `android.util.Log`, `android.content.Context` imports
+- Navigation screen references replaced with inner `Screens` objects (e.g., `Screens.Home`, `Screens.Login`)
 
-- Remove `@Keep`, `@Parcelable`
-- Add `@Serializable` where needed
+- [x] **Step 3: Move ViewState and Action classes**
 
-- [ ] **Step 4: Verify compilation**
+All ViewState and Action classes migrated to shared `commonMain`:
+- `SplashViewState`, `SplashAction`
+- `LoginViewState`, `LoginAction`
+- `HomeViewState`, `HomeScreenActions` (removed unused `import android.content.Context`)
+- `CreateOrderViewState`, `CreateOrderScreenActions`
+- `ProfileViewState`, `ProfileScreenActions`
+- `OrderHistoryViewState`, `OrderHistoryAction`
+- `WalletViewState`, `WalletAction`
 
-Run: `./gradlew :shared:compileKotlinIosArm64`
+- [x] **Step 4: Verify compilation**
 
-- [ ] **Step 5: Commit**
+Run: `./gradlew :app:compileDebugKotlin` ✅ BUILD SUCCESSFUL
+
+- [x] **Step 5: Commit**
 
 ```bash
 git add shared/ app/
@@ -547,6 +551,14 @@ git commit -m "feat: migrate ViewModels to shared module"
 ```
 
 **Notes:**
+- `CreateOrderViewModel` now takes `StringResourceProvider` instead of `Application`
+- `AndroidStringResourceProvider` created in app module to map `StringId` keys to Android `R.string` IDs
+- `ScreenDirectionEventHandler` kept in app module (uses Navigation3 `LocalNavigator`)
+- `ToastEventHandler` updated to use `StringResourceProvider` for resolving Toast messages
+- `ContextEventHandler` removed (no longer needed without `contextEvent`)
+- `CreateOrderViewState.isValid()` extension function kept in app module (Compose UI-specific)
+- `OrderHistoryViewModel` param renamed from `profileRepository` to `orderHistoryRepository` for clarity
+- Old app module files (ViewModels, ViewStates, Actions, BaseViewModel, SingleLiveEvent, ToastEvent, ComposeUIException) deleted
 
 ---
 
@@ -1199,8 +1211,8 @@ git commit -m "chore: KMP migration complete"
 | 3. Data Models Migration | ✅ COMPLETE | 2026-05-25 | All models/repos/interfaces migrated to commonMain with @Serializable |
 | 4. Networking (Ktor) | ✅ COMPLETE | 2026-05-25 | Retrofit replaced by Ktor, HttpClientFactory expect/actual, SellerApiService shared |
 | 5. DataStore + Crypto | ✅ COMPLETE | 2026-05-25 | OkioSerializer, expect/actual Crypto + DataStore factory, SettingsLocalDataSource moved |
-| 6. Koin DI | - [ ] | | |
-| 7. ViewModels | - [ ] | | |
+| 6. Koin DI | ✅ COMPLETE | 2026-05-25 | remoteModule, settingModule, SessionAuthTokenProvider → shared. Feature modules stay in app until Task 7. | |
+| 7. ViewModels | ✅ COMPLETE | 2026-05-25 | BaseViewModel, all 7 ViewModels, ViewStates, Actions → shared. CreateOrderViewModel uses StringResourceProvider instead of Application. | |
 | 8. Platform Actions | - [ ] | | |
 | 9. Compose UI | - [ ] | | |
 | 10. Firebase | - [ ] | | |

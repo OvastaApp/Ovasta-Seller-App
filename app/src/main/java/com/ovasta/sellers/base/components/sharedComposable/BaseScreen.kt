@@ -42,12 +42,10 @@ fun BaseScreen(
 
             BaseDialog(
                 icon = painterResource(R.drawable.ic_error),
-                title = stringResource(
-                    exceptionState?.exceptionTitleResource
-                        ?: R.string.an_error_occurred
-                ),
-                message = exceptionState?.getUIMessage(LocalContext.current)
-                    ?: stringResource(R.string.generic_unknown_error),
+                title = exceptionState?.exceptionTitle
+                        ?: stringResource(R.string.an_error_occurred),
+                message = exceptionState?.errorMessage
+                        ?: stringResource(R.string.generic_unknown_error),
                 dismissOnClickOutside = true,
                 primaryButtonText = stringResource(R.string.dismiss),
                 onPrimaryClick = {
@@ -78,8 +76,6 @@ fun BaseScreen(
             }
         }
     }
-
-    ContextEventHandler(viewModel)
 
     content()
 }

@@ -55,7 +55,6 @@ import com.ovasta.sellers.base.Gray200
 import com.ovasta.sellers.base.Gray800
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
-import com.ovasta.sellers.base.components.sharedComposable.ContextEventHandler
 import com.ovasta.sellers.base.mdMedium
 import com.ovasta.sellers.base.mdRegular
 import com.ovasta.sellers.base.smMedium
@@ -89,7 +88,6 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         viewModel.onAction(LoginAction.ResetState)
     }
-    ContextEventHandler(viewModel)
 }
 
 @Composable
