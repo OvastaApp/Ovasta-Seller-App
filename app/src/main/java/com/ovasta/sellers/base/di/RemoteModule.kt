@@ -1,59 +1,18 @@
 package com.ovasta.sellers.base.di
 
-import com.google.gson.GsonBuilder
-import com.ovasta.sellers.base.interceptor.CacheProviderInterceptor
-import com.ovasta.sellers.base.interceptor.ErrorMappingInterceptor
-import com.ovasta.sellers.base.interceptor.HeadersInterceptor
-import com.ovasta.sellers.data.RemoteConstants
+import com.ovasta.sellers.data.network.AuthTokenProvider
+import com.ovasta.sellers.data.notification.FcmTokenRemoteDataSource
+import com.ovasta.sellers.data.notification.IFcmTokenRemoteDataSource
+import com.ovasta.sellers.data.network.SellerApiService
+import com.ovasta.sellers.data.network.createHttpClient
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
-import com.ovasta.sellers.BuildConfig
-import com.ovasta.sellers.data.notification.FcmTokenApi
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 val remoteModule = module {
-    single { HeadersInterceptor(get()) }
+    single<AuthTokenProvider> { SessionAuthTokenProvider(get()) }
+    single { SellerApiService(createHttpClient(get())) }
+    single<IFcmTokenRemoteDataSource> { FcmTokenRemoteDataSource(get()) }
     single<FirebaseFirestore> { Firebase.firestore }
-    single { HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY) }
-    single { ErrorMappingInterceptor(get(), get()) }
-    single { CacheProviderInterceptor.provideCache(get()) }
-
-    single {
-        val builder = OkHttpClient.Builder()
-        val protocols = mutableListOf<Protocol>()
-        protocols.add(Protocol.HTTP_1_1)
-        builder
-            .cache(get())
-            .addInterceptor(get<HeadersInterceptor>())
-            .addInterceptor(get<ErrorMappingInterceptor>())
-            .connectTimeout(RemoteConstants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(RemoteConstants.READ_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(RemoteConstants.WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .protocols(protocols)
-
-        if (BuildConfig.DEBUG) {
-            builder.addInterceptor(get<HttpLoggingInterceptor>())
-        }
-        builder.build()
-    }
-
-    single { GsonBuilder().create() }
-
-    single<Retrofit> {
-        Retrofit.Builder()
-            .baseUrl("http://167.172.209.252/api/seller-app/")
-            .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(get())
-            .build()
-    }
-
-    factory { get<Retrofit>().create(FcmTokenApi::class.java) }
-
 }

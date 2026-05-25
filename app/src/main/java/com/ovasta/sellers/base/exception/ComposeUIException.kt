@@ -1,20 +1,16 @@
 package com.ovasta.sellers.base.exception
 
 import android.content.Context
-import androidx.annotation.Keep
 import androidx.annotation.StringRes
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
 import com.ovasta.sellers.R
 import java.io.IOException
 
-@Keep
 data class ComposeUIException(
     @StringRes val exceptionTitleResource: Int? = null,
-    @SerializedName("msg", alternate = ["message"]) var errorMessage: String?,
+    val errorMessage: String? = null,
     @StringRes val exceptionMessageResource: Int? = null,
-    @Expose var code: Int?,
-    @SerializedName("data") val data: Any? = null,
+    var code: Int? = null,
+    val data: Any? = null,
     val actions: List<(() -> Unit)> = listOf(),
 ) : IOException() {
 
@@ -25,21 +21,17 @@ data class ComposeUIException(
             errorMessage ?: context.getString(R.string.generic_unknown_error)
         }
     }
-
 }
 
-
 fun Throwable.toComposeUIException(vararg actions: () -> Unit): ComposeUIException {
-    return when(this) {
-
+    return when (this) {
         is APIException -> {
             ComposeUIException(
                 code = this.code,
                 errorMessage = this.errorMessage,
                 data = this.data,
                 actions = actions.toList(),
-
-                )
+            )
         }
 
         is NetworkException -> {
@@ -60,6 +52,5 @@ fun Throwable.toComposeUIException(vararg actions: () -> Unit): ComposeUIExcepti
                 exceptionMessageResource = R.string.generic_unknown_error
             )
         }
-
     }
 }

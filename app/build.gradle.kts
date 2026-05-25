@@ -80,7 +80,6 @@ dependencies {
 
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.kotlinx.serialization.core)
 
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
@@ -95,7 +94,6 @@ dependencies {
     testImplementation(kotlin("test"))
 
 
-    //Jetpack
     implementation(libs.lifecycle.extensions)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(platform(libs.androidx.compose.bom))
@@ -111,39 +109,27 @@ dependencies {
     implementation(libs.constraintlayout.compose)
     implementation(libs.lifecycle.viewmodel.compose)
 
-    implementation(libs.coil.compose)
-
     implementation(libs.sdp)
     implementation(libs.ssp)
 
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.google.gson)
 
     implementation(libs.androidx.datastore.preferences)
 
-
-    // retrofit
-    implementation(libs.squareup.retrofit)
-    implementation(libs.squareup.converter.gson)
-
-    //OKHTTP
-    implementation(libs.squareup.okhttp)
-    implementation(libs.logging.interceptor)
-
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.coil.compose)
+
+    implementation(libs.ktor.client.okhttp)
+
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.auth)
-    implementation(libs.coil.kt.coil.compose)
     implementation(libs.security.crypto)
 
-    implementation (libs.play.services.location)
+    implementation(libs.play.services.location)
 
     implementation(libs.paging.runtime)
     implementation(libs.paging.compose)
