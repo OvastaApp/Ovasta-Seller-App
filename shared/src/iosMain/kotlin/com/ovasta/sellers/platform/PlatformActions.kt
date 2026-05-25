@@ -9,12 +9,18 @@ import platform.UIKit.UIAlertController
 import platform.UIKit.UIAlertControllerStyle
 import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
+import com.ovasta.sellers.platform
 import platform.Foundation.NSURL
 import platform.Foundation.NSBundle
 import platform.UIKit.UIScreen
 import platform.CoreLocation.CLGeocoder
 import platform.AVFAudio.AVAudioSession
 import platform.AVFAudio.AVAudioSessionCategoryPlayback
+import platform.darwin.dispatch_after
+import platform.darwin.dispatch_time
+import platform.darwin.dispatch_get_main_queue
+import platform.darwin.DISPATCH_TIME_NOW
+import platform.darwin.NSEC_PER_SEC
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -29,15 +35,11 @@ actual fun showPlatformToast(message: String) {
         message = message,
         preferredStyle = UIAlertControllerStyle.UIAlertControllerStyleAlert
     )
-    alert.addAction(
-        platform.UIKit.UIAlertAction.actionWithTitle(
-            title = "OK",
-            style = platform.UIKit.UIAlertActionStyle.UIAlertActionStyleDefault,
-            handler = null
-        )
-    )
     val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
     rootViewController?.presentViewController(alert, animated = true, completion = null)
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (2 * NSEC_PER_SEC).toLong()), dispatch_get_main_queue()) {
+        alert.dismissViewControllerAnimated(true, null)
+    }
 }
 
 actual fun getPlatformContext(): PlatformContext {
@@ -69,7 +71,16 @@ actual fun openMapNavigation(latitude: Double, longitude: Double) {
 actual fun openWhatsApp(phoneNumber: String) {
     val cleaned = phoneNumber.replace(Regex("[^\\d]"), "")
     val url = NSURL.URLWithString("https://wa.me/$cleaned") ?: return
-    UIApplication.sharedApplication.openURL(url)
+    if (UIApplication.sharedApplication.canOpenURL(url)) {
+        UIApplication.sharedApplication.openURL(url)
+    } else {
+        val fallbackUrl = NSURL.URLWithString("https://api.whatsapp.com/send?phone=$cleaned")
+        if (fallbackUrl != null && UIApplication.sharedApplication.canOpenURL(fallbackUrl)) {
+            UIApplication.sharedApplication.openURL(fallbackUrl)
+        } else {
+            showPlatformToast("WhatsApp not installed")
+        }
+    }
 }
 
 actual fun vibrateDevice() {

@@ -33,11 +33,31 @@ actual fun getPlatformContext(): PlatformContext {
 }
 
 actual fun sdp(value: Int): Dp {
-    return value.dp
+    val context = get<Context>(Context::class.java)
+    val resourceId = context.resources.getIdentifier(
+        "_${value}sdp", "dimen", context.packageName
+    )
+    return if (resourceId != 0) {
+        val px = context.resources.getDimension(resourceId)
+        val density = context.resources.displayMetrics.density
+        (px / density).dp
+    } else {
+        value.dp
+    }
 }
 
 actual fun ssp(value: Int): TextUnit {
-    return value.sp
+    val context = get<Context>(Context::class.java)
+    val resourceId = context.resources.getIdentifier(
+        "_${value}ssp", "dimen", context.packageName
+    )
+    return if (resourceId != 0) {
+        val px = context.resources.getDimension(resourceId)
+        val density = context.resources.displayMetrics.scaledDensity
+        (px / density).sp
+    } else {
+        value.sp
+    }
 }
 
 actual fun openPhoneDialer(phoneNumber: String) {
