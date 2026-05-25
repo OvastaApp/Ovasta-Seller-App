@@ -60,9 +60,6 @@ class HomeViewModel(
 
     fun onScreenAction(action: HomeScreenActions) {
         when (action) {
-            is HomeScreenActions.ChangeLogoutDialogStatus ->
-                updateViewState { it.copy(isLogoutDialogVisible = action.isVisible) }
-
             is HomeScreenActions.CreateOrder ->
                 emitScreenDirectionEvent(ScreenDirection.Push(AppRoute.CreateOrder()))
 
@@ -76,8 +73,6 @@ class HomeViewModel(
 
             is HomeScreenActions.NavigateToWallet ->
                 emitScreenDirectionEvent(ScreenDirection.Push(AppRoute.Wallet))
-
-            else -> Unit
         }
     }
 

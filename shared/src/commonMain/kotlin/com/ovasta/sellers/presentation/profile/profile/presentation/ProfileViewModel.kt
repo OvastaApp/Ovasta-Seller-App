@@ -28,7 +28,6 @@ class ProfileViewModel(
 
     fun onScreenAction(action: ProfileScreenActions) {
         when (action) {
-            is ProfileScreenActions.ChangeLogoutDialogStatus -> {}
             is ProfileScreenActions.OnWalletClicked -> navWallet()
             is ProfileScreenActions.OnLogout -> logout()
             ProfileScreenActions.OnOrderHistoryTabClicked -> navLastOrders()

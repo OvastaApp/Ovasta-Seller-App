@@ -7,6 +7,5 @@ import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 data class HomeViewState(
     val homeInfo: HomeInfo? = null,
     val deliveryOrdersResponse: DeliveryOrdersResponse? = null,
-    val isLogoutDialogVisible: Boolean = false,
     val isRefreshing: Boolean? = false
 )
