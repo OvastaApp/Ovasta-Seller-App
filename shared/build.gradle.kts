@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.sdp)
             implementation(libs.ssp)
+            implementation(libs.firebase.messaging)
         }
 
         iosMain.dependencies {

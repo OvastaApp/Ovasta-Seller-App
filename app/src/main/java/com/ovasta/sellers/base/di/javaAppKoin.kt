@@ -21,6 +21,7 @@ fun startKoin(application: Application) {
         androidLogger(Level.DEBUG)
         modules(
             dataStoreModule,
+            firebaseModule,
             *getSharedModules().toTypedArray(),
             splashModule,
             loginModule,
