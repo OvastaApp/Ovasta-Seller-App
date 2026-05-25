@@ -9,12 +9,19 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.java.KoinJavaComponent.get
 import java.util.Locale
+
+@Composable
+actual fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit) {
+    BackHandler(enabled = enabled, onBack = onBack)
+}
 
 actual fun showPlatformToast(message: String) {
     Toast.makeText(get<Context>(Context::class.java), message, Toast.LENGTH_SHORT).show()

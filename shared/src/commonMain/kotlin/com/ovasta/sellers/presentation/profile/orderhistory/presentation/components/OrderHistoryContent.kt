@@ -221,7 +221,7 @@ private fun DeliveryOrderCard(
                         if (!courier.mobile.isNullOrEmpty()) {
                             val courierMobile = courier.mobile
                             IconButton(
-                                onClick = { onCallCourier(courierMobile!!) },
+                                onClick = { courierMobile?.let { onCallCourier(it) } },
                                 modifier = Modifier.size(28.dp)
                             ) {
                                 Icon(

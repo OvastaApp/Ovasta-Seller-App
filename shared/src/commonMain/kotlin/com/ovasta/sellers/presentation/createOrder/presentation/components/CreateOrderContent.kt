@@ -22,10 +22,23 @@ import com.ovasta.sellers.base.mdMedium
 import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.xsMedium
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.cancel
+import com.ovasta.sellers.resources.confirm
+import com.ovasta.sellers.resources.confirm_order
+import com.ovasta.sellers.resources.confirm_order_message
+import com.ovasta.sellers.resources.confirm_order_title
+import com.ovasta.sellers.resources.collection_amount
+import com.ovasta.sellers.resources.delivery_address
+import com.ovasta.sellers.resources.delivery_fees
+import com.ovasta.sellers.resources.order_details
+import com.ovasta.sellers.resources.order_notes
+import com.ovasta.sellers.resources.phone_number
 import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderScreenActions
 import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewState
 import com.ovasta.sellers.presentation.createOrder.data.model.DeliveryTiming
 import com.ovasta.sellers.presentation.createOrder.presentation.isValid
+import org.jetbrains.compose.resources.stringResource
 
 private val BrandColor = Color(0xFF006D98)
 
@@ -44,14 +57,15 @@ fun CreateOrderContent(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .statusBarsPadding(),
         containerColor = Color.White,
         topBar = {
             Surface(
                 shadowElevation = 2.dp, color = Color.White
             ) {
                 CenteredTextAppBar(
-                    "",
+                    stringResource(Res.string.order_details),
                     onBackButtonPressed = { onNavigateBack() })
             }
         }) { paddingValues ->
@@ -63,6 +77,7 @@ fun CreateOrderContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .imePadding()
                     .verticalScroll(scrollState)
                     .padding(16.dp)
                     .padding(bottom = 80.dp),
@@ -75,7 +90,7 @@ fun CreateOrderContent(
                         val filtered = input.filter { it.isDigit() }.take(11)
                         onAction(CreateOrderScreenActions.OnCustomerPhoneChanged(filtered))
                     },
-                    label = "",
+                    label = stringResource(Res.string.phone_number),
                     error = viewState.customerPhoneError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     minLines = 1,
@@ -86,7 +101,7 @@ fun CreateOrderContent(
                 OrderTextField(
                     value = viewState.customerAddress,
                     onValueChange = { onAction(CreateOrderScreenActions.OnCustomerAddressChanged(it)) },
-                    label = "",
+                    label = stringResource(Res.string.delivery_address),
                     error = viewState.customerAddressError,
                     minLines = 2,
                     modifier = Modifier.focusRequester(addressFocusRequester)
@@ -99,7 +114,7 @@ fun CreateOrderContent(
                             .take(7)
                         onAction(CreateOrderScreenActions.OnCollectionAmountChanged(filtered))
                     },
-                    label = "",
+                    label = stringResource(Res.string.collection_amount),
                     error = viewState.collectionAmountError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     minLines = 1,
@@ -114,7 +129,7 @@ fun CreateOrderContent(
                             .take(7)
                         onAction(CreateOrderScreenActions.OnDeliveryFeesChanged(filtered))
                     },
-                    label = "",
+                    label = stringResource(Res.string.delivery_fees),
                     error = viewState.deliveryFeesError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     minLines = 1,
@@ -129,7 +144,7 @@ fun CreateOrderContent(
                             onAction(CreateOrderScreenActions.OnNoteChanged(it))
                         }
                     },
-                    label = "",
+                    label = stringResource(Res.string.order_notes),
                     error = null,
                     minLines = 1,
                     maxLines = 4,
@@ -140,6 +155,7 @@ fun CreateOrderContent(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .align(Alignment.BottomCenter),
                 color = Color.White,
                 shadowElevation = 2.dp
@@ -149,7 +165,7 @@ fun CreateOrderContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
-                    enabled = viewState.isValid(),
+                    enabled = viewState.isValid() && !viewState.isSubmitting,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = BrandColor,
                         disabledContainerColor = BrandColor.copy(alpha = 0.5f)
@@ -157,7 +173,7 @@ fun CreateOrderContent(
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Text(
-                        text = "",
+                        text = stringResource(Res.string.confirm_order),
                         style = mdSemiBold,
                         color = Color.White
                     )
@@ -168,12 +184,11 @@ fun CreateOrderContent(
 
     if (viewState.showConfirmDialog) {
         BaseDialog(
-            icon = null,
-            title = "",
-            message = "",
+            title = stringResource(Res.string.confirm_order_title),
+            message = stringResource(Res.string.confirm_order_message),
             dismissOnClickOutside = true,
-            primaryButtonText = "",
-            secondaryButtonText = "",
+            primaryButtonText = stringResource(Res.string.confirm),
+            secondaryButtonText = stringResource(Res.string.cancel),
             onPrimaryClick = {
                 onAction(CreateOrderScreenActions.OnConfirmSubmit)
             },

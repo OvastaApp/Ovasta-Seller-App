@@ -43,6 +43,7 @@ import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrdersS
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreen
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewModel
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletScreen
+import com.ovasta.sellers.platform.PlatformBackHandler
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
 import com.ovasta.sellers.ui.theme.OvastaSellersTheme
 import org.koin.compose.koinInject
@@ -72,6 +73,11 @@ fun AppNavHost(modifier: Modifier = Modifier) {
     }
 
     CompositionLocalProvider(LocalNavigator provides navigator) {
+        PlatformBackHandler(
+            enabled = backStack.size > 1,
+            onBack = { navigator.pop() }
+        )
+
         Scaffold(
             bottomBar = {
                 if (currentScreen is AppRoute.Home || currentScreen is AppRoute.Profile) {

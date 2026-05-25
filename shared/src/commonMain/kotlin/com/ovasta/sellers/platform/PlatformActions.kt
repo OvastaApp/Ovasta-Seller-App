@@ -1,7 +1,11 @@
 package com.ovasta.sellers.platform
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+
+@Composable
+expect fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit)
 
 expect fun showPlatformToast(message: String)
 

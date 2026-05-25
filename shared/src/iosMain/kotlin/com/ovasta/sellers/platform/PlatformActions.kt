@@ -1,5 +1,6 @@
 package com.ovasta.sellers.platform
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,10 @@ import platform.AVFAudio.AVAudioSessionCategoryPlayback
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+
+@Composable
+actual fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit) {
+}
 
 actual fun showPlatformToast(message: String) {
     val alert = UIAlertController.alertControllerWithTitle(

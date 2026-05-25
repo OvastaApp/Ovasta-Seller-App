@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.sdp)
             implementation(libs.ssp)
             implementation(libs.firebase.messaging)
+            implementation(libs.androidx.activity.compose)
         }
 
         iosMain.dependencies {
@@ -90,6 +91,12 @@ android {
             consumerProguardFiles("proguard-rules.pro")
         }
     }
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.ovasta.sellers.resources"
+    generateResClass = always
 }
 
 kotlin.sourceSets.all {
