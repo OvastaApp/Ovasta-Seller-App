@@ -1,8 +1,12 @@
 package com.ovasta.sellers.presentation.home.presentation.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.logout
+import com.ovasta.sellers.resources.logout_message
+import com.ovasta.sellers.resources.ok
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LogoutDialog(
@@ -12,9 +16,9 @@ fun LogoutDialog(
 ) {
     if (isVisible == true) {
         BaseDialog(
-            title = "",
-            message = "",
-            primaryButtonText = "",
+            title = stringResource(Res.string.logout),
+            message = stringResource(Res.string.logout_message),
+            primaryButtonText = stringResource(Res.string.ok),
             onPrimaryClick = {
                 onConfirm()
             },
@@ -23,13 +27,4 @@ fun LogoutDialog(
             }
         )
     }
-}
-@Preview
-@Composable
-fun PreviewLogoutDialog() {
-    LogoutDialog(
-        isVisible = true,
-        onConfirm = {},
-        onDismiss = {}
-    )
 }

@@ -21,6 +21,9 @@ class OrderHistoryViewModel(
             OrderHistoryAction.LoadOrderHistory -> {
                 getLastOrders()
             }
+            OrderHistoryAction.RefreshHistory -> {
+                getLastOrders()
+            }
         }
     }
 

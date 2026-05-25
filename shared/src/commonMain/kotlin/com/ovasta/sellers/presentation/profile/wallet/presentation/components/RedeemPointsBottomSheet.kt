@@ -14,8 +14,14 @@ import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.smSemiBold
 import com.ovasta.sellers.base.xsMedium
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.confirm
+import com.ovasta.sellers.resources.convert_to_money
+import com.ovasta.sellers.resources.mini_redeem_message
+import com.ovasta.sellers.resources.point
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletAction
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewState
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +49,7 @@ fun RedeemPointsBottomSheet(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "convert_to_money",
+                text = stringResource(Res.string.convert_to_money),
                 style = mdSemiBold,
                 color = Color.Black
             )
@@ -51,7 +57,7 @@ fun RedeemPointsBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "mini_redeem_message $min",
+                text = stringResource(Res.string.mini_redeem_message, min.toString()),
                 style = xsMedium,
                 color = Color.Gray
             )
@@ -59,7 +65,7 @@ fun RedeemPointsBottomSheet(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "$currentValue point",
+                text = "$currentValue ${stringResource(Res.string.point)}",
                 style = smSemiBold,
                 color = Primary
             )
@@ -114,7 +120,7 @@ fun RedeemPointsBottomSheet(
                 )
             ) {
                 Text(
-                    text = "confirm",
+                    text = stringResource(Res.string.confirm),
                     style = smMedium,
                     color = Color.White
                 )

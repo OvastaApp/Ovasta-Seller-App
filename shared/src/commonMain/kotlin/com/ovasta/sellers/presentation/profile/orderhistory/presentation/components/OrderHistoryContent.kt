@@ -28,6 +28,16 @@ import com.ovasta.sellers.presentation.home.data.model.OrderSteps
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
 import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryAction
 import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewState
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.last_orders
+import com.ovasta.sellers.resources.no_orders_yet
+import com.ovasta.sellers.resources.price_currency
+import com.ovasta.sellers.resources.status_pending
+import com.ovasta.sellers.resources.status_assigned
+import com.ovasta.sellers.resources.status_picked
+import com.ovasta.sellers.resources.status_delivered
+import com.ovasta.sellers.resources.status_cancelled
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +57,7 @@ fun OrderHistoryContent(
                 shadowElevation = 2.dp, color = Color.White
             ) {
                 CenteredTextAppBar(
-                    "last_orders",
+                    stringResource(Res.string.last_orders),
                     onBackButtonPressed = { onNavigateBack() })
             }
         }) { paddingValues ->
@@ -73,7 +83,7 @@ fun OrderHistoryContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "no_orders_yet",
+                                text = stringResource(Res.string.no_orders_yet),
                                 style = mdRegular.copy(color = Gray500)
                             )
                         }
@@ -156,7 +166,7 @@ private fun DeliveryOrderCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${order.deliveryPrice} EGP",
+                            text = stringResource(Res.string.price_currency, order.deliveryPrice.toString()),
                             style = smSemiBold,
                             maxLines = 1
                         )
@@ -171,7 +181,7 @@ private fun DeliveryOrderCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${order.totalPrice} EGP",
+                            text = stringResource(Res.string.price_currency, order.totalPrice.toString()),
                             style = smSemiBold,
                             maxLines = 1
                         )
@@ -243,11 +253,11 @@ private fun DeliveryOrderCard(
 private fun StatusBadge(statusId: Int) {
     val stepId = fromStatusId(statusId)
     val (text, color) = when (stepId) {
-        OrderSteps.Pending -> Pair("status_pending", Color.Gray)
-        OrderSteps.Assigned -> Pair("status_assigned", Primary)
-        OrderSteps.Picked -> Pair("status_picked", Amber)
-        OrderSteps.Delivered -> Pair("status_delivered", Green)
-        OrderSteps.Canceled -> Pair("status_cancelled", Color.Red)
+        OrderSteps.Pending -> Pair(stringResource(Res.string.status_pending), Color.Gray)
+        OrderSteps.Assigned -> Pair(stringResource(Res.string.status_assigned), Primary)
+        OrderSteps.Picked -> Pair(stringResource(Res.string.status_picked), Amber)
+        OrderSteps.Delivered -> Pair(stringResource(Res.string.status_delivered), Green)
+        OrderSteps.Canceled -> Pair(stringResource(Res.string.status_cancelled), Color.Red)
         else -> Pair("-", Color.Gray)
     }
     Surface(

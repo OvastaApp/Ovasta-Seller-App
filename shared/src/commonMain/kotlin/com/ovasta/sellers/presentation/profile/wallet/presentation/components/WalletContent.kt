@@ -26,9 +26,27 @@ import com.ovasta.sellers.presentation.profile.wallet.data.TransactionsSteps
 import com.ovasta.sellers.presentation.profile.wallet.data.WithdrawRequests
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletAction
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewState
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.approved
+import com.ovasta.sellers.resources.back
+import com.ovasta.sellers.resources.confirm
+import com.ovasta.sellers.resources.convert_to_money
+import com.ovasta.sellers.resources.empty_wallet_transactions
+import com.ovasta.sellers.resources.empty_withdraw_history
+import com.ovasta.sellers.resources.ok
+import com.ovasta.sellers.resources.point
+import com.ovasta.sellers.resources.price_currency
+import com.ovasta.sellers.resources.rejected
+import com.ovasta.sellers.resources.status_pending
+import com.ovasta.sellers.resources.success
+import com.ovasta.sellers.resources.the_points
+import com.ovasta.sellers.resources.wallet
+import com.ovasta.sellers.resources.wallet_balance
+import com.ovasta.sellers.resources.withdraw
+import com.ovasta.sellers.resources.withdraw_confirmation_message
+import com.ovasta.sellers.resources.withdraw_request_success
+import com.ovasta.sellers.resources.withdraw_requests
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,11 +75,10 @@ fun WalletContent(
 
     if (viewState.showWithdrawConfirmDialog) {
         BaseDialog(
-            title = "withdraw",
-            message = "withdraw_confirmation_message ${viewState.wallet?.walletBalance ?: 0.0}",
-            icon = Icons.Default.CheckCircle,
-            primaryButtonText = "confirm",
-            secondaryButtonText = "back",
+            title = stringResource(Res.string.withdraw),
+            message = stringResource(Res.string.withdraw_confirmation_message, (viewState.wallet?.walletBalance ?: 0.0).toString()),
+            primaryButtonText = stringResource(Res.string.confirm),
+            secondaryButtonText = stringResource(Res.string.back),
             onPrimaryClick = { onAction(WalletAction.ConfirmWithdraw) },
             onSecondaryClick = { onAction(WalletAction.DismissWithdrawDialog) }
         )
@@ -69,16 +86,16 @@ fun WalletContent(
 
     if (viewState.showWithdrawSuccessDialog) {
         BaseDialog(
-            title = "success",
-            message = "withdraw_request_success",
-            primaryButtonText = "ok",
+            title = stringResource(Res.string.success),
+            message = stringResource(Res.string.withdraw_request_success),
+            primaryButtonText = stringResource(Res.string.ok),
             onPrimaryClick = { onAction(WalletAction.DismissSuccessDialog) }
         )
     }
 
     val tabs = listOf(
-        "the_points",
-        "withdraw_requests"
+        stringResource(Res.string.the_points),
+        stringResource(Res.string.withdraw_requests)
     )
 
     Scaffold(
@@ -89,7 +106,7 @@ fun WalletContent(
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {
                 CenteredTextAppBar(
-                    "wallet",
+                    stringResource(Res.string.wallet),
                     onBackButtonPressed = { onNavigateBack() }
                 )
             }
@@ -122,9 +139,9 @@ fun WalletContent(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = "the_points",
-                                style = xsMedium,
+                        Text(
+                            text = stringResource(Res.string.the_points),
+                            style = xsMedium,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -145,7 +162,7 @@ fun WalletContent(
                                 contentPadding = PaddingValues(vertical = 8.dp)
                             ) {
                                 Text(
-                                    text = "convert_to_money",
+                                    text = stringResource(Res.string.convert_to_money),
                                     style = xsMedium
                                 )
                             }
@@ -166,13 +183,13 @@ fun WalletContent(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "wallet_balance",
+                                text = stringResource(Res.string.wallet_balance),
                                 style = xsMedium,
                                 color = Color.White.copy(alpha = 0.8f)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "${wallet.walletBalance ?: 0} EGP",
+                                text = stringResource(Res.string.price_currency, (wallet.walletBalance ?: 0).toString()),
                                 style = mdSemiBold,
                                 color = Color.White
                             )
@@ -188,7 +205,7 @@ fun WalletContent(
                                 contentPadding = PaddingValues(vertical = 8.dp)
                             ) {
                                 Text(
-                                    text = "withdraw",
+                                    text = stringResource(Res.string.withdraw),
                                     style = xsMedium
                                 )
                             }
@@ -248,7 +265,7 @@ fun WalletContent(
 @Composable
 fun WalletWithdrawList(transactions: List<WithdrawRequests>) {
     if (transactions.isEmpty()) {
-        EmptyState(text = "empty_wallet_transactions")
+        EmptyState(text = stringResource(Res.string.empty_wallet_transactions))
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -294,7 +311,7 @@ fun PointsItem(transaction: PointsHistory) {
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${transaction.amount ?: 0} point",
+                    text = "${transaction.amount ?: 0} ${stringResource(Res.string.point)}",
                     style = smSemiBold,
                     color = Primary
                 )
@@ -312,7 +329,7 @@ fun PointsItem(transaction: PointsHistory) {
 @Composable
 fun PointsHistoryList(requests: List<PointsHistory>) {
     if (requests.isEmpty()) {
-        EmptyState(text = "empty_withdraw_history")
+        EmptyState(text = stringResource(Res.string.empty_withdraw_history))
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -341,7 +358,7 @@ fun WithdrawItem(request: WithdrawRequests) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "#${request.id}", style = smSemiBold, color = Color.Black)
-                Text(text = "${request.amount ?: 0} EGP", style = smSemiBold, color = Primary)
+                Text(text = stringResource(Res.string.price_currency, (request.amount ?: 0).toString()), style = smSemiBold, color = Primary)
             }
             Spacer(modifier = Modifier.height(6.dp))
             Row(
@@ -368,10 +385,10 @@ fun WithdrawItem(request: WithdrawRequests) {
 fun StatusChip(status: Int) {
     val stepId = TransactionsSteps.fromStatusId(status)
     val (text, color) = when (stepId) {
-        TransactionsSteps.Pending -> Pair("status_pending", Amber)
-        TransactionsSteps.Approved -> Pair("approved", Green)
-        TransactionsSteps.Rejected -> Pair("rejected", Color.Red)
-        else -> "Unknown" to Gray500
+        TransactionsSteps.Pending -> Pair(stringResource(Res.string.status_pending), Amber)
+        TransactionsSteps.Approved -> Pair(stringResource(Res.string.approved), Green)
+        TransactionsSteps.Rejected -> Pair(stringResource(Res.string.rejected), Color.Red)
+        else -> stringResource(Res.string.rejected) to Gray500
     }
     Box(
         modifier = Modifier

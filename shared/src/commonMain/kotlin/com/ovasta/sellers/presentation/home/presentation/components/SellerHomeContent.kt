@@ -36,6 +36,24 @@ import com.ovasta.sellers.presentation.home.data.model.OrderSteps
 import com.ovasta.sellers.presentation.home.data.model.OrderSteps.Companion.fromStatusId
 import com.ovasta.sellers.presentation.home.presentation.HomeScreenActions
 import com.ovasta.sellers.presentation.home.presentation.HomeViewState
+import com.ovasta.sellers.platform.openPhoneDialer
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.are_you_sure_you_want_to_cancel_order
+import com.ovasta.sellers.resources.cancel_order
+import com.ovasta.sellers.resources.create_order
+import com.ovasta.sellers.resources.home
+import com.ovasta.sellers.resources.my_orders
+import com.ovasta.sellers.resources.no
+import com.ovasta.sellers.resources.no_orders_yet
+import com.ovasta.sellers.resources.points_rate
+import com.ovasta.sellers.resources.price_currency
+import com.ovasta.sellers.resources.status_pending
+import com.ovasta.sellers.resources.status_assigned
+import com.ovasta.sellers.resources.status_picked
+import com.ovasta.sellers.resources.status_delivered
+import com.ovasta.sellers.resources.status_cancelled
+import com.ovasta.sellers.resources.yes
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,10 +68,9 @@ fun SellerHomeContent(
         modifier = Modifier,
         topBar = {
             CenteredTextAppBar(
-                title = "", showBackButton = false
+                title = stringResource(Res.string.home), showBackButton = false
             )
         },
-        floatingActionButton = {},
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -82,21 +99,21 @@ fun SellerHomeContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "",
-                            style = lgSemiBold
+                    Text(
+                        text = stringResource(Res.string.my_orders),
+                        style = lgSemiBold
+                    )
+                    Button(
+                        onClick = { onAction(HomeScreenActions.CreateOrder) },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
+                        contentPadding = PaddingValues(
+                            horizontal = 12.dp,
+                            vertical = 6.dp
                         )
-                        Button(
-                            onClick = { onAction(HomeScreenActions.CreateOrder) },
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                            contentPadding = PaddingValues(
-                                horizontal = 12.dp,
-                                vertical = 6.dp
-                            )
-                        ) {
-                            Text(
-                                text = "",
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.create_order),
                                 style = xsMedium.copy(color = Color.White)
                             )
                         }
@@ -114,7 +131,7 @@ fun SellerHomeContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "",
+                                text = stringResource(Res.string.no_orders_yet),
                                 style = mdRegular.copy(color = Gray500)
                             )
                         }
@@ -127,7 +144,7 @@ fun SellerHomeContent(
                         DeliveryOrderCard(
                             order = order,
                             onClick = { onAction(HomeScreenActions.OrderClicked(order.id)) },
-                            onCallCourier = {},
+                            onCallCourier = { phone -> openPhoneDialer(phone) },
                             onCancelOrder = {
                                 cancelOrderId = order.id
                                 showCancelDialog = true
@@ -145,10 +162,10 @@ fun SellerHomeContent(
     // Cancel confirmation dialog
     if (showCancelDialog && cancelOrderId != null) {
         BaseDialog(
-            title = "",
-            message = "",
-            primaryButtonText = "",
-            secondaryButtonText = "",
+            title = stringResource(Res.string.cancel_order),
+            message = stringResource(Res.string.are_you_sure_you_want_to_cancel_order),
+            primaryButtonText = stringResource(Res.string.yes),
+            secondaryButtonText = stringResource(Res.string.no),
             onPrimaryClick = {
                 onAction(HomeScreenActions.CancelOrder(cancelOrderId!!))
                 showCancelDialog = false
@@ -215,7 +232,7 @@ private fun PointsCard(homeInfo: HomeInfo?, onClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "",
+                text = stringResource(Res.string.points_rate),
                 style = xsRegular.copy(color = Gray500)
             )
         }
@@ -252,7 +269,7 @@ private fun DeliveryOrderCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "",
+                        text = "#${order.id}",
                         style = mdSemiBold.copy(color = Primary)
                     )
                     StatusBadge(order.statusId)
@@ -278,7 +295,7 @@ private fun DeliveryOrderCard(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "",
+                            text = stringResource(Res.string.price_currency, order.deliveryPrice.toString()),
                             style = smSemiBold,
                             maxLines = 1
                         )
@@ -286,7 +303,7 @@ private fun DeliveryOrderCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "",
+                            text = stringResource(Res.string.price_currency, order.totalPrice.toString()),
                             style = smSemiBold,
                             maxLines = 1
                         )
@@ -343,7 +360,7 @@ private fun DeliveryOrderCard(
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = "",
+                            text = stringResource(Res.string.cancel_order),
                             style = xsMedium.copy(color = Color.Red),
                             maxLines = 1
                         )
@@ -358,11 +375,11 @@ private fun DeliveryOrderCard(
 private fun StatusBadge(statusId: Int) {
     val stepId = fromStatusId(statusId)
     val (text, color) = when (stepId) {
-        OrderSteps.Pending -> Pair("", Color.Gray)
-        OrderSteps.Assigned -> Pair("", Primary)
-        OrderSteps.Picked -> Pair("", Amber)
-        OrderSteps.Delivered -> Pair("", Green)
-        OrderSteps.Canceled -> Pair("", Color.Red)
+        OrderSteps.Pending -> Pair(stringResource(Res.string.status_pending), Color.Gray)
+        OrderSteps.Assigned -> Pair(stringResource(Res.string.status_assigned), Primary)
+        OrderSteps.Picked -> Pair(stringResource(Res.string.status_picked), Amber)
+        OrderSteps.Delivered -> Pair(stringResource(Res.string.status_delivered), Green)
+        OrderSteps.Canceled -> Pair(stringResource(Res.string.status_cancelled), Color.Red)
         else -> Pair("-", Color.Gray)
     }
     Surface(

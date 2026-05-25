@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,11 +18,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.ovasta.sellers.base.*
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.data.User
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreenActions
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewState
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.last_orders
+import com.ovasta.sellers.resources.logout
+import com.ovasta.sellers.resources.logout_message
+import com.ovasta.sellers.resources.no
+import com.ovasta.sellers.resources.price_currency
+import com.ovasta.sellers.resources.profile
+import com.ovasta.sellers.resources.profile_image
+import com.ovasta.sellers.resources.the_points
+import com.ovasta.sellers.resources.wallet
+import com.ovasta.sellers.resources.yes
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,13 +49,13 @@ fun ProfileContent(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
-                title = "profile",
+                title = stringResource(Res.string.profile),
                 showBackButton = false,
                 actions = {
                     IconButton(onClick = { showLogoutDialog = true }) {
                         Icon(
-                            imageVector = Icons.Default.ExitToApp,
-                            contentDescription = "Logout",
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                            contentDescription = stringResource(Res.string.logout),
                             tint = Color.Black
                         )
                     }
@@ -62,7 +75,7 @@ fun ProfileContent(
 
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = "profile_image",
+                contentDescription = stringResource(Res.string.profile_image),
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
@@ -85,18 +98,28 @@ fun ProfileContent(
                 textAlign = TextAlign.Center
             )
 
+            if (viewState.points > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "${stringResource(Res.string.the_points)}: ${viewState.points.toLong()}",
+                    style = smNormal,
+                    color = Primary,
+                    textAlign = TextAlign.Center
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             ProfileInfoCard(
-                title = "wallet",
-                value = "${viewState.walletBalance} EGP",
+                title = stringResource(Res.string.wallet),
+                value = stringResource(Res.string.price_currency, viewState.walletBalance.toString()),
                 onClick = { onAction(ProfileScreenActions.OnWalletClicked) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             ProfileInfoCard(
-                title = "last_orders",
+                title = stringResource(Res.string.last_orders),
                 onClick = { onAction(ProfileScreenActions.OnOrderHistoryTabClicked) }
             )
         }
@@ -104,10 +127,10 @@ fun ProfileContent(
 
     if (showLogoutDialog) {
         BaseDialog(
-            title = "logout",
-            message = "logout_message",
-            primaryButtonText = "yes",
-            secondaryButtonText = "no",
+            title = stringResource(Res.string.logout),
+            message = stringResource(Res.string.logout_message),
+            primaryButtonText = stringResource(Res.string.yes),
+            secondaryButtonText = stringResource(Res.string.no),
             onPrimaryClick = {
                 showLogoutDialog = false
                 onAction(ProfileScreenActions.OnLogout)

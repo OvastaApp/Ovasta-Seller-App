@@ -46,6 +46,17 @@ import com.ovasta.sellers.base.components.sharedComposable.BaseScreen
 import com.ovasta.sellers.base.mdMedium
 import com.ovasta.sellers.base.mdRegular
 import com.ovasta.sellers.base.smMedium
+import com.ovasta.sellers.resources.Res
+import com.ovasta.sellers.resources.enter_password
+import com.ovasta.sellers.resources.enter_your_phone_number
+import com.ovasta.sellers.resources.invalid_password
+import com.ovasta.sellers.resources.invalid_phone_number
+import com.ovasta.sellers.resources.login
+import com.ovasta.sellers.resources.password
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.IconButton
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 object LoginContentTestTag {
@@ -89,6 +100,7 @@ private fun LoginContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
     ) {
 
         Column(
@@ -101,7 +113,7 @@ private fun LoginContent(
         ) {
             Text(
                 modifier = Modifier.padding(top = 24.dp),
-                text = "placeholder_text",
+                text = stringResource(Res.string.enter_your_phone_number),
                 style = smMedium
             )
 
@@ -137,9 +149,21 @@ private fun LoginContent(
                 ),
                 placeholder = {
                     Text(
-                        text = "01xxxxxxxxx",
+                        text = stringResource(Res.string.password),
                         style = mdRegular
                     )
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible },
+                        modifier = Modifier.testTag(LoginContentTestTag.IC_PASSWORD_VISIBILITY)
+                    ) {
+                        Text(
+                            text = if (passwordVisible) "Hide" else "Show",
+                            style = mdRegular,
+                            color = Gray200
+                        )
+                    }
                 },
                 maxLines = 1
             )
@@ -156,7 +180,7 @@ private fun LoginContent(
 
             Text(
                 modifier = Modifier.padding(top = 16.dp),
-                text = "placeholder_text",
+                text = stringResource(Res.string.enter_password),
                 style = smMedium
             )
 
@@ -192,8 +216,8 @@ private fun LoginContent(
                     cursorColor = Color.Black
                 ),
                 placeholder = {
-                    Text(
-                        text = "placeholder_text",
+                Text(
+                    text = stringResource(Res.string.invalid_phone_number),
                         style = mdRegular
                     )
                 },
@@ -212,7 +236,7 @@ private fun LoginContent(
 
             if (!viewState.isPasswordValid) {
                 Text(
-                    text = "placeholder_text",
+                    text = stringResource(Res.string.invalid_password),
                     color = Primary,
                     modifier = Modifier
                         .testTag(LoginContentTestTag.TXT_INVALID_PASSWORD)
@@ -229,6 +253,7 @@ private fun LoginContent(
                     width = 1.dp,
                     color = Gray200
                 )
+                .navigationBarsPadding()
                 .padding(
                     end = 16.dp,
                     start = 16.dp,
@@ -250,7 +275,7 @@ private fun LoginContent(
                 enabled = viewState.isLoginButtonEnabled
             ) {
                 Text(
-                    text = "placeholder_text",
+                    text = stringResource(Res.string.login),
                     style = mdMedium.copy(color = Base_white)
                 )
             }
