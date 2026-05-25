@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Ovasta Sellers"
 include(":app")
+include(":shared")
