@@ -158,132 +158,21 @@ git commit -m "chore: add KMP and Compose Multiplatform dependencies"
 - Create: `shared/src/androidMain/kotlin/com/ovasta/sellers/Platform.kt`
 - Create: `shared/src/iosMain/kotlin/com/ovasta/sellers/Platform.kt`
 
-- [ ] **Step 1: Create `shared/build.gradle.kts`**
+- [x] **Step 1: Create `shared/build.gradle.kts`**
 
-```kotlin
-plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.multiplatform.library)
-    alias(libs.plugins.compose.multiplatform)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
-}
+Created with KMP targets, Compose Multiplatform, Ktor, Koin, DataStore, Coil dependencies.
 
-kotlin {
-    androidLibrary {
-        namespace = "com.ovasta.sellers.shared"
-        compileSdk = 36
-        minSdk = 24
-    }
+- [x] **Step 2: Create expect/actual Platform declarations**
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+Created `Platform.kt` expect/actual for Android and iOS platforms.
 
-    sourceSets {
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.material)
-            implementation(compose.components.resources)
-            implementation(compose.ui)
-            implementation(compose.components.uiToolingPreview)
+- [x] **Step 3: Create `shared/src/commonMain/resources/` directory**
 
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.logging)
-
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.serialization.core)
-
-            implementation(libs.androidx.datastore.preferences.core)
-            implementation(libs.androidx.datastore.core.okio)
-
-            implementation(libs.androidx.lifecycle.viewmodel.compose.mp)
-            implementation(libs.androidx.lifecycle.runtime.compose.mp)
-
-            implementation(libs.androidx.navigation.compose.mp)
-
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor)
-        }
-
-        androidMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.koin.android)
-            implementation(libs.androidx.core.ktx)
-            implementation(libs.sdp)
-            implementation(libs.ssp)
-        }
-
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
-    }
-}
-
-android {
-    namespace = "com.ovasta.sellers.shared"
-    compileSdk = 36
-    defaultConfig { minSdk = 24 }
-}
-```
-
-- [ ] **Step 2: Create expect/actual Platform declarations**
-
-`shared/src/commonMain/kotlin/com/ovasta/sellers/Platform.kt`:
-```kotlin
-package com.ovasta.sellers
-
-expect fun getPlatform(): Platform
-
-interface Platform {
-    val name: String
-}
-```
-
-`shared/src/androidMain/kotlin/com/ovasta/sellers/Platform.kt`:
-```kotlin
-package com.ovasta.sellers
-
-actual fun getPlatform(): Platform = AndroidPlatform()
-
-class AndroidPlatform : Platform {
-    override val name: String = "Android ${android.os.Build.VERSION.SDK_INT}"
-}
-```
-
-`shared/src/iosMain/kotlin/com/ovasta/sellers/Platform.kt`:
-```kotlin
-package com.ovasta.sellers
-
-import platform.UIKit.UIDevice
-
-actual fun getPlatform(): Platform = IOSPlatform()
-
-class IOSPlatform : Platform {
-    override val name: String = "${UIDevice.currentDevice.systemName()} ${UIDevice.currentDevice.systemVersion}"
-}
-```
-
-- [ ] **Step 3: Create `shared/src/commonMain/resources/` directory**
-
-- [ ] **Step 4: Verify build**
+- [x] **Step 4: Verify build**
 
 Run: `./gradlew :shared:build`
 
-- [ ] **Step 5: Commit**
-
-```bash
-git add shared/
-git commit -m "feat: create shared KMP module"
-```
+- [x] **Step 5: Commit**
 
 **Notes:**
 
@@ -841,112 +730,6 @@ Created `iosApp/Podfile` with FirebaseCore, FirebaseAuth, FirebaseFirestore, Fir
 - [x] **Step 7: Verify compilation**
 
 Verified compilation on both Android and iOS targets.
-iosApp/
-├── iosApp.xcodeproj/
-│   └── project.pbxproj
-├── iosApp/
-│   ├── iOSApp.swift
-│   ├── ContentView.swift
-│   ├── Assets.xcassets/
-│   │   └── Contents.json
-│   └── Info.plist
-├── Podfile
-└── iosApp.xcworkspace/
-```
-
-- [ ] **Step 2: Create iOSApp.swift**
-
-```swift
-import SwiftUI
-import ComposeMultiplatform
-
-@main
-struct iOSApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
-}
-```
-
-- [ ] **Step 3: Create ContentView.swift**
-
-```swift
-import SwiftUI
-import ComposeMultiplatform
-
-struct ContentView: View {
-    var body: some View {
-        ComposeView()
-            .ignoresSafeArea(.all)
-    }
-}
-
-struct ComposeView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
-    }
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
-}
-```
-
-- [ ] **Step 4: Create MainViewController in shared/iosMain**
-
-```kotlin
-// shared/src/iosMain/kotlin/com/ovasta/sellers/MainViewController.kt
-fun MainViewController(): UIViewController = ComposeUIViewController {
-    App()
-}
-```
-
-- [ ] **Step 5: Create shared App composable**
-
-```kotlin
-// shared/src/commonMain/kotlin/com/ovasta/sellers/App.kt
-@Composable
-fun App() {
-    OvastaSellersTheme {
-        AppNavHost()
-    }
-}
-```
-
-- [ ] **Step 6: Configure Xcode build phases**
-
-Add "Run Script" build phase:
-```bash
-"$SRCROOT/../gradlew" -p "$SRCROOT/.." :shared:embedAndSignAppleFrameworkForXcode
-```
-
-Link the generated `.framework` to the iOS app target.
-
-- [ ] **Step 7: Add Firebase iOS SDK**
-
-Create `iosApp/Podfile`:
-```ruby
-platform :ios, '16.0'
-target 'iosApp' do
-  pod 'FirebaseCore'
-  pod 'FirebaseAuth'
-  pod 'FirebaseFirestore'
-  pod 'FirebaseMessaging'
-  pod 'FirebaseCrashlytics'
-end
-```
-
-Run `pod install`
-
-- [ ] **Step 8: Verify iOS app builds**
-
-Open `iosApp/iosApp.xcworkspace` in Xcode, build and run on iOS Simulator
-
-- [ ] **Step 9: Commit**
-
-```bash
-git add iosApp/ shared/
-git commit -m "feat: add iOS app shell"
-```
 
 **Notes:**
 
