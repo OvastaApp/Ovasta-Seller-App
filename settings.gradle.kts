@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Ovasta Sellers"
+rootProject.name = "OvastaSellers"
 include(":app")
+include(":shared")

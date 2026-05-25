@@ -1,19 +1,15 @@
 package com.ovasta.sellers.base.ext
 
-import android.content.Context
-import android.widget.Toast
-
+import com.ovasta.sellers.platform.showPlatformToast
 
 object ToastHelper {
-    fun showLongToaster(context: Context?, message: String) {
-        if (context != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        }
+    fun showLongToaster(message: String) {
+        showPlatformToast(message)
     }
 
-    fun showShortToaster(context: Context?, message: String?) {
-        if (context != null && message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    fun showShortToaster(message: String?) {
+        if (message != null) {
+            showPlatformToast(message)
         }
     }
 }

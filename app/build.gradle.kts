@@ -1,7 +1,3 @@
-import org.gradle.kotlin.dsl.androidTestImplementation
-import org.gradle.kotlin.dsl.implementation
-
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,9 +6,7 @@ plugins {
     alias(libs.plugins.gms.google.service)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.firebase.crashlytics)
-
 }
-
 
 android {
     namespace = "com.ovasta.sellers"
@@ -22,12 +16,10 @@ android {
         applicationId = "com.ovasta.sellers"
         minSdk = 24
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.0.6"
+        versionCode = 7
+        versionName = "1.0.7"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
-
 
     buildTypes {
         release {
@@ -39,8 +31,8 @@ android {
             )
         }
         debug {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -64,26 +56,30 @@ android {
 }
 
 dependencies {
+    implementation(project(":shared"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-//    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 
-    androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
 
-    testImplementation(libs.junit)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.datastore.preferences)
+
+    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -91,58 +87,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     testImplementation(kotlin("test"))
-
-
-    //Jetpack
-    implementation(libs.lifecycle.extensions)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.runtime.livedata)
-    implementation(libs.compose.material)
-    implementation(libs.constraintlayout.compose)
-    implementation(libs.lifecycle.viewmodel.compose)
-
-    implementation(libs.coil.compose)
-
-    implementation(libs.sdp)
-    implementation(libs.ssp)
-
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.google.gson)
-
-    implementation(libs.androidx.datastore.preferences)
-
-
-    // retrofit
-    implementation(libs.squareup.retrofit)
-    implementation(libs.squareup.converter.gson)
-
-    //OKHTTP
-    implementation(libs.squareup.okhttp)
-    implementation(libs.logging.interceptor)
-
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.coil.compose)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.messaging)
-    implementation(libs.firebase.auth)
-    implementation(libs.coil.kt.coil.compose)
-    implementation(libs.security.crypto)
-
-    implementation (libs.play.services.location)
-
-    implementation(libs.paging.runtime)
-    implementation(libs.paging.compose)
 }
