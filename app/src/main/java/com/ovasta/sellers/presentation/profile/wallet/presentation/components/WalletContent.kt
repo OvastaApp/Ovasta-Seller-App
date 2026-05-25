@@ -1,6 +1,5 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation.components
 
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +37,7 @@ import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.xsRegular
 import com.ovasta.sellers.presentation.profile.wallet.data.PointsHistory
+import com.ovasta.sellers.platform.showPlatformToast
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -49,8 +49,6 @@ fun WalletContent(
     onAction: (WalletAction) -> Unit,
     onNavigateBack: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-
     LaunchedEffect(Unit) {
         onAction(WalletAction.LoadWalletTransactions)
     }
@@ -58,7 +56,7 @@ fun WalletContent(
     // Show toast message
     LaunchedEffect(viewState.toastMessage) {
         viewState.toastMessage?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            showPlatformToast(it)
             onAction(WalletAction.DismissToast)
         }
     }
