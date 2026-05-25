@@ -1,9 +1,19 @@
 package com.ovasta.sellers.base.di
 
-import com.ovasta.sellers.platform.FirebaseProvider
-import org.koin.core.module.Module
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.memoryCacheSettings
 import org.koin.dsl.module
 
-val firebaseModule: Module = module {
-    single { FirebaseProvider() }
+val firebaseModule = module {
+
+    single<FirebaseFirestore> {
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setLocalCacheSettings(memoryCacheSettings {})
+            .build()
+
+        FirebaseFirestore.getInstance().apply {
+            firestoreSettings = settings
+        }
+    }
 }

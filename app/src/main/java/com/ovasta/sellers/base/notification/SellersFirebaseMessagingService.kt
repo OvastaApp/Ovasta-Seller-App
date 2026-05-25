@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.ovasta.sellers.data.notification.IFcmTokenRemoteDataSource
+import com.ovasta.sellers.data.notification.FcmTokenApi
+import com.ovasta.sellers.data.notification.FcmTokenRequest
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ class SellersFirebaseMessagingService : FirebaseMessagingService() {
         private const val TAG = "FCMService"
     }
 
-    private val fcmTokenDataSource: IFcmTokenRemoteDataSource by inject()
+    private val fcmTokenApi: FcmTokenApi by inject()
     private val dataStore: DataStore<SessionPreferences> by inject()
 
     override fun onNewToken(token: String) {
@@ -69,7 +70,7 @@ class SellersFirebaseMessagingService : FirebaseMessagingService() {
             return
         }
         try {
-            fcmTokenDataSource.updateFcmToken(token)
+            fcmTokenApi.updateFcmToken(FcmTokenRequest(token))
             Log.d(TAG, "Token sent to server successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to send token to server", e)
