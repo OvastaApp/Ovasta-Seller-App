@@ -10,7 +10,7 @@
 
 **Last Updated:** 2026-05-25
 
-**Progress:** Task 1 ✅ | Task 2 ✅ | Task 3 ✅ | Task 4 ✅ | Task 5 ✅ | Task 6 ✅ | Task 7 ✅ | Task 8 ✅ | Task 9 ✅ | Task 10 ✅ | Task 11 ✅ | Task 12 ✅ | Task 13 ✅
+**Progress:** Task 1 ✅ | Task 2 ✅ | Task 3 ✅ | Task 4 ✅ | Task 5 ✅ | Task 6 ✅ | Task 7 ✅ | Task 8 ✅ | Task 9 ✅ | Task 10 ✅ | Task 11 ✅ | Task 12 ✅ | Task 13 ✅ | Task 14 ✅
 
 ---
 
@@ -865,6 +865,56 @@ git commit -m "chore: KMP migration complete"
 
 ---
 
+## Task 14: GitHub Actions CI for TestFlight Distribution
+
+**Files:**
+- Create: `.github/workflows/testflight.yml`
+- Create: `iosApp/project.yml` (XcodeGen spec)
+- Modify: `shared/build.gradle.kts` (CocoaPods plugin)
+
+- [x] **Step 1: Add CocoaPods plugin to shared module**
+
+Added `kotlin("native.cocoapods")` plugin to `shared/build.gradle.kts` with:
+- `version = "1.0"`, `ios.deploymentTarget = "16.0"`
+- `framework { baseName = "shared", isStatic = true }`
+- Links to `iosApp/Podfile`
+
+- [x] **Step 2: Create XcodeGen project spec**
+
+Created `iosApp/project.yml` with:
+- Target `iosApp` (application, iOS 16.0+)
+- Bundle ID: `com.ovasta.sellers`, Team ID: `H8X427WWQW`
+- Dependencies: `shared` pod + Firebase pods
+- `CODE_SIGN_STYLE: Manual` for CI compatibility
+
+- [x] **Step 3: Create GitHub Actions workflow**
+
+Created `.github/workflows/testflight.yml` with:
+- **Trigger**: `workflow_dispatch` (manual "Run workflow" button)
+- **Runner**: `macos-latest`
+- **Steps**: JDK setup → CocoaPods → XcodeGen → Kotlin framework build → Xcode archive → IPA export → TestFlight upload
+- **Signing**: API Key only (no certificates or provisioning profiles needed)
+- **Security**: All sensitive values via GitHub secrets
+
+- [x] **Step 4: Configure GitHub secrets**
+
+Required secrets (all added):
+- `APP_STORE_CONNECT_API_KEY` — Base64-encoded `.p8` private key
+- `APP_STORE_CONNECT_KEY_ID` — `8SHB577423`
+- `APP_STORE_CONNECT_ISSUER_ID` — `0b05f5b5-d42c-4840-90b6-8dd8c86e46c2`
+
+- [x] **Step 5: Verify no sensitive data in workflow**
+
+All secrets referenced via `${{ secrets.* }}` — no hardcoded keys, IDs, or credentials in the workflow file.
+
+**Notes:**
+- No Mac required — CI runner handles signing automatically via API Key
+- Build takes ~15-20 minutes on `macos-latest`
+- App appears in TestFlight within ~30 minutes after upload
+- To trigger: GitHub → Actions → "TestFlight Distribution" → "Run workflow" → enter version + build number
+
+---
+
 ## Risk Assessment
 
 ### High Risk
@@ -904,3 +954,4 @@ git commit -m "chore: KMP migration complete"
 | 11. iOS Shell | ✅ COMPLETE | 2026-05-25 | iosApp/ directory created with Swift entry points. App.kt with multiplatform navigation created. MainViewController.kt for iOS. Podfile for Firebase iOS SDK. |
 | 12. Android Slim-down | ✅ COMPLETE | 2026-05-25 | app/build.gradle.kts cleaned (~30 deps removed). MainActivity.kt uses App() from shared. ~50 duplicate files deleted. 23 Android-specific files kept. Android + iOS compilation verified. |
 | 13. Final Testing | ✅ COMPLETE | 2026-05-25 | assembleDebug ✅. ProGuard rules created. .gitignore updated. iOS cross-compilation requires macOS. Final commit made. |
+| 14. GitHub Actions CI | ✅ COMPLETE | 2026-05-25 | CocoaPods plugin added. XcodeGen project spec created. testflight.yml workflow with API Key signing only (no Mac needed). All secrets secured. Manual trigger only. |

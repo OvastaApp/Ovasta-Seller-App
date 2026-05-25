@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.compose")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization)
+    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -16,6 +17,16 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    cocoapods {
+        version = "1.0"
+        ios.deploymentTarget = "16.0"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "shared"
+            isStatic = true
+        }
+    }
 
     sourceSets {
         commonMain.dependencies {
