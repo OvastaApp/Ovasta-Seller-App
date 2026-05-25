@@ -359,10 +359,11 @@ private fun DeliveryOrderCard(
                 }
 
                 // Note
-                if (!order.note.isNullOrEmpty()) {
+                val note = order.note
+                if (!note.isNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
                     Text(
-                        text = order.note,
+                        text = note,
                         style = xsMedium.copy(color = Gray500),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -370,7 +371,8 @@ private fun DeliveryOrderCard(
                 }
 
                 // Courier info
-                if (order.courier != null) {
+                val courier = order.courier
+                if (courier != null) {
                     Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
                     HorizontalDivider(color = Gray200)
                     Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
@@ -392,15 +394,16 @@ private fun DeliveryOrderCard(
                             )
                             Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
                             Text(
-                                text = "${order.courier.firstName} ${order.courier.lastName}",
+                                text = "${courier.firstName} ${courier.lastName}",
                                 style = smSemiBold,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        if (!order.courier.mobile.isNullOrEmpty()) {
+                        if (!courier.mobile.isNullOrEmpty()) {
+                            val courierMobile = courier.mobile
                             IconButton(
-                                onClick = { onCallCourier(order.courier.mobile) },
+                                onClick = { onCallCourier(courierMobile!!) },
                                 modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._28sdp))
                             ) {
                                 Icon(

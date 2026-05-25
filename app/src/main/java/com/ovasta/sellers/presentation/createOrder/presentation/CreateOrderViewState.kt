@@ -1,5 +1,7 @@
 package com.ovasta.sellers.presentation.createOrder.presentation
 
+import com.ovasta.sellers.presentation.createOrder.data.model.DeliveryTiming
+
 data class CreateOrderViewState(
     val customerPhone: String = "",
     val customerAddress: String = "",
@@ -31,10 +33,6 @@ data class CreateOrderViewState(
 
 
 )
-
-enum class DeliveryTiming {
-    NOW, LATER
-}
 
 // Extension function for validation
 fun CreateOrderViewState.isValid(): Boolean {

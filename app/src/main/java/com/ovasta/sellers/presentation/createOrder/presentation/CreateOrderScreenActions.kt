@@ -1,5 +1,7 @@
 package com.ovasta.sellers.presentation.createOrder.presentation
 
+import com.ovasta.sellers.presentation.createOrder.data.model.DeliveryTiming
+
 sealed class CreateOrderScreenActions {
     // Customer info
     data class OnCustomerPhoneChanged(val phone: String) : CreateOrderScreenActions()

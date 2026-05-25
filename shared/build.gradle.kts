@@ -70,3 +70,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+kotlin.sourceSets.all {
+    languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+}

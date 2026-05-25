@@ -27,7 +27,7 @@ import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.xsMedium
 import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderScreenActions
 import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewState
-import com.ovasta.sellers.presentation.createOrder.presentation.DeliveryTiming
+import com.ovasta.sellers.presentation.createOrder.data.model.DeliveryTiming
 import com.ovasta.sellers.presentation.createOrder.presentation.isValid
 
 private val BrandColor = Color(0xFF006D98)
