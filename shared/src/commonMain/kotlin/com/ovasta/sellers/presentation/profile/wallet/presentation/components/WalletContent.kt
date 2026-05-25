@@ -394,23 +394,36 @@ fun formatDate(isoDate: String?): String {
     if (isoDate.isNullOrEmpty()) return ""
 
     return try {
-        val inputFormat = SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
-            Locale.US
+        val cleaned = isoDate.substringBefore(".").removeSuffix("Z")
+        val parts = cleaned.split("T")
+        if (parts.size != 2) return isoDate
+
+        val dateParts = parts[0].split("-")
+        val timeParts = parts[1].split(":")
+
+        if (dateParts.size < 3) return isoDate
+
+        val month = dateParts[1]
+        val day = dateParts[0]
+        val hour = timeParts.getOrElse(0) { "00" }.toInt()
+        val minute = timeParts.getOrElse(1) { "00" }
+
+        val monthNames = listOf(
+            "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+            "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
         )
-        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val monthIndex = month.toIntOrNull()?.minus(1)?.coerceIn(0, 11) ?: return isoDate
+        val monthName = monthNames[monthIndex]
 
-        val arabicLocale = Locale("ar")
+        val amPm = if (hour < 12) "ص" else "م"
+        val hour12 = when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
+        val timeStr = "$hour12:$minute $amPm"
 
-        val date = inputFormat.parse(isoDate) ?: return isoDate
-
-        val dayMonthFormat = SimpleDateFormat("dd-MMM", arabicLocale)
-        val timeFormat = SimpleDateFormat("hh:mm a", arabicLocale)
-
-        val dayMonth = dayMonthFormat.format(date)
-        val time = timeFormat.format(date)
-
-        "$dayMonth\n$time"
+        "$day-$monthName\n$timeStr"
 
     } catch (e: Exception) {
         isoDate

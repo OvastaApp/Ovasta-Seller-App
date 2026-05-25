@@ -2,18 +2,20 @@ package com.ovasta.sellers.base.encryption
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.allocArrayOf
+import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
+import platform.CommonCrypto.CCCrypt
+import platform.CommonCrypto.kCCAlgorithmAES128
+import platform.CommonCrypto.kCCDecrypt
+import platform.CommonCrypto.kCCEncrypt
+import platform.CommonCrypto.kCCOptionPKCS7Padding
 import platform.Foundation.NSData
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSSearchPathForDirectoriesInDomains
-import platform.Foundation.NSUserDomainMask
-import platform.Foundation.dataUsingEncoding
-import platform.Foundation.writeToFile
 import platform.Security.KSecAttrAccount
 import platform.Security.KSecAttrService
+import platform.Security.KSecAttrAccessible
+import platform.Security.KSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
 import platform.Security.KSecClass
 import platform.Security.KSecClassGenericPassword
 import platform.Security.KSecReturnData
@@ -22,10 +24,9 @@ import platform.Security.SecItemAdd
 import platform.Security.SecItemCopyMatching
 import platform.Security.SecItemUpdate
 import platform.Security.kCFBooleanTrue
-import platform.Security.kSecAttrAccessible
-import platform.Security.kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+import platform.posix.ULongVar
 import platform.posix.memcpy
-import kotlin.experimental.xor
+import kotlin.random.Random
 
 @OptIn(ExperimentalForeignApi::class)
 actual object Crypto {
@@ -36,11 +37,7 @@ actual object Crypto {
         val existing = getKeyFromKeychain()
         if (existing != null) return existing
 
-        val newKey = ByteArray(32).also { array ->
-            for (i in array.indices) {
-                array[i] = (i * 7 + 13 and 0xFF).toByte()
-            }
-        }
+        val newKey = Random.nextBytes(32)
         saveKeyToKeychain(newKey)
         return newKey
     }
@@ -93,14 +90,8 @@ actual object Crypto {
 
     actual fun encrypt(bytes: ByteArray): ByteArray {
         val key = getOrCreateKey()
-        val iv = ByteArray(16).also { array ->
-            for (i in array.indices) {
-                array[i] = (System.currentTimeMillis() % 256).toByte()
-            }
-        }
-
-        val padded = pkcs7Pad(bytes, 16)
-        val encrypted = aesCbcEncrypt(padded, key, iv)
+        val iv = Random.nextBytes(16)
+        val encrypted = aesCbc(bytes, key, iv, kCCEncrypt)
         return iv + encrypted
     }
 
@@ -108,115 +99,49 @@ actual object Crypto {
         val key = getOrCreateKey()
         val iv = bytes.copyOfRange(0, 16)
         val data = bytes.copyOfRange(16, bytes.size)
-        val decrypted = aesCbcDecrypt(data, key, iv)
-        return pkcs7Unpad(decrypted, 16)
+        return aesCbc(data, key, iv, kCCDecrypt)
     }
 
-    private fun pkcs7Pad(data: ByteArray, blockSize: Int): ByteArray {
-        val padding = blockSize - (data.size % blockSize)
-        return data + ByteArray(padding) { padding.toByte() }
-    }
+    private fun aesCbc(input: ByteArray, key: ByteArray, iv: ByteArray, operation: ULong): ByteArray {
+        val blockSize = 16
+        val outputSize = input.size + blockSize
 
-    private fun pkcs7Unpad(data: ByteArray, blockSize: Int): ByteArray {
-        if (data.isEmpty()) return data
-        val padding = data.last().toInt() and 0xFF
-        if (padding > blockSize || padding == 0) return data
-        return data.copyOfRange(0, data.size - padding)
-    }
+        return memScoped {
+            val dataOut = ByteArray(outputSize)
+            val dataOutMoved = alloc<ULongVar>()
 
-    private fun aesCbcEncrypt(data: ByteArray, key: ByteArray, iv: ByteArray): ByteArray {
-        val numBlocks = data.size / 16
-        val result = ByteArray(data.size)
-        var previousBlock = iv
-
-        for (i in 0 until numBlocks) {
-            val block = data.copyOfRange(i * 16, (i + 1) * 16)
-            val xored = ByteArray(16) { j -> (block[j].toInt() xor previousBlock[j].toInt()).toByte() }
-            val encrypted = aesEncryptBlock(xored, key)
-            encrypted.copyInto(result, i * 16)
-            previousBlock = encrypted
-        }
-
-        return result
-    }
-
-    private fun aesCbcDecrypt(data: ByteArray, key: ByteArray, iv: ByteArray): ByteArray {
-        val numBlocks = data.size / 16
-        val result = ByteArray(data.size)
-        var previousBlock = iv
-
-        for (i in 0 until numBlocks) {
-            val block = data.copyOfRange(i * 16, (i + 1) * 16)
-            val decrypted = aesDecryptBlock(block, key)
-            val xored = ByteArray(16) { j -> (decrypted[j].toInt() xor previousBlock[j].toInt()).toByte() }
-            xored.copyInto(result, i * 16)
-            previousBlock = block
-        }
-
-        return result
-    }
-
-    @OptIn(ExperimentalForeignApi::class)
-    private fun aesEncryptBlock(block: ByteArray, key: ByteArray): ByteArray {
-        memScoped {
-            val outBuf = allocArrayOf(ByteArray(16))
-            val outLen = allocArrayOf(0)
-
-            platform.CommonCrypto.CCCrypt(
-                0,
-                0,
-                0,
-                key.refTo(0),
-                16.toULong(),
-                null,
-                block.refTo(0),
-                16.toULong(),
-                outBuf,
-                16.toULong(),
-                outLen.ptr
+            val status = CCCrypt(
+                op = operation,
+                alg = kCCAlgorithmAES128,
+                options = kCCOptionPKCS7Padding,
+                key = key.usePinned { pinned -> pinned.addressOf(0) },
+                keyLength = key.size.toULong(),
+                iv = iv.usePinned { pinned -> pinned.addressOf(0) },
+                dataIn = input.usePinned { pinned -> pinned.addressOf(0) },
+                dataInLength = input.size.toULong(),
+                dataOut = dataOut.usePinned { pinned -> pinned.addressOf(0) },
+                dataOutAvailable = dataOut.size.toULong(),
+                dataOutMoved = dataOutMoved.ptr
             )
 
-            return ByteArray(16) { i -> outBuf[i] }
+            if (status != 0) {
+                throw SecurityException("CCCrypt failed with status: $status")
+            }
+            dataOut.copyOfRange(0, dataOutMoved.value.toInt())
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
-    private fun aesDecryptBlock(block: ByteArray, key: ByteArray): ByteArray {
-        memScoped {
-            val outBuf = allocArrayOf(ByteArray(16))
-            val outLen = allocArrayOf(0)
-
-            platform.CommonCrypto.CCCrypt(
-                1,
-                0,
-                0,
-                key.refTo(0),
-                16.toULong(),
-                null,
-                block.refTo(0),
-                16.toULong(),
-                outBuf,
-                16.toULong(),
-                outLen.ptr
-            )
-
-            return ByteArray(16) { i -> outBuf[i] }
-        }
-    }
-
-    @OptIn(ExperimentalForeignApi::class)
     private fun ByteArray.toNSData(): NSData {
         return usePinned { pinned ->
-            NSData.create(bytes = pinned.addressOf(0), length = this@toNSData.size.toULong())
+            NSData(bytes = pinned.addressOf(0), length = this.size.toULong())
         }
     }
 
-    @OptIn(ExperimentalForeignApi::class)
     private fun NSData.toByteArray(): ByteArray {
         val length = this.length.toInt()
         val bytes = ByteArray(length)
         if (length > 0) {
-            memcpy(bytes.refTo(0), this.bytes, length.toULong())
+            memcpy(bytes.usePinned { it.addressOf(0) }, this.bytes, length.toULong())
         }
         return bytes
     }

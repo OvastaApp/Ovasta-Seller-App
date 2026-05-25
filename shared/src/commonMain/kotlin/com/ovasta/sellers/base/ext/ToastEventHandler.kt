@@ -13,8 +13,10 @@ fun ToastEventHandler(
         viewModel.toastEvent.collect { event ->
             when (event) {
                 is ToastEvent.ResourceToastEvent -> {
-                    val key = event.stringId.key
-                    showPlatformToast(key)
+                    val displayText = event.stringId.key
+                        .replace("_", " ")
+                        .replaceFirstChar { it.uppercase() }
+                    showPlatformToast(displayText)
                 }
                 is ToastEvent.StringToastEvent -> {
                     showPlatformToast(event.message)

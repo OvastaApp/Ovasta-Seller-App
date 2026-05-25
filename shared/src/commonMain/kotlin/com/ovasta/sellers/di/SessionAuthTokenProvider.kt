@@ -5,20 +5,22 @@ import com.ovasta.sellers.data.network.AuthTokenProvider
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class SessionAuthTokenProvider(
     private val dataStore: DataStore<SessionPreferences>
 ) : AuthTokenProvider {
-    override var token: String = ""
-        private set
 
-    init {
-        CoroutineScope(Dispatchers.Default).launch {
-            val session = dataStore.data.first()
-            token = session.accessToken
-            dataStore.data.collect { token = it.accessToken }
-        }
-    }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private val tokenFlow: StateFlow<String> = dataStore.data
+        .map { it.accessToken }
+        .stateIn(scope, SharingStarted.Eagerly, "")
+
+    override val token: String
+        get() = tokenFlow.value
 }
