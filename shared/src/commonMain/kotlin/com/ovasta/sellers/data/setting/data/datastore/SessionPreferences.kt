@@ -1,21 +1,19 @@
 package com.ovasta.sellers.data.setting.data.datastore
 
-import androidx.datastore.core.Serializer
-import com.ovasta.sellers.data.setting.model.RemoteConfigModel
+import androidx.datastore.core.okio.OkioSerializer
 import com.ovasta.sellers.base.constants.LocalConstants.LANGUAGE_AR_ISO
 import com.ovasta.sellers.base.encryption.Crypto
 import com.ovasta.sellers.data.User
+import com.ovasta.sellers.data.setting.model.RemoteConfigModel
+import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.io.InputStream
-import java.io.OutputStream
-import android.util.Base64
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
+import okio.BufferedSink
+import okio.BufferedSource
 
-@Keep
 @Serializable
 data class SessionPreferences(
     val userLang: String = LANGUAGE_AR_ISO,
@@ -30,7 +28,7 @@ data class SessionPreferences(
     val homeInfo: HomeInfo? = null,
 )
 
-object SessionPreferencesSerializer : Serializer<SessionPreferences> {
+object SessionPreferencesSerializer : OkioSerializer<SessionPreferences> {
     override val defaultValue: SessionPreferences
         get() = SessionPreferences()
 
@@ -38,46 +36,41 @@ object SessionPreferencesSerializer : Serializer<SessionPreferences> {
         ignoreUnknownKeys = true
     }
 
-    override suspend fun readFrom(input: InputStream): SessionPreferences {
+    override suspend fun readFrom(source: BufferedSource): SessionPreferences {
         return try {
             val encryptedBytes = withContext(Dispatchers.IO) {
-                input.use { it.readBytes() }
+                source.readByteArray()
             }
             if (encryptedBytes.isEmpty()) return defaultValue
 
             val jsonString = try {
-                val decoded = Base64.decode(encryptedBytes, Base64.NO_WRAP)
-                val decrypted = Crypto.decrypt(decoded)
+                val decrypted = Crypto.decrypt(encryptedBytes)
                 decrypted.decodeToString()
             } catch (e: Exception) {
-                encryptedBytes.decodeToString()
+                try {
+                    encryptedBytes.decodeToString()
+                } catch (e2: Exception) {
+                    return defaultValue
+                }
             }
 
             json.decodeFromString(jsonString)
-
         } catch (e: Exception) {
             e.printStackTrace()
-
             defaultValue
         }
     }
 
     override suspend fun writeTo(
         t: SessionPreferences,
-        output: OutputStream
+        sink: BufferedSink
     ) {
-        val json = Json.encodeToString(t)
-        val bytes = json.toByteArray()
-
+        val jsonStr = Json.encodeToString(t)
+        val bytes = jsonStr.toByteArray()
         val encryptedBytes = Crypto.encrypt(bytes)
-
-        val encryptedBytesBase64 =
-            Base64.encode(encryptedBytes, Base64.DEFAULT)
-
         withContext(Dispatchers.IO) {
-            output.use {
-                it.write(encryptedBytesBase64)
-            }
+            sink.write(encryptedBytes)
+            sink.flush()
         }
     }
 }
