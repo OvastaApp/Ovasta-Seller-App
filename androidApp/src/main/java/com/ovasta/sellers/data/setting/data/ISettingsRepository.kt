@@ -1,0 +1,17 @@
+package com.ovasta.sellers.data.setting.data
+
+import com.ovasta.sellers.domain.model.User
+import com.ovasta.sellers.domain.model.HomeInfo
+
+interface ISettingsRepository {
+
+    suspend fun saveUserData(user: User)
+    suspend fun getUseData(): User?
+    suspend fun saveHomeData(homeResponse: HomeInfo)
+    suspend fun getHomeInfo(): HomeInfo?
+    suspend fun logout()
+    suspend fun clearUserData()
+    suspend fun getDeviceId(): String
+    suspend fun saveDeviceId(deviceId: String)
+
+}
