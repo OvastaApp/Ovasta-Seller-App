@@ -1,5 +1,6 @@
 package com.ovasta.sellers.data.remote
 
+import com.ovasta.sellers.platform.isDebug
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -26,7 +27,7 @@ interface SessionHeaderProvider {
 
 object HttpClientFactory {
     fun create(sessionHeaderProvider: SessionHeaderProvider): HttpClient {
-        return createHttpClient(getHttpClientEngine(), sessionHeaderProvider, enableLogging = true)
+        return createHttpClient(getHttpClientEngine(), sessionHeaderProvider, enableLogging = isDebug)
     }
 }
 

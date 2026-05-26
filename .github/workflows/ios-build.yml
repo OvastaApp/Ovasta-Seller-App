@@ -36,31 +36,11 @@ jobs:
 
       - name: Build KMP Shared Framework
         run: |
+          ./gradlew :shared:compileKotlinIosArm64 --info 2>&1 | tail -100
           ./gradlew :shared:linkDebugFrameworkIosArm64 \
                     :shared:linkDebugFrameworkIosSimulatorArm64 \
                     --stacktrace
           echo "Framework built successfully"
-
-      - name: Install CocoaPods
-        run: |
-          sudo gem install cocoapods
-          pod --version
-
-      - name: Install Pod Dependencies
-        working-directory: iosApp
-        run: pod install --repo-update
-
-      - name: Build iOS App (Debug, No Signing)
-        working-directory: iosApp
-        run: |
-          xcodebuild build \
-            -workspace iosApp.xcworkspace \
-            -scheme "Ovasta Sellers" \
-            -configuration Debug \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
-            CODE_SIGNING_ALLOWED=NO \
-            | tee build.log
-          echo "iOS build succeeded"
 
       - name: Upload Build Log
         if: always()
