@@ -3,7 +3,7 @@ package com.ovasta.sellers.data.setting.data
 import androidx.datastore.core.DataStore
 import com.ovasta.sellers.base.constants.LocalConstants.LANGUAGE_AR_ISO
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
-import com.ovasta.sellers.data.User
+import com.ovasta.sellers.domain.model.User
 import com.ovasta.sellers.presentation.home.data.model.HomeInfo
 import kotlinx.coroutines.flow.first
 

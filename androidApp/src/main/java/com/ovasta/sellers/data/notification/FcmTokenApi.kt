@@ -1,6 +1,6 @@
 package com.ovasta.sellers.data.notification
 
-import com.ovasta.sellers.data.ApiResponse
+import com.ovasta.sellers.domain.model.ApiResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 

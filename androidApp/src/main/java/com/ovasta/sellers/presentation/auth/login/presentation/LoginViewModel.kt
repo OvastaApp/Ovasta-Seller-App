@@ -10,7 +10,7 @@ import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.RemoteConstants
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
-import com.ovasta.sellers.presentation.auth.login.data.ILoginRepository
+import com.ovasta.sellers.domain.repository.ILoginRepository
 import com.ovasta.sellers.presentation.nav.Home
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
