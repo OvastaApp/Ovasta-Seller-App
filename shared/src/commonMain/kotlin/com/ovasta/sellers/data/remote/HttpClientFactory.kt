@@ -10,6 +10,7 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 /**
@@ -17,10 +18,24 @@ import kotlinx.serialization.json.Json
  * Implemented per-platform or via DI to read from session storage.
  */
 interface SessionHeaderProvider {
-    fun getAccessToken(): String
-    fun getDeviceId(): String
-    fun getLanguage(): String
+    suspend fun getAccessToken(): String
+    suspend fun getDeviceId(): String
+    suspend fun getLanguage(): String
+    suspend fun getIdentifier(): String
 }
+
+object HttpClientFactory {
+    fun create(sessionHeaderProvider: SessionHeaderProvider): HttpClient {
+        return createHttpClient(getHttpClientEngine(), sessionHeaderProvider, enableLogging = true)
+    }
+}
+
+/**
+ * Platform-specific HTTP client engine.
+ * Android: OkHttp
+ * iOS: Darwin
+ */
+expect fun getHttpClientEngine(): io.ktor.client.engine.HttpClientEngine
 
 fun createHttpClient(
     engine: io.ktor.client.engine.HttpClientEngine,
@@ -52,10 +67,16 @@ fun createHttpClient(
             url(ApiConstants.BASE_URL)
             contentType(ContentType.Application.Json)
             header(ApiConstants.Headers.ACCEPT, "application/json")
-            header(ApiConstants.Headers.IDENTIFIER, "\$2a\$12\$BeuZVyrk1vlnlws5ljkRnuHA5UypUwVW3gyGoFaGvpdF5sgeSzXr2")
-            header(ApiConstants.Headers.LANG, sessionHeaderProvider.getLanguage())
-            header(ApiConstants.Headers.DEVICE_ID, sessionHeaderProvider.getDeviceId())
-            val token = sessionHeaderProvider.getAccessToken()
+            // Note: Using runBlocking here is not ideal but Ktor's defaultRequest doesn't support suspend
+            // In production, consider refactoring to use an interceptor instead
+            val identifier = runBlocking { sessionHeaderProvider.getIdentifier() }
+            val lang = runBlocking { sessionHeaderProvider.getLanguage() }
+            val deviceId = runBlocking { sessionHeaderProvider.getDeviceId() }
+            val token = runBlocking { sessionHeaderProvider.getAccessToken() }
+            
+            header(ApiConstants.Headers.IDENTIFIER, identifier)
+            header(ApiConstants.Headers.LANG, lang)
+            header(ApiConstants.Headers.DEVICE_ID, deviceId)
             if (token.isNotEmpty()) {
                 header(ApiConstants.Headers.AUTHORIZATION, "Bearer $token")
             }
