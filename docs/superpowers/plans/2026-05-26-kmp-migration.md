@@ -2,17 +2,19 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Migrate Ovasta Seller Android app to KMP producing Android + iOS apps with shared business logic.
+**Goal:** Migrate Ovasta Seller Android app to KMP producing Android + iOS apps with shared business logic, preserving exact Android UX and matching iOS as closely as possible.
 
-**Architecture:** Three modules: `shared` (pure Kotlin business logic + expect/actual platform services), `androidApp` (existing Android Compose UI + Android actuals), future `iosApp` (Xcode project consuming shared framework). Retrofit replaced with Ktor, Gson with Kotlinx Serialization, DataStore made multiplatform, Firebase via expect/actual.
+**Architecture:** Three modules: `shared` (pure Kotlin business logic + expect/actual platform services), `androidApp` (existing Android Compose UI + Android actuals), `iosApp` (iOS wrapper for shared Compose UI). Retrofit replaced with Ktor, Gson with Kotlinx Serialization, DataStore made multiplatform, Firebase via expect/actual.
 
-**Tech Stack:** Kotlin 2.2.0, Ktor, Kotlinx Serialization, Koin Multiplatform, Multiplatform DataStore
+**UI Strategy:** ⭐ **Compose Multiplatform** - Same Compose screens run on both Android and iOS (NOT SwiftUI). This saves 1-2 days and reuses 100% of existing UI code.
+
+**Tech Stack:** Kotlin 2.2.0, Ktor, Kotlinx Serialization, Koin Multiplatform, Multiplatform DataStore, Compose Multiplatform
 
 ---
 
 ## Progress Summary
 
-**Overall Progress: 10/14 phases complete (71%) — Android complete, ready for iOS**
+**Overall Progress: 10/14 phases complete (71%) — Android complete, ready for iOS with Compose Multiplatform**
 
 | Phase | Status | Commit | Description |
 |-------|--------|--------|-------------|
@@ -27,15 +29,46 @@
 | Phase 9: Fix androidApp build | ✅ Complete | `fae379e` | Wired all ViewModels/DI to shared repos |
 | Phase 10: Template cleanup | ✅ Complete | `6400546` | Deleted Platform.kt + 11 duplicate models |
 | Phase 11: iOS actuals | ⏳ Next | - | iOS platform implementations (requires macOS) |
-| Phase 12: iOS App Setup | ⏳ Pending | - | Xcode project + CocoaPods + Firebase |
-| Phase 13: iOS UI (SwiftUI) | ⏳ Pending | - | 7 screens in SwiftUI |
+| Phase 12: Compose Multiplatform iOS | ⭐ REVISED | - | Setup Compose MP instead of SwiftUI (faster!) |
+| Phase 13: Migrate UI to Compose MP | ⭐ REVISED | - | Move existing Compose screens to shared |
 | Phase 14: Release Prep | ⏳ Pending | - | Both platforms ready for production |
 
 **Current state:** Both shared ✅ and androidApp ✅ build successfully. iOS requires macOS.
 
+**Key change:** Using **Compose Multiplatform instead of SwiftUI** for iOS UI!
+- ✅ Reuse 100% of existing Compose screens
+- ✅ ViewModels already inject shared repositories
+- ✅ Saves 1-2 days development time
+- ✅ Single UI codebase for both platforms
+
 **Total shared code created:** 54 files, ~985 lines  
 **Code deleted (duplicates):** 28 files, ~500+ lines  
 **Net improvement:** Cleaner architecture, single source of truth
+
+---
+
+## ⏱️ Revised Timeline with Compose Multiplatform
+
+### Original Estimate (SwiftUI):
+- Phase 11: iOS actuals → 1 day
+- Phase 12: iOS setup → 0.5 day
+- Phase 13: SwiftUI UI → **3-4 days**
+- Phase 14: Release → 1 day
+- **Total: 5.5-6.5 days**
+
+### New Estimate (Compose Multiplatform): ✅ 1-2 DAYS SAVED!
+- Phase 11: iOS actuals → 1 day
+- Phase 12: Compose MP setup → 0.5 day
+- Phase 13: Migrate UI to Compose MP → **2-3 days** (instead of 3-4!)
+- Phase 14: Release → 1 day
+- **Total: 4.5-5.5 days**
+
+### Why Compose Multiplatform Is Faster:
+1. ✅ **Screens already exist** - Just move from `androidApp` to `shared`
+2. ✅ **ViewModels already use shared repos** - No business logic changes needed
+3. ✅ **Same technology** - You know Compose, don't need to learn SwiftUI
+4. ✅ **One codebase** - Single UI code for Android + iOS
+5. ✅ **Proven approach** - Many apps use Compose MP successfully (JetBrains Toolbox, etc.)
 
 ---
 
@@ -1517,54 +1550,336 @@ Results:
 
 ---
 
-## Phase 12: iOS App Setup (Xcode Project)
+## Phase 12: Setup Compose Multiplatform for iOS ⭐ REVISED
 
-**Goal:** Create the `iosApp/` Xcode project that consumes the shared framework.
+**Goal:** Enable Compose Multiplatform so the same Compose UI code runs on both Android and iOS.
+
+**Why Compose MP instead of SwiftUI:** 
+- ✅ Reuse 100% of existing Compose screens (already built!)
+- ✅ ViewModels already inject shared repositories
+- ✅ Single UI codebase for both platforms
+- ✅ Faster development (2-3 days vs 3-4 days for SwiftUI)
+- ✅ No need to learn SwiftUI
 
 **Prerequisites:** macOS with Xcode installed, Apple Developer account ready.
 
-- [ ] **Step 1:** Create `iosApp/` directory structure
-- [ ] **Step 2:** Generate Xcode project (use KMP template or manual)
-- [ ] **Step 3:** Configure CocoaPods `Podfile` for Firebase:
-  ```ruby
-  pod 'Firebase/Auth'
-  pod 'Firebase/Firestore'
-  pod 'Firebase/Messaging'
-  pod 'Firebase/Crashlytics'
+### Part A: Enable Compose Multiplatform in shared module
+
+- [ ] **Step 1:** Add Compose Multiplatform plugin to `shared/build.gradle.kts`:
+  ```kotlin
+  plugins {
+      alias(libs.plugins.kotlin.multiplatform)
+      alias(libs.plugins.android.kotlin.multiplatform.library)
+      alias(libs.plugins.compose.compiler) // Add this
+      alias(libs.plugins.serialization)
+  }
   ```
-- [ ] **Step 4:** Add `sharedKit.framework` dependency to Xcode
-- [ ] **Step 5:** Add `Info.plist` entries:
-  - ATS exception for `http://167.172.209.252`
-  - Push notification capability
-  - Location usage descriptions
-  - Supported localizations (ar, en)
-- [ ] **Step 6:** Add `GoogleService-Info.plist` for Firebase
-- [ ] **Step 7:** Configure signing with Apple Developer certificates
-- [ ] **Step 8:** Verify framework imports work: `import sharedKit`
-- [ ] **Step 9:** Commit
+
+- [ ] **Step 2:** Add Compose Multiplatform version to `gradle/libs.versions.toml`:
+  ```toml
+  [versions]
+  compose-multiplatform = "1.7.1"
+  
+  [plugins]
+  compose-compiler = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+  ```
+
+- [ ] **Step 3:** Add Compose dependencies to `shared/build.gradle.kts` commonMain:
+  ```kotlin
+  commonMain {
+      dependencies {
+          // Existing dependencies...
+          
+          // Compose Multiplatform
+          implementation(compose.runtime)
+          implementation(compose.foundation)
+          implementation(compose.material3)
+          implementation(compose.ui)
+          implementation(compose.components.resources)
+          implementation(compose.components.uiToolingPreview)
+          
+          // Navigation (multiplatform)
+          implementation("cafe.adriel.voyager:voyager-navigator:1.0.0")
+          implementation("cafe.adriel.voyager:voyager-koin:1.0.0")
+          
+          // Image loading (Coil3 - multiplatform)
+          implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+          implementation("io.coil-kt.coil3:coil-network-ktor:3.3.0")
+      }
+  }
+  ```
+
+- [ ] **Step 4:** Verify shared module builds with Compose: `./gradlew :shared:build`
+
+### Part B: Create iOS App with Compose
+
+- [ ] **Step 5:** Create `iosApp/` directory structure:
+  ```
+  iosApp/
+  ├── iosApp/
+  │   ├── ContentView.swift
+  │   ├── ComposeApp.swift
+  │   └── Info.plist
+  ├── iosApp.xcodeproj/
+  └── Podfile
+  ```
+
+- [ ] **Step 6:** Create Xcode project for iOS app (File → New → Project → iOS App)
+
+- [ ] **Step 7:** Configure CocoaPods `Podfile` for Firebase:
+  ```ruby
+  platform :ios, '14.0'
+  
+  target 'iosApp' do
+    use_frameworks!
+    
+    # Firebase
+    pod 'Firebase/Auth'
+    pod 'Firebase/Firestore'
+    pod 'Firebase/Messaging'
+    pod 'Firebase/Crashlytics'
+  end
+  ```
+
+- [ ] **Step 8:** Add `sharedKit.framework` to Xcode project:
+  - Add framework search path: `$(SRCROOT)/../../shared/build/XCFrameworks/debug`
+  - Link binary with `sharedKit.framework`
+  - Embed framework
+
+- [ ] **Step 9:** Add `Info.plist` entries:
+  ```xml
+  <!-- ATS Exception for HTTP API -->
+  <key>NSAppTransportSecurity</key>
+  <dict>
+      <key>NSExceptionDomains</key>
+      <dict>
+          <key>167.172.209.252</key>
+          <dict>
+              <key>NSExceptionAllowsInsecureHTTPLoads</key>
+              <true/>
+          </dict>
+      </dict>
+  </dict>
+  
+  <!-- Push Notifications -->
+  <key>UIBackgroundModes</key>
+  <array>
+      <string>remote-notification</string>
+  </array>
+  
+  <!-- Localization -->
+  <key>CFBundleDevelopmentRegion</key>
+  <string>ar</string>
+  <key>CFBundleLocalizations</key>
+  <array>
+      <string>ar</string>
+      <string>en</string>
+  </array>
+  ```
+
+- [ ] **Step 10:** Add `GoogleService-Info.plist` for Firebase
+
+- [ ] **Step 11:** Create Swift wrapper for Compose UI (`ContentView.swift`):
+  ```swift
+  import SwiftUI
+  import sharedKit
+  
+  struct ContentView: View {
+      var body: some View {
+          ComposeView()
+              .ignoresSafeArea(.all)
+      }
+  }
+  
+  struct ComposeView: UIViewControllerRepresentable {
+      func makeUIViewController(context: Context) -> UIViewController {
+          return MainKt.createComposeViewController()
+      }
+      
+      func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+  }
+  ```
+
+- [ ] **Step 12:** Configure signing with Apple Developer certificates
+
+- [ ] **Step 13:** Verify build and run on iOS simulator
+
+- [ ] **Step 14:** Commit
 
 ---
 
-## Phase 13: iOS UI (SwiftUI)
+## Phase 13: Migrate UI to Compose Multiplatform ⭐ MAJOR REVISION
 
-**Goal:** Build all 7 screens in SwiftUI consuming shared business logic.
+**Goal:** Move existing Compose screens from `androidApp` to `shared` module so both Android and iOS use the same UI code.
 
-**Screens:**
-- [ ] **Step 1:** `SplashView.swift` — check auth state, navigate to Login or Home
-- [ ] **Step 2:** `LoginView.swift` — phone/password form, calls `ILoginRepository`
-- [ ] **Step 3:** `HomeView.swift` — dashboard with current orders, cancel functionality
-- [ ] **Step 4:** `CreateOrderView.swift` — order creation form
-- [ ] **Step 5:** `ProfileView.swift` — user info display
-- [ ] **Step 6:** `LastOrdersView.swift` — paginated order history
-- [ ] **Step 7:** `WalletView.swift` — balance, transactions, withdraw, redeem
+**Time saved:** 1-2 days compared to rewriting in SwiftUI! ✅
 
-**Cross-cutting:**
-- [ ] **Step 8:** Arabic/English localization (`Localizable.strings`)
-- [ ] **Step 9:** RTL layout support
-- [ ] **Step 10:** Push notification registration (APNs + shared `FcmTokenApiService`)
-- [ ] **Step 11:** Navigation structure (TabView or NavigationStack)
-- [ ] **Step 12:** Error handling & loading states (matching Android UX)
-- [ ] **Step 13:** Run on simulator, verify all flows
+**Strategy:** Your Compose screens already work and ViewModels already use shared repositories. Most code can move to `shared` with minimal changes.
+
+### Part A: Prepare shared UI structure
+
+- [ ] **Step 1:** Create UI package structure in shared:
+  ```
+  shared/src/commonMain/kotlin/com/ovasta/sellers/ui/
+  ├── login/
+  │   ├── LoginScreen.kt
+  │   └── LoginViewModel.kt (move from androidApp)
+  ├── home/
+  │   ├── HomeScreen.kt
+  │   ├── HomeViewModel.kt
+  │   └── components/
+  ├── createorder/
+  │   ├── CreateOrderScreen.kt
+  │   └── CreateOrderViewModel.kt
+  ├── profile/
+  │   ├── ProfileScreen.kt
+  │   ├── ProfileViewModel.kt
+  │   └── components/
+  ├── orderhistory/
+  │   ├── OrderHistoryScreen.kt
+  │   └── OrderHistoryViewModel.kt
+  ├── wallet/
+  │   ├── WalletScreen.kt
+  │   ├── WalletViewModel.kt
+  │   └── components/
+  ├── navigation/
+  │   └── AppNavigation.kt
+  └── theme/
+      └── Theme.kt
+  ```
+
+### Part B: Move ViewModels to shared (already use shared repos!)
+
+- [ ] **Step 2:** Move `LoginViewModel` to `shared/commonMain` ✅ (already uses `ILoginRepository`)
+- [ ] **Step 3:** Move `HomeViewModel` to `shared/commonMain` ✅ (already uses `IHomeRepository`)
+- [ ] **Step 4:** Move `CreateOrderViewModel` to `shared/commonMain` ✅ (already uses `ICreateOrderRepository`)
+- [ ] **Step 5:** Move `WalletViewModel` to `shared/commonMain` ✅ (already uses `IWalletRepository`)
+- [ ] **Step 6:** Move `OrderHistoryViewModel` to `shared/commonMain` ✅ (already uses `IOrderHistoryRepository`)
+- [ ] **Step 7:** Move `ProfileViewModel` to `shared/commonMain`
+
+**Note:** ViewModels should work as-is since they already inject shared repositories!
+
+### Part C: Move Compose screens to shared
+
+- [ ] **Step 8:** Move `LoginScreen.kt` to `shared/commonMain/ui/login/`
+  - Replace Android-specific imports (if any)
+  - Update ViewModel injection to use Koin from shared
+
+- [ ] **Step 9:** Move `HomeScreen.kt` + components to `shared/commonMain/ui/home/`
+  - Extract platform-specific code (permissions, etc.) to expect/actual if needed
+
+- [ ] **Step 10:** Move `CreateOrderScreen.kt` to `shared/commonMain/ui/createorder/`
+
+- [ ] **Step 11:** Move `ProfileScreen.kt` + components to `shared/commonMain/ui/profile/`
+
+- [ ] **Step 12:** Move `OrderHistoryScreen.kt` + components to `shared/commonMain/ui/orderhistory/`
+
+- [ ] **Step 13:** Move `WalletScreen.kt` + components to `shared/commonMain/ui/wallet/`
+
+### Part D: Handle platform-specific UI code
+
+- [ ] **Step 14:** Replace Navigation3 with Voyager (multiplatform navigation):
+  ```kotlin
+  // shared/commonMain/ui/navigation/AppNavigation.kt
+  @Composable
+  fun AppNavigation() {
+      Navigator(LoginScreen) { navigator ->
+          SlideTransition(navigator)
+      }
+  }
+  ```
+
+- [ ] **Step 15:** Move images/strings to Compose Resources:
+  ```
+  shared/composeResources/
+  ├── drawable/
+  │   └── (move images here)
+  └── values/
+      ├── strings.xml (Arabic)
+      └── strings-en.xml (English)
+  ```
+
+- [ ] **Step 16:** Replace Android-specific image loading with Coil3 (already multiplatform):
+  ```kotlin
+  AsyncImage(
+      model = imageUrl,
+      contentDescription = null
+  )
+  ```
+
+- [ ] **Step 17:** Extract platform-specific functionality to expect/actual:
+  ```kotlin
+  // commonMain
+  expect fun openDialer(phoneNumber: String)
+  
+  // androidMain
+  actual fun openDialer(phoneNumber: String) {
+      // Android Intent
+  }
+  
+  // iosMain
+  actual fun openDialer(phoneNumber: String) {
+      // iOS URL scheme
+  }
+  ```
+
+### Part E: Update androidApp to use shared UI
+
+- [ ] **Step 18:** Update `androidApp` MainActivity to use shared Compose UI:
+  ```kotlin
+  class MainActivity : ComponentActivity() {
+      override fun onCreate(savedInstanceState: Bundle?) {
+          super.onCreate(savedInstanceState)
+          setContent {
+              // Use shared UI
+              AppNavigation()
+          }
+      }
+  }
+  ```
+
+- [ ] **Step 19:** Remove old UI code from `androidApp/presentation/` (now in shared)
+
+- [ ] **Step 20:** Verify Android app still works: `./gradlew :androidApp:assembleDebug`
+
+### Part F: Create iOS Compose entry point
+
+- [ ] **Step 21:** Create Compose entry point in `shared/iosMain`:
+  ```kotlin
+  // shared/iosMain/kotlin/Main.ios.kt
+  import androidx.compose.ui.window.ComposeUIViewController
+  
+  fun createComposeViewController() = ComposeUIViewController {
+      AppNavigation()
+  }
+  ```
+
+- [ ] **Step 22:** Build iOS app and run on simulator
+
+- [ ] **Step 23:** Test all screens on iOS:
+  - Login flow
+  - Home dashboard
+  - Create order
+  - Profile
+  - Order history
+  - Wallet
+
+### Part G: Cross-platform polish
+
+- [ ] **Step 24:** Test Arabic/English switching on both platforms
+- [ ] **Step 25:** Test RTL layout on both platforms
+- [ ] **Step 26:** Verify push notifications work on iOS (APNs)
+- [ ] **Step 27:** Test navigation flows on both platforms
+- [ ] **Step 28:** Fix any iOS-specific UI issues (safe areas, status bar, etc.)
+
+- [ ] **Step 29:** Commit: "feat: migrate UI to Compose Multiplatform - works on Android + iOS"
+
+**Verification:**
+- [ ] Android app builds and runs ✅
+- [ ] iOS app builds and runs ✅
+- [ ] All 7 screens work on both platforms ✅
+- [ ] ViewModels use shared repositories ✅
+- [ ] Single UI codebase maintained ✅
 
 ---
 
