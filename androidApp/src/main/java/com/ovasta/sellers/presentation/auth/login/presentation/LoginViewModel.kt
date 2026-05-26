@@ -104,6 +104,10 @@ class LoginViewModel(
                 loginRepository.login(phone, password, userType.typeId, fcmToken)
             }.onSuccess { response ->
                 val user = response.data
+                if (user == null) {
+                    updateViewStateWithFail(IllegalStateException("Login response data is null"))
+                    return@launch
+                }
                 user.token = response.token
                 settingsRepository.saveUserData(user)
                 setComposeUILoading(false)

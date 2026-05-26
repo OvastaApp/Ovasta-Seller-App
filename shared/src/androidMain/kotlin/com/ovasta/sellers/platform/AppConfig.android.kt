@@ -1,6 +1,7 @@
 package com.ovasta.sellers.platform
 
 import android.content.pm.ApplicationInfo
+import android.util.Log
 
 actual val isDebug: Boolean by lazy {
     try {
@@ -10,4 +11,8 @@ actual val isDebug: Boolean by lazy {
     } catch (_: Exception) {
         false
     }
+}
+
+actual fun httpLog(message: String) {
+    Log.d("OvastaHttp", message)
 }
