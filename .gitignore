@@ -9,8 +9,21 @@
 .cxx
 ./app/google-serivce.json
 app/google-services.json
+androidApp/google-services.json
 /google-services.json
 /.kotlin/sessions/*
 
 # Build artifacts
 app/release/
+androidApp/release/
+
+# KMP / iOS
+shared/build/
+androidApp/build/
+iosApp/iosApp.xcworkspace/xcuserdata/
+iosApp/iosApp.xcodeproj/xcuserdata/
+iosApp/Pods/
+*.xcuserstate
+
+# Kotlin
+.kotlin/

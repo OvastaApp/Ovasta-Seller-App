@@ -20,4 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Ovasta Sellers"
-include(":app")
+include(":androidApp")
+include(":shared")
