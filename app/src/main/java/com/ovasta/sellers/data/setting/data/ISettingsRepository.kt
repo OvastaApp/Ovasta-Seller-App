@@ -11,5 +11,7 @@ interface ISettingsRepository {
     suspend fun getHomeInfo(): HomeInfo?
     suspend fun logout()
     suspend fun clearUserData()
+    suspend fun getDeviceId(): String
+    suspend fun saveDeviceId(deviceId: String)
 
 }

@@ -41,4 +41,12 @@ class SettingsLocalDataSource(private val dataStore: DataStore<SessionPreference
     }
 
     override suspend fun getHomeData(): HomeInfo? = dataStore.data.first().homeInfo
+
+    override suspend fun getDeviceId(): String = dataStore.data.first().deviceId
+
+    override suspend fun saveDeviceId(deviceId: String) {
+        dataStore.updateData {
+            it.copy(deviceId = deviceId)
+        }
+    }
 }

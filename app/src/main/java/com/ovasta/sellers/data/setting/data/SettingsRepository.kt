@@ -26,4 +26,10 @@ class SettingsRepository(
     override suspend fun clearUserData() {
         settingsLocalDataSource.clearUserData()
     }
+
+    override suspend fun getDeviceId(): String = settingsLocalDataSource.getDeviceId()
+
+    override suspend fun saveDeviceId(deviceId: String) {
+        settingsLocalDataSource.saveDeviceId(deviceId)
+    }
 }

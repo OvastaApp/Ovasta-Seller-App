@@ -9,4 +9,6 @@ interface ISettingsLocalDataSource {
     suspend fun saveUserData(user: User)
     suspend fun saveHomeData(homeResponse: HomeInfo)
     suspend fun getHomeData(): HomeInfo?
+    suspend fun getDeviceId(): String
+    suspend fun saveDeviceId(deviceId: String)
 }

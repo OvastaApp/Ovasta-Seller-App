@@ -20,7 +20,7 @@ object RemoteConstants : KoinComponent {
         const val ANDROID_VERSION = "android_version"
         const val ACCEPT = "Accept"
         const val IDENTIFIER = "identifier"
-        const val DEVICE_ID = "device-id"
+        const val DEVICE_ID = "device_id"
         const val AUTHORIZATION = "Authorization"
         const val LANG = "lang"
     }

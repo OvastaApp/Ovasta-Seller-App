@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import com.ovasta.sellers.base.constants.LocalConstants.LANGUAGE_AR_ISO
 import com.ovasta.sellers.data.RemoteConstants.HeadersConst.ACCEPT
 import com.ovasta.sellers.data.RemoteConstants.HeadersConst.AUTHORIZATION
+import com.ovasta.sellers.data.RemoteConstants.HeadersConst.DEVICE_ID
 import com.ovasta.sellers.data.RemoteConstants.HeadersConst.IDENTIFIER
 import com.ovasta.sellers.data.RemoteConstants.HeadersConst.LANG
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
@@ -65,7 +66,7 @@ class HeadersInterceptor(private val dataStore: DataStore<SessionPreferences>) :
         builder.addHeader(IDENTIFIER, hash)
 
         builder.addHeader(LANG, "ar")
-//        builder.addHeader(DEVICE_ID, SessionHeaderCache.deviceId)
+        builder.addHeader(DEVICE_ID, SessionHeaderCache.deviceId)
         val token = SessionHeaderCache.token
         builder.addHeader(
             AUTHORIZATION,

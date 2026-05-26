@@ -1,9 +1,10 @@
 package com.ovasta.sellers.presentation.auth.splash.di
 
 import com.ovasta.sellers.presentation.auth.splash.SplashViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val splashModule = module {
-    viewModel { SplashViewModel(get()) }
+    viewModel { SplashViewModel(get(), androidContext()) }
 }
