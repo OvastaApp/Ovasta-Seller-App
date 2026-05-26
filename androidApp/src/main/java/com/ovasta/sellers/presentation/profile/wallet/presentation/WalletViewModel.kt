@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.base.ext.ToastEvent
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
-import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRepository
+import com.ovasta.sellers.domain.repository.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

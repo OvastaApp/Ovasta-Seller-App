@@ -1,18 +1,10 @@
 package com.ovasta.sellers.presentation.profile.wallet.di
 
-import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRemoteDataSource
-import com.ovasta.sellers.presentation.profile.wallet.data.IWalletRepository
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletApi
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletRemoteDataSource
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletRepository
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import retrofit2.Retrofit
 
 val walletModule = module {
-    factory { get<Retrofit>().create(WalletApi::class.java) }
-    single<IWalletRemoteDataSource> { WalletRemoteDataSource(get()) }
-    single<IWalletRepository> { WalletRepository(get()) }
+    // IWalletRepository is provided by sharedModule
     viewModel { WalletViewModel(get(), get()) }
 }

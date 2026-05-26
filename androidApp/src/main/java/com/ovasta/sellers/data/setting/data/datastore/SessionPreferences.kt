@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 import android.util.Base64
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
+import com.ovasta.sellers.domain.model.HomeInfo
 
 @Keep
 @Serializable

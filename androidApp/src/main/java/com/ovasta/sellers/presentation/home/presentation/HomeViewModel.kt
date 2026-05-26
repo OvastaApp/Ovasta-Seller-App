@@ -2,7 +2,7 @@ package com.ovasta.sellers.presentation.home.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.base.BaseViewModel
-import com.ovasta.sellers.presentation.home.data.IHomeRepository
+import com.ovasta.sellers.domain.repository.IHomeRepository
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.ScreenDirection
 import com.ovasta.sellers.base.exception.toComposeUIException

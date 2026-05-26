@@ -1,7 +1,7 @@
 package com.ovasta.sellers.presentation.profile.profile.presentation
 
-import com.ovasta.sellers.data.User
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
+import com.ovasta.sellers.domain.model.User
+import com.ovasta.sellers.domain.model.HomeInfo
 
 data class ProfileViewState(
     val homeInfo: HomeInfo? = null,

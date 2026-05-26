@@ -3,7 +3,7 @@ package com.ovasta.sellers.presentation.auth.login.data
 import com.google.firebase.auth.FirebaseAuth
 import com.ovasta.sellers.domain.model.ApiResponse
 import com.ovasta.sellers.domain.model.User
-import com.ovasta.sellers.presentation.auth.login.data.model.LoginRequest
+import com.ovasta.sellers.domain.model.LoginRequest
 import com.ovasta.sellers.data.remote.LoginApiService
 
 class LoginRemoteDataSource(private val loginApi: LoginApiService) :
@@ -11,7 +11,7 @@ class LoginRemoteDataSource(private val loginApi: LoginApiService) :
 
     override suspend fun login(phone: String, password: String, userType: Int, fcmToken: String?): ApiResponse<User> {
         val loginData = LoginRequest(mobile = phone, password = password, fcmToken = fcmToken)
-        return loginApi.login(login = loginData)
+        return loginApi.login(request = loginData)
     }
 
     override suspend fun authenticateWithFirebase(

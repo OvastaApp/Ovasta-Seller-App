@@ -1,7 +1,7 @@
 package com.ovasta.sellers.presentation.home.presentation
 
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
-import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
+import com.ovasta.sellers.domain.model.HomeInfo
+import com.ovasta.sellers.domain.model.DeliveryOrdersResponse
 
 data class HomeViewState(
     val homeInfo: HomeInfo? = null,

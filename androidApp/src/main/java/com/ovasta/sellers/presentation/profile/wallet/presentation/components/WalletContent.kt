@@ -31,13 +31,13 @@ import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.base.smSemiBold
 import com.ovasta.sellers.base.xsMedium
 import com.ovasta.sellers.presentation.profile.wallet.data.TransactionsSteps
-import com.ovasta.sellers.presentation.profile.wallet.data.WithdrawRequests
+import com.ovasta.sellers.domain.model.WithdrawRequests
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletAction
 import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewState
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.xsRegular
-import com.ovasta.sellers.presentation.profile.wallet.data.PointsHistory
+import com.ovasta.sellers.domain.model.PointsHistory
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -450,7 +450,7 @@ fun formatDate(isoDate: String?): String {
 fun WalletContentPreview() {
     WalletContent(
         viewState = WalletViewState(
-            wallet = com.ovasta.sellers.presentation.profile.wallet.data.WalletResponse(
+            wallet = com.ovasta.sellers.domain.model.WalletResponse(
                 walletBalance = 1500.0,
                 pointsHistory = listOf(
                     PointsHistory(

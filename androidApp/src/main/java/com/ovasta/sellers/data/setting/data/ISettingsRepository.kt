@@ -1,7 +1,7 @@
 package com.ovasta.sellers.data.setting.data
 
 import com.ovasta.sellers.domain.model.User
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
+import com.ovasta.sellers.domain.model.HomeInfo
 
 interface ISettingsRepository {
 

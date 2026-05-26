@@ -1,7 +1,7 @@
 package com.ovasta.sellers.presentation.profile.wallet.presentation
 
-import com.ovasta.sellers.presentation.profile.wallet.data.WalletResponse
-import com.ovasta.sellers.presentation.profile.wallet.data.WithdrawRequests
+import com.ovasta.sellers.domain.model.WalletResponse
+import com.ovasta.sellers.domain.model.WithdrawRequests
 
 data class WalletViewState(
     val wallet: WalletResponse? = null,

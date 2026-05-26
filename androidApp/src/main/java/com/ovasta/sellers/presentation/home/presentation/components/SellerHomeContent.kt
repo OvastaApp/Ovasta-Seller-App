@@ -29,10 +29,10 @@ import com.ovasta.sellers.base.mdSemiBold
 import com.ovasta.sellers.base.smNormal
 import com.ovasta.sellers.base.smSemiBold
 import com.ovasta.sellers.base.xsMedium
-import com.ovasta.sellers.presentation.home.data.model.HomeInfo
-import com.ovasta.sellers.presentation.home.data.model.DeliveryOrder
-import com.ovasta.sellers.presentation.home.data.model.CourierInfo
-import com.ovasta.sellers.presentation.home.data.model.DeliveryOrdersResponse
+import com.ovasta.sellers.domain.model.HomeInfo
+import com.ovasta.sellers.domain.model.DeliveryOrder
+import com.ovasta.sellers.domain.model.CourierInfo
+import com.ovasta.sellers.domain.model.DeliveryOrdersResponse
 import com.ovasta.sellers.presentation.home.presentation.HomeScreenActions
 import com.ovasta.sellers.presentation.home.presentation.HomeViewState
 import com.ovasta.sellers.ui.theme.BLACK
@@ -362,7 +362,7 @@ private fun DeliveryOrderCard(
                 if (!order.note.isNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(dimensionResource(com.intuit.sdp.R.dimen._8sdp)))
                     Text(
-                        text = order.note,
+                        text = order.note ?: "",
                         style = xsMedium.copy(color = Gray500),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
@@ -387,21 +387,21 @@ private fun DeliveryOrderCard(
                             Icon(
                                 painter = painterResource(R.drawable.ic_delivery_agent),
                                 contentDescription = null,
-                                modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
-                                tint = Primary
-                            )
-                            Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
-                            Text(
-                                text = "${order.courier.firstName} ${order.courier.lastName}",
-                                style = smSemiBold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        if (!order.courier.mobile.isNullOrEmpty()) {
-                            IconButton(
-                                onClick = { onCallCourier(order.courier.mobile) },
-                                modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._28sdp))
+                            modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._16sdp)),
+                            tint = Primary
+                        )
+                        Spacer(modifier = Modifier.width(dimensionResource(com.intuit.sdp.R.dimen._6sdp)))
+                        Text(
+                            text = "${order.courier?.firstName ?: ""} ${order.courier?.lastName ?: ""}",
+                            style = smSemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    if (!order.courier?.mobile.isNullOrEmpty()) {
+                        IconButton(
+                            onClick = { onCallCourier(order.courier?.mobile ?: "") },
+                            modifier = Modifier.size(dimensionResource(com.intuit.sdp.R.dimen._28sdp))
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_call),

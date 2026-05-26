@@ -5,7 +5,7 @@ import com.ovasta.sellers.base.BaseViewModel
 import kotlinx.coroutines.launch
 import com.ovasta.sellers.base.exception.toComposeUIException
 import com.ovasta.sellers.data.setting.data.ISettingsRepository
-import com.ovasta.sellers.presentation.profile.orderhistory.data.IOrderHistoryRepository
+import com.ovasta.sellers.domain.repository.IOrderHistoryRepository
 import com.ovasta.sellers.presentation.profile.profile.data.IProfileRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

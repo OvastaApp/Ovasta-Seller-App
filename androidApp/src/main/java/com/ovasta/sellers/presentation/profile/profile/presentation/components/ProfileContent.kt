@@ -28,7 +28,7 @@ import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.BaseDialog
 import com.ovasta.sellers.base.smMedium
 import com.ovasta.sellers.base.smNormal
-import com.ovasta.sellers.data.User
+import com.ovasta.sellers.domain.model.User
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreenActions
 import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewState
 
