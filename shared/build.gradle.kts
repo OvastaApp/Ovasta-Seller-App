@@ -73,6 +73,14 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.okhttp)
                 implementation(libs.security.crypto)
+                implementation(libs.androidx.datastore.preferences)
+                // Firebase (using platform BOM from androidApp)
+                implementation(project.dependencies.platform(libs.firebase.bom))
+                implementation(libs.firebase.auth)
+                implementation(libs.firebase.firestore)
+                implementation(libs.firebase.messaging)
+                // Coroutines support for Firebase
+                implementation(libs.kotlinx.coroutines.play.services)
             }
         }
 
