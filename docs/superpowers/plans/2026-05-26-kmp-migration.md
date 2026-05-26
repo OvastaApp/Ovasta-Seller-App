@@ -4,9 +4,28 @@
 
 **Goal:** Migrate Ovasta Seller Android app to KMP producing Android + iOS apps with shared business logic.
 
-**Architecture:** Three modules: `shared` (pure Kotlin business logic + expect/actual platform services), `androidApp` (existing Android Compose UI + Android actuals), future `iosApp` (Xcode project consuming shared framework). Retrofit replaced with Ktor, Gson with Kotlinx Serialization, DataStore made multiplatform, Firebase via GitLive SDK.
+**Architecture:** Three modules: `shared` (pure Kotlin business logic + expect/actual platform services), `androidApp` (existing Android Compose UI + Android actuals), future `iosApp` (Xcode project consuming shared framework). Retrofit replaced with Ktor, Gson with Kotlinx Serialization, DataStore made multiplatform, Firebase via expect/actual.
 
-**Tech Stack:** Kotlin 2.2.0, Ktor, Kotlinx Serialization, Koin Multiplatform, GitLive Firebase, Multiplatform DataStore, Compose Navigation
+**Tech Stack:** Kotlin 2.2.0, Ktor, Kotlinx Serialization, Koin Multiplatform, Multiplatform DataStore
+
+---
+
+## Progress Summary
+
+**Overall Progress: 3/8 phases complete (37.5%)**
+
+| Phase | Status | Commit | Files | Lines |
+|-------|--------|--------|-------|-------|
+| Phase 1: KMP Dependencies | ✅ Complete | `c517fd2` | 2 | - |
+| Phase 2: Domain Models | ✅ Complete | `fa98244` | 9 | 165 |
+| Phase 3: Ktor API Services | ✅ Complete | `635c647` | 9 | 217 |
+| Phase 4: Repository Layer | 🔄 Next | - | - | - |
+| Phase 5: Platform Abstractions | ⏳ Pending | - | - | - |
+| Phase 6: Koin DI Module | ⏳ Pending | - | - | - |
+| Phase 7: Wire androidApp | ⏳ Pending | - | - | - |
+| Phase 8: Cleanup | ⏳ Pending | - | - | - |
+
+**Total code created so far:** 18 files, 382 lines in `shared/commonMain`
 
 ---
 
@@ -33,15 +52,19 @@
 
 ---
 
-## Phase 1: Add KMP Dependencies to shared module
+## Phase 1: Add KMP Dependencies to shared module ✅ COMPLETED
 
 **Goal:** Add all required KMP libraries to `shared/build.gradle.kts` and `libs.versions.toml` so subsequent phases can use them.
+
+**Status:** ✅ Completed - Commit: `c517fd2`
+
+**Note:** GitLive Firebase was removed from `commonMain` due to BOM resolution issues in KMP library modules. Firebase will be abstracted via expect/actual in Phase 5.
 
 **Files:**
 - Modify: `gradle/libs.versions.toml`
 - Modify: `shared/build.gradle.kts`
 
-- [ ] **Step 1: Add new version entries to `libs.versions.toml`**
+- [x] **Step 1: Add new version entries to `libs.versions.toml`**
 
 Add these entries to the `[versions]` section:
 
@@ -166,9 +189,11 @@ git commit -m "feat: add KMP dependencies to shared module (Ktor, Koin, GitLive 
 
 ---
 
-## Phase 2: Shared Domain Models
+## Phase 2: Shared Domain Models ✅ COMPLETED
 
 **Goal:** Create all serializable domain models in `shared/commonMain` that mirror the existing Android models but use `@Serializable` + `@SerialName` instead of Gson.
+
+**Status:** ✅ Completed - Commit: `fa98244` - 9 files created (165 lines)
 
 **Files:**
 - Create: `shared/src/commonMain/kotlin/com/ovasta/sellers/domain/model/ApiResponse.kt`
@@ -181,7 +206,7 @@ git commit -m "feat: add KMP dependencies to shared module (Ktor, Koin, GitLive 
 - Create: `shared/src/commonMain/kotlin/com/ovasta/sellers/domain/model/FcmTokenRequest.kt`
 - Create: `shared/src/commonMain/kotlin/com/ovasta/sellers/domain/model/RemoteConfigModel.kt`
 
-- [ ] **Step 1: Create ApiResponse.kt**
+- [x] **Step 1: Create ApiResponse.kt**
 
 ```kotlin
 package com.ovasta.sellers.domain.model
@@ -405,9 +430,11 @@ git commit -m "feat: add shared domain models with kotlinx serialization"
 
 ---
 
-## Phase 3: Shared Networking Layer (Ktor)
+## Phase 3: Shared Networking Layer (Ktor) ✅ COMPLETED
 
 **Goal:** Create Ktor HTTP client factory and all API service classes in `shared/commonMain`.
+
+**Status:** ✅ Completed - Commit: `635c647` - 9 files created (217 lines)
 
 **Files:**
 - Create: `shared/src/commonMain/kotlin/com/ovasta/sellers/data/remote/HttpClientFactory.kt`
@@ -420,7 +447,7 @@ git commit -m "feat: add shared domain models with kotlinx serialization"
 - Create: `shared/src/commonMain/kotlin/com/ovasta/sellers/data/remote/FcmTokenApi.kt`
 - Create: `shared/src/commonMain/kotlin/com/ovasta/sellers/data/remote/SettingsApi.kt`
 
-- [ ] **Step 1: Create ApiConstants.kt**
+- [x] **Step 1: Create ApiConstants.kt**
 
 ```kotlin
 package com.ovasta.sellers.data.remote
