@@ -37,6 +37,7 @@ val remoteModule = module {
             .readTimeout(RemoteConstants.READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(RemoteConstants.WRITE_TIMEOUT, TimeUnit.SECONDS)
             .protocols(protocols)
+        builder.addInterceptor(get<HttpLoggingInterceptor>())
 
         if (BuildConfig.DEBUG) {
             builder.addInterceptor(get<HttpLoggingInterceptor>())
