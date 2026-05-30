@@ -7,7 +7,7 @@ jobs:
   build-ios:
     name: Build iOS App (No Signing)
     runs-on: macos-14
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     steps:
       - name: Checkout Repository
@@ -34,13 +34,50 @@ jobs:
           echo "Swift: $(swift --version | head -1)"
           echo "Java: $(java -version 2>&1 | head -1)"
 
-      - name: Build KMP Shared Framework
+      # Step 1: Build KMP Shared Framework with Compose Multiplatform
+      - name: Build KMP Shared Framework (Debug - Simulator)
         run: |
-          ./gradlew :shared:compileKotlinIosArm64 --info 2>&1 | tail -100
-          ./gradlew :shared:linkDebugFrameworkIosArm64 \
-                    :shared:linkDebugFrameworkIosSimulatorArm64 \
-                    --stacktrace
+          echo "Building shared framework for iOS Simulator..."
+          ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 --stacktrace
           echo "Framework built successfully"
+          ls -lh shared/build/bin/iosSimulatorArm64/debugFramework/
+
+      - name: Build KMP Shared Framework (Debug - Device)
+        run: |
+          echo "Building shared framework for iOS Device..."
+          ./gradlew :shared:linkDebugFrameworkIosArm64 --stacktrace
+          echo "Framework built successfully"
+
+      # Step 2: Generate Xcode project with xcodegen
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        working-directory: iosApp
+        run: |
+          echo "Generating Xcode project from project.yml..."
+          xcodegen generate
+          echo "Xcode project generated successfully"
+          ls -la iosApp.xcodeproj/
+
+      # Step 3: Build iOS app (no signing)
+      - name: Build iOS App (Simulator - No Signing)
+        working-directory: iosApp
+        run: |
+          echo "Building iOS app for Simulator..."
+          xcodebuild build \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            FRAMEWORK_SEARCH_PATHS='$(inherited) $(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework' \
+            OTHER_LDFLAGS='$(inherited) -framework sharedKit' \
+            | tee build.log | tail -50
+
+          echo "iOS app built successfully!"
 
       - name: Upload Build Log
         if: always()

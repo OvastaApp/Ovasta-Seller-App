@@ -51,6 +51,7 @@ koinCore = "4.1.0"
 gitliveFirebase = "2.1.0"
 datastoreCore = "1.1.7"
 coroutines = "1.10.2"
+composeMultiplatform = "1.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -151,3 +152,4 @@ firebase-crashlytics ={id = "com.google.firebase.crashlytics", version.ref = "fi
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
