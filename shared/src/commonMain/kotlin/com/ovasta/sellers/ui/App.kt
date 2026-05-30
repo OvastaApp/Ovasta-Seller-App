@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.base.Navigator
 import com.ovasta.sellers.ui.screens.CreateOrder
@@ -31,12 +33,13 @@ import com.ovasta.sellers.ui.theme.AppTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App() {
+fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
     AppTheme {
-        val backStack = remember { mutableStateListOf<Any>(Splash as Any) }
-        val navigator = remember { Navigator(backStack) }
+        CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+            val backStack = remember { mutableStateListOf<Any>(Splash as Any) }
+            val navigator = remember { Navigator(backStack) }
 
-        CompositionLocalProvider(LocalNavigator provides navigator) {
+            CompositionLocalProvider(LocalNavigator provides navigator) {
             val currentScreen = backStack.lastOrNull() ?: Splash
 
             when (currentScreen) {
@@ -68,6 +71,7 @@ fun App() {
                     val viewModel = koinViewModel<WalletViewModel>()
                     WalletScreen(viewModel)
                 }
+            }
             }
         }
     }
