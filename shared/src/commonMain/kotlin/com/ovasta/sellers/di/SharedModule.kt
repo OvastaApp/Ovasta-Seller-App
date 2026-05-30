@@ -20,8 +20,16 @@ import com.ovasta.sellers.domain.repository.ILoginRepository
 import com.ovasta.sellers.domain.repository.IOrderHistoryRepository
 import com.ovasta.sellers.domain.repository.ISettingsRepository
 import com.ovasta.sellers.domain.repository.IWalletRepository
+import com.ovasta.sellers.ui.screens.createorder.CreateOrderViewModel
+import com.ovasta.sellers.ui.screens.home.HomeViewModel
+import com.ovasta.sellers.ui.screens.login.LoginViewModel
+import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryViewModel
+import com.ovasta.sellers.ui.screens.profile.ProfileViewModel
+import com.ovasta.sellers.ui.screens.splash.SplashViewModel
+import com.ovasta.sellers.ui.screens.wallet.WalletViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -57,6 +65,15 @@ val sharedModule = module {
     singleOf(::WalletRepository) bind IWalletRepository::class
     singleOf(::OrderHistoryRepository) bind IOrderHistoryRepository::class
     singleOf(::SettingsRepository) bind ISettingsRepository::class
+
+    // ViewModels
+    viewModelOf(::SplashViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::HomeViewModel)
+    viewModelOf(::CreateOrderViewModel)
+    viewModelOf(::ProfileViewModel)
+    viewModelOf(::OrderHistoryViewModel)
+    viewModelOf(::WalletViewModel)
 }
 
 /**
