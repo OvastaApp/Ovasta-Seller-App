@@ -69,6 +69,11 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
+                // Lifecycle ViewModel (KMP-compatible)
+                implementation(libs.lifecycle.viewmodel.compose)
+                // Koin Compose Multiplatform
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
             }
         }
 
@@ -110,7 +115,7 @@ kotlin {
 }
 
 compose.resources {
-    publicResClass = false
+    publicResClass = true
     packageOfResClass = "com.ovasta.sellers.shared.resources"
-    generateResClass = auto
+    generateResClass = always
 }
