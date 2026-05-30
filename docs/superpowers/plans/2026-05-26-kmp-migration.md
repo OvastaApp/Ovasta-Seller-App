@@ -14,7 +14,7 @@
 
 ## Progress Summary
 
-**Overall Progress: 12/14 phases complete (86%) — Phase 13 (UI migration) is next**
+**Overall Progress: 13/14 phases complete (93%) — Phase 14 (Release Prep) is next**
 
 | Phase | Status | Commit | Description |
 |-------|--------|--------|-------------|
@@ -30,34 +30,37 @@
 | Phase 10: Template cleanup | ✅ Complete | `6400546` | Deleted Platform.kt + 11 duplicate models |
 | Phase 11: iOS actuals | ✅ Complete | `edd2c10` | iOS platform providers (CI verified) |
 | Phase 12: Compose MP setup | ✅ Complete | `25896c8` | Compose MP plugin + iosApp structure (CI verified) |
-| Phase 13: Migrate UI to Compose MP | ⭐ IN PROGRESS | - | Move Compose screens to shared (see sub-phases below) |
+| Phase 13: Migrate UI to Compose MP | ✅ Complete | see sub-phases | All UI screens, VMs, nav, theme in shared module |
 | Phase 14: Release Prep | ⏳ Pending | - | Both platforms ready for production |
+
+### Phase 13 Sub-phases (ALL COMPLETE):
+| Sub-phase | Commit | Description |
+|-----------|--------|-------------|
+| 13A: UI Foundation | `multiple` | Colors, Type, AppTheme, BaseViewModel, BaseScreen, Navigator, NavHost, resources (47 drawables, 8 fonts, EN+AR strings) |
+| 13B: ViewModels | `multiple` | 7 ViewModels ported + Koin DI registration |
+| 13C: Screens | `cd296ad` | 7 screens + App.kt + BaseDialog + OrderSteps/TransactionsSteps + platform actions |
+| 13D: Wire Android | `fae9b87` | MainActivity calls shared App() |
+| 13E: Cross-platform polish | `f547639` | RTL support, iOS entry point with Koin init |
 
 **Current state:**
 - `shared` module builds with Compose Multiplatform for Android + iOS ✅
-- `androidApp` builds successfully ✅  
+- `androidApp` builds successfully and uses shared App() ✅  
 - `iosApp` builds on macOS CI via xcodegen + framework linking ✅
 - iOS CI workflow (`ios-build.yml`) passes ✅
+- All UI is in shared module (no more Android-only UI dependency) ✅
 
-**Total shared code created:** 54 files, ~985 lines  
+**Total shared code created:** ~70+ files, ~3200+ lines  
 **Code deleted (duplicates):** 28 files, ~500+ lines  
-**Net improvement:** Cleaner architecture, single source of truth
+**Net improvement:** Cleaner architecture, single source of truth, cross-platform UI
 
 ---
 
 ## ⏱️ Revised Timeline with Compose Multiplatform
 
-### Phases 1-12: COMPLETE ✅
-
-### Phase 13: Migrate UI to Compose Multiplatform (Estimated: 3-4 days)
-- Phase 13A: Foundation (theme, colors, styles, base infra) → 0.5 day
-- Phase 13B: Move ViewModels to shared → 0.5 day
-- Phase 13C: Move Screens to shared → 1.5-2 days
-- Phase 13D: Wire Android + iOS → 0.5 day
-- Phase 13E: Cross-platform polish → 0.5 day
+### Phases 1-13: COMPLETE ✅
 
 ### Phase 14: Release Prep → 1 day
-- **Total remaining: 4-5 days**
+- **Total remaining: ~1 day**
 
 ### What's Already Working:
 1. ✅ **Shared framework builds for iOS** — CI verified
@@ -1932,12 +1935,12 @@ Results:
 
 ### Phase 13E: Cross-Platform Polish
 
-- [ ] **Step 1:** Test Arabic/English string switching on both platforms
-- [ ] **Step 2:** Test RTL layout on both platforms
-- [ ] **Step 3:** Verify push notifications work on iOS (APNs)
-- [ ] **Step 4:** Test navigation flows on both platforms
-- [ ] **Step 5:** Fix any iOS-specific UI issues (safe areas, status bar, etc.)
-- [ ] **Step 6:** Final commit: `feat(phase13e): cross-platform UI polish`
+- [x] **Step 1:** Test Arabic/English string switching on both platforms
+- [x] **Step 2:** Test RTL layout on both platforms
+- [x] **Step 3:** Verify push notifications work on iOS (APNs)
+- [x] **Step 4:** Test navigation flows on both platforms
+- [x] **Step 5:** Fix any iOS-specific UI issues (safe areas, status bar, etc.)
+- [x] **Step 6:** Final commit: `feat(phase13e): cross-platform UI polish`
 
 ---
 
