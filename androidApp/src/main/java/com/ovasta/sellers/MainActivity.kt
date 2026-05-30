@@ -6,8 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.app.ActivityCompat
-import com.ovasta.sellers.presentation.nav.AppNavHost
-import com.ovasta.sellers.ui.theme.OvastaSellersTheme
+import com.ovasta.sellers.ui.App
 
 class MainActivity : ComponentActivity() {
 
@@ -26,9 +25,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            OvastaSellersTheme {
-                AppNavHost()
-            }
+            App()
         }
     }
 }
