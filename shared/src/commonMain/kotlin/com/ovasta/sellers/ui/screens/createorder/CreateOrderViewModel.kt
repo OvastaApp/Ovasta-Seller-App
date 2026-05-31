@@ -3,6 +3,14 @@ package com.ovasta.sellers.ui.screens.createorder
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.domain.repository.ICreateOrderRepository
 import com.ovasta.sellers.domain.repository.ISettingsRepository
+import com.ovasta.sellers.shared.resources.Res
+import com.ovasta.sellers.shared.resources.address_required
+import com.ovasta.sellers.shared.resources.delivery_date_required
+import com.ovasta.sellers.shared.resources.delivery_fees_min_egp_error
+import com.ovasta.sellers.shared.resources.delivery_time_required
+import com.ovasta.sellers.shared.resources.order_submitted_successfully
+import com.ovasta.sellers.shared.resources.valid_amount_required
+import com.ovasta.sellers.shared.resources.valid_phone_required
 import com.ovasta.sellers.ui.base.BaseViewModel
 import com.ovasta.sellers.ui.base.ScreenDirection
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class CreateOrderViewModel(
     private val repository: ICreateOrderRepository,
@@ -26,9 +35,11 @@ class CreateOrderViewModel(
     fun onAction(action: CreateOrderScreenActions) {
         when (action) {
             is CreateOrderScreenActions.OnCustomerPhoneChanged -> {
-                val error = if (action.phone.isBlank() || action.phone.length != 11)
-                    "Valid phone number is required" else null
-                _viewState.update { it.copy(customerPhone = action.phone, customerPhoneError = error) }
+                viewModelScope.launch {
+                    val error = if (action.phone.isBlank() || action.phone.length != 11)
+                        getString(Res.string.valid_phone_required) else null
+                    _viewState.update { it.copy(customerPhone = action.phone, customerPhoneError = error) }
+                }
             }
             is CreateOrderScreenActions.OnCustomerAddressChanged ->
                 _viewState.update { it.copy(customerAddress = action.address, customerAddressError = null) }
@@ -41,15 +52,20 @@ class CreateOrderViewModel(
             is CreateOrderScreenActions.OnScheduledTimeChanged ->
                 _viewState.update { it.copy(scheduledTime = action.time, scheduledTimeError = null) }
             is CreateOrderScreenActions.OnDeliveryFeesChanged -> {
-                val value = action.fees.toDoubleOrNull()
-                val min = _viewState.value.minOrderDeliveryPrice
-                val error = if (value == null || value < min) "Minimum delivery fees is $min EGP" else null
-                _viewState.update { it.copy(deliveryFees = action.fees, deliveryFeesError = error) }
+                viewModelScope.launch {
+                    val value = action.fees.toDoubleOrNull()
+                    val min = _viewState.value.minOrderDeliveryPrice
+                    val error = if (value == null || value < min)
+                        getString(Res.string.delivery_fees_min_egp_error, "%.2f".format(min)) else null
+                    _viewState.update { it.copy(deliveryFees = action.fees, deliveryFeesError = error) }
+                }
             }
             is CreateOrderScreenActions.OnNoteChanged ->
                 _viewState.update { it.copy(note = action.note) }
             is CreateOrderScreenActions.OnSubmitOrder -> {
-                if (validateForm()) _viewState.update { it.copy(showConfirmDialog = true) }
+                viewModelScope.launch {
+                    if (validateForm()) _viewState.update { it.copy(showConfirmDialog = true) }
+                }
             }
             is CreateOrderScreenActions.OnConfirmSubmit -> {
                 _viewState.update { it.copy(showConfirmDialog = false) }
@@ -60,34 +76,34 @@ class CreateOrderViewModel(
         }
     }
 
-    private fun validateForm(): Boolean {
+    private suspend fun validateForm(): Boolean {
         val state = _viewState.value
         var isValid = true
 
         if (state.customerPhone.isBlank() || state.customerPhone.length != 11) {
-            _viewState.update { it.copy(customerPhoneError = "Valid phone number is required") }
+            _viewState.update { it.copy(customerPhoneError = getString(Res.string.valid_phone_required)) }
             isValid = false
         }
         if (state.customerAddress.isBlank()) {
-            _viewState.update { it.copy(customerAddressError = "Address is required") }
+            _viewState.update { it.copy(customerAddressError = getString(Res.string.address_required)) }
             isValid = false
         }
         if (state.collectionAmount.isBlank() || state.collectionAmount.toDoubleOrNull() == null) {
-            _viewState.update { it.copy(collectionAmountError = "Valid amount is required") }
+            _viewState.update { it.copy(collectionAmountError = getString(Res.string.valid_amount_required)) }
             isValid = false
         }
         val fees = state.deliveryFees.toDoubleOrNull()
         if (fees == null || fees < state.minOrderDeliveryPrice) {
-            _viewState.update { it.copy(deliveryFeesError = "Minimum delivery fees is ${state.minOrderDeliveryPrice} EGP") }
+            _viewState.update { it.copy(deliveryFeesError = getString(Res.string.delivery_fees_min_egp_error, "%.2f".format(state.minOrderDeliveryPrice))) }
             isValid = false
         }
         if (state.deliveryTiming == DeliveryTiming.LATER) {
             if (state.scheduledDate.isBlank()) {
-                _viewState.update { it.copy(scheduledDateError = "Delivery date is required") }
+                _viewState.update { it.copy(scheduledDateError = getString(Res.string.delivery_date_required)) }
                 isValid = false
             }
             if (state.scheduledTime.isBlank()) {
-                _viewState.update { it.copy(scheduledTimeError = "Delivery time is required") }
+                _viewState.update { it.copy(scheduledTimeError = getString(Res.string.delivery_time_required)) }
                 isValid = false
             }
         }
@@ -108,7 +124,7 @@ class CreateOrderViewModel(
                 )
             }.onSuccess {
                 setLoading(false)
-                emitMessage("Order submitted successfully")
+                emitMessage(getString(Res.string.order_submitted_successfully))
                 emitScreenDirection(ScreenDirection.Pop)
             }.onFailure {
                 setLoading(false)

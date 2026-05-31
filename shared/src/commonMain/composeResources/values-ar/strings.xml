@@ -96,7 +96,7 @@
     <string name="items_count">عدد العناصر</string>
     <string name="delivery_fees">رسوم التوصيل</string>
     <string name="delivery_fees_min_egp_error">
-    الحد الأدنى لرسوم التوصيل هو %1$.2f ج.م</string>
+    الحد الأدنى لرسوم التوصيل هو %1$s ج.م</string>
     <string name="status_label">الحالة</string>
     <string name="new_label">جديد</string>
     <string name="pending_label">قيد الانتظار</string>
