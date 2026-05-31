@@ -31,7 +31,7 @@
 | Phase 11: iOS actuals | ✅ Complete | `edd2c10` | iOS platform providers (CI verified) |
 | Phase 12: Compose MP setup | ✅ Complete | `25896c8` | Compose MP plugin + iosApp structure (CI verified) |
 | Phase 13: Migrate UI to Compose MP | ✅ Complete | see sub-phases | All UI screens, VMs, nav, theme in shared module |
-| Phase 14: Release Prep | ⏳ Pending | - | Both platforms ready for production |
+| Phase 14: Release Prep | ⏳ In Progress | `9755707`+ | CI/code fixes done, manual testing remaining |
 
 ### Phase 13 Sub-phases (ALL COMPLETE):
 | Sub-phase | Commit | Description |
@@ -1972,18 +1972,47 @@ implementation("io.insert-koin:koin-compose-viewmodel:4.1.0")
 
 **Goal:** Both platforms ready for production release.
 
+**Status:** In Progress — Code/CI work done, manual testing + Apple setup remaining.
+
+### Completed:
+- [x] **Step 2:** ProGuard/R8 rules updated for shared module (removed dead Retrofit/Gson rules, added Ktor + shared model rules)
+- [x] **Step 3 (partial):** Signing config added to `androidApp/build.gradle.kts` (reads from `keystore.properties` or env vars), `assembleRelease` BUILD SUCCESSFUL
+- [x] **Fix:** Deleted duplicate theme files from androidApp (Color.kt, Theme.kt, Type.kt) — caused R8 duplicate class error
+- [x] **Fix:** Added `Purple80` to shared Colors.kt
+- [x] **Fix:** Deleted stale `app/` directory (old module before rename)
+- [x] **Fix:** Updated `.gitignore` with keystore exclusions
+- [x] **Fix:** Replaced `androidx.lifecycle:lifecycle-viewmodel-compose` with JetBrains KMP-compatible version (`org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.0-beta01`) — iOS CI now passes
+- [x] **Fix:** TestFlight workflow — added xcodegen step, fixed scheme name from `"Ovasta Sellers"` to `iosApp`
+
+### Remaining (manual/device-dependent):
+
 **Android:**
-- [ ] **Step 1:** Verify full regression test on device
-- [ ] **Step 2:** Ensure ProGuard/R8 rules cover shared module
-- [ ] **Step 3:** Generate signed release APK/AAB
+- [ ] **Step 1:** Verify full regression test on device (install APK, test all flows)
+- [ ] **Step 3 (remaining):** Create `keystore.properties` with real Play Store keystore, run `./gradlew :androidApp:bundleRelease`
 
-**iOS:**
-- [ ] **Step 4:** Test on physical device
-- [ ] **Step 5:** Configure App Store Connect
-- [ ] **Step 6:** Archive and upload to TestFlight
-- [ ] **Step 7:** Submit for App Store review
+**iOS — Requires Apple Developer setup:**
+- [ ] **Step 4:** Test on physical iOS device (requires macOS + device)
+- [ ] **Step 5:** Configure App Store Connect (bundle ID, provisioning profiles)
+- [ ] **Step 6:** Configure GitHub Secrets for TestFlight workflow:
+  - `CERTIFICATES_P12_BASE64` — Distribution certificate (.p12) base64-encoded
+  - `CERTIFICATES_PASSWORD` — Password for the .p12 file
+  - `PROVISIONING_PROFILE_BASE64` — App Store provisioning profile base64-encoded
+  - `SIGNING_IDENTITY` — e.g. `"Apple Distribution: Your Name (H8X427WWQW)"`
+  - `PROVISIONING_PROFILE_NAME` — Name of the profile in Apple portal
+  - `ASC_KEY_ID` — App Store Connect API Key ID
+  - `ASC_ISSUER_ID` — App Store Connect Issuer ID
+  - `ASC_PRIVATE_KEY` — Contents of AuthKey_*.p8 file
+- [ ] **Step 7:** Trigger TestFlight workflow (manual dispatch or tag `v1.0.8`)
+- [ ] **Step 8:** Submit for App Store review
 
-**Both:**
-- [ ] **Step 8:** Verify push notifications work end-to-end
-- [ ] **Step 9:** Verify Arabic/English switching
-- [ ] **Step 10:** Final QA pass on both platforms
+**Both Platforms:**
+- [ ] **Step 9:** Verify push notifications work end-to-end (FCM + APNs)
+- [ ] **Step 10:** Verify Arabic/English switching on devices
+- [ ] **Step 11:** Final QA pass on both platforms
+
+### Key Commits (Phase 14):
+| Commit | Description |
+|--------|-------------|
+| `9755707` | ProGuard rules + signing config + theme cleanup |
+| `0ab5e0a` | Fix lifecycle-viewmodel-compose for iOS KMP compatibility |
+| `a354c04` | Fix TestFlight workflow (xcodegen + scheme name) |
