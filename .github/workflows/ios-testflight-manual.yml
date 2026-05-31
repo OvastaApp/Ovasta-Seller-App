@@ -68,6 +68,16 @@ jobs:
       # PHASE 3: IOS DEPENDENCIES
       # ============================================
       
+      - name: 🔧 Install xcodegen
+        run: brew install xcodegen
+
+      - name: 📋 Generate Xcode Project
+        working-directory: iosApp
+        run: |
+          echo "Generating Xcode project from project.yml..."
+          xcodegen generate
+          echo "✅ Xcode project generated"
+
       - name: 💎 Install CocoaPods
         run: |
           sudo gem install cocoapods
@@ -171,7 +181,7 @@ jobs:
           
           xcodebuild archive \
             -workspace iosApp.xcworkspace \
-            -scheme "Ovasta Sellers" \
+            -scheme iosApp \
             -configuration Release \
             -archivePath build/OvastaSellers.xcarchive \
             -destination 'generic/platform=iOS' \
