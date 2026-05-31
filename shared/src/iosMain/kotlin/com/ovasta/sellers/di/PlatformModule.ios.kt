@@ -9,8 +9,15 @@ import com.ovasta.sellers.data.platform.HapticFeedback
 import com.ovasta.sellers.data.platform.SecureStorage
 import com.ovasta.sellers.data.remote.SessionHeaderProvider
 import com.ovasta.sellers.domain.repository.ISettingsRepository
+import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
+
+fun initKoinIos() {
+    startKoin {
+        modules(sharedModule, platformModule())
+    }
+}
 
 actual fun platformModule(): Module = module {
     // Platform services (no Context required on iOS)

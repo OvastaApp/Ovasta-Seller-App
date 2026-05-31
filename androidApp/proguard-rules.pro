@@ -36,12 +36,10 @@
 -keep class com.ovasta.sellers.data.** { *; }
 -keep class com.ovasta.sellers.data.setting.model.** { *; }
 -keep class com.ovasta.sellers.data.setting.data.datastore.** { *; }
--keep class com.ovasta.sellers.presentation.auth.login.data.model.** { *; }
--keep class com.ovasta.sellers.presentation.createOrder.data.model.** { *; }
--keep class com.ovasta.sellers.presentation.home.data.model.** { *; }
--keep class com.ovasta.sellers.presentation.profile.wallet.data.** { *; }
--keep class com.ovasta.sellers.presentation.profile.orderhistory.data.** { *; }
 -keep class com.ovasta.sellers.base.exception.** { *; }
+
+# Shared module domain models (kotlinx.serialization)
+-keep class com.ovasta.sellers.domain.model.** { *; }
 
 # Keep any class with @SerializedName fields
 -keepclassmembers,allowobfuscation class * {
@@ -77,13 +75,9 @@
 -dontwarn retrofit2.**
 
 # Keep Retrofit service interfaces
--keep,allowobfuscation interface com.ovasta.sellers.presentation.auth.login.data.LoginApi
--keep,allowobfuscation interface com.ovasta.sellers.presentation.home.data.HomeApi
--keep,allowobfuscation interface com.ovasta.sellers.presentation.createOrder.data.CreateOrderApi
--keep,allowobfuscation interface com.ovasta.sellers.presentation.profile.wallet.data.WalletApi
--keep,allowobfuscation interface com.ovasta.sellers.presentation.profile.orderhistory.data.OrderHistoryApi
 -keep,allowobfuscation interface com.ovasta.sellers.data.setting.data.SettingsApi
 -keep,allowobfuscation interface com.ovasta.sellers.presentation.profile.profile.data.ProfileApi
+-keep,allowobfuscation interface com.ovasta.sellers.data.notification.FcmTokenApi
 
 # Keep all methods in Retrofit interfaces
 -keepclassmembernames,allowobfuscation interface * {
@@ -159,3 +153,7 @@
 
 # ---------- Play Services Location ----------
 -dontwarn com.google.android.gms.location.**
+
+# ---------- Ktor (shared module networking) ----------
+-dontwarn io.ktor.**
+-dontwarn kotlinx.coroutines.debug.**
