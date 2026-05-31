@@ -14,6 +14,18 @@ plugins {
 }
 
 
+// Load keystore properties if available (for signed release builds)
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val hasKeystoreProps = keystorePropertiesFile.exists()
+val keystoreProperties: Map<String, String> = if (hasKeystoreProps) {
+    keystorePropertiesFile.readLines()
+        .filter { it.contains("=") && !it.startsWith("#") }
+        .associate { line ->
+            val (key, value) = line.split("=", limit = 2)
+            key.trim() to value.trim()
+        }
+} else emptyMap()
+
 android {
     namespace = "com.ovasta.sellers"
     compileSdk = 36
@@ -28,11 +40,24 @@ android {
 
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"] ?: "keystore.jks")
+            storePassword = keystoreProperties["storePassword"] ?: System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = keystoreProperties["keyAlias"] ?: System.getenv("KEY_ALIAS") ?: ""
+            keyPassword = keystoreProperties["keyPassword"] ?: System.getenv("KEY_PASSWORD") ?: ""
+        }
+    }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = if (hasKeystoreProps || System.getenv("KEYSTORE_PASSWORD") != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
