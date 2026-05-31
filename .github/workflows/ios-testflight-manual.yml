@@ -1,10 +1,19 @@
 name: Deploy iOS to TestFlight (Manual)
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      match_readonly:
+        description: 'Match readonly mode (false for first run to generate certs)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
   push:
     tags:
-      - 'v*.*.*'  # Trigger on version tags (e.g., v1.0.0)
+      - 'v*.*.*'
 
 jobs:
   deploy-testflight:
@@ -15,6 +24,7 @@ jobs:
     env:
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_READONLY: ${{ github.event.inputs.match_readonly || 'false' }}
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}

@@ -6,7 +6,7 @@ platform :ios do
   lane :sync_certs do
     match(
       type: "appstore",
-      readonly: is_ci,
+      readonly: ENV["MATCH_READONLY"] == "true",
       git_url: ENV["MATCH_GIT_URL"],
       app_identifier: "com.ovasta.sellers",
       team_id: "H8X427WWQW"
