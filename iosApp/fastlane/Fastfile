@@ -65,12 +65,14 @@ platform :ios do
 
     key_id = ENV["ASC_KEY_ID"]
     issuer_id = ENV["ASC_ISSUER_ID"]
+    UI.user_error!("ASC_KEY_ID is missing") if key_id.to_s.strip.empty?
+    UI.user_error!("ASC_ISSUER_ID is missing") if issuer_id.to_s.strip.empty?
 
     unless key_value.include?("BEGIN PRIVATE KEY") || key_value.include?("BEGIN EC PRIVATE KEY")
       key_value = Base64.decode64(key_value)
     end
 
-    key_value = key_value.gsub('\\n', "\n").strip
+    key_value = key_value.gsub('\\n', "\n").gsub("\r\n", "\n").strip
 
     begin
       parsed_key = OpenSSL::PKey.read(key_value)

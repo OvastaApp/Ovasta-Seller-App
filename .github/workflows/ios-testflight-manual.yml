@@ -105,7 +105,13 @@ jobs:
         run: |
           bundle config set --local path vendor/bundle
           bundle install --jobs 4
+          bundle exec fastlane --version
           echo "Fastlane and CocoaPods installed"
+
+      - name: Validate ASC key format
+        working-directory: iosApp
+        run: |
+          ruby -e 'require "base64"; raw = ENV.fetch("ASC_PRIVATE_KEY", "").strip; abort("ASC_PRIVATE_KEY is missing") if raw.empty?; pem = (raw.include?("BEGIN PRIVATE KEY") || raw.include?("BEGIN EC PRIVATE KEY")) ? raw : Base64.decode64(raw); pem = pem.gsub("\\n", "\n").gsub("\r\n", "\n").strip; abort("ASC key is not PEM") unless pem.include?("BEGIN") && pem.include?("END"); puts "ASC key payload looks valid"'
 
       - name: Install Pod Dependencies
         working-directory: iosApp

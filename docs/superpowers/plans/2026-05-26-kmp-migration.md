@@ -1993,12 +1993,12 @@ implementation("io.insert-koin:koin-compose-viewmodel:4.1.0")
 **iOS — Requires Apple Developer setup:**
 - [x] **Step 5:** Configure App Store Connect (bundle ID, provisioning profiles)
 - [x] **Step 6:** Configure GitHub Secrets for TestFlight workflow (Fastlane Match):
-  - `MATCH_GIT_URL` — `https://github.com/OvastaApp/ios-certificates.git`
-  - `MATCH_PASSWORD` — `ovasta-match-2026`
-  - `MATCH_GIT_BASIC_AUTHORIZATION` — `bS5mYXJhaGF0X21heGFiOmdocF83aDdoaEhMVG5UMkU1ZnF2Z21TSmdvR21HdmhrYkkydFBhOFA=`
-  - `ASC_KEY_ID` — `487K5GK4WD`
-  - `ASC_ISSUER_ID` — `0b05f5b5-d42c-4840-90b6-8dd8c86e46c2`
-  - `ASC_PRIVATE_KEY` — `LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZ1IrbHdBWkJ2Tkxuc2d0S08KTW8wREpoTk9Va3hDNkVBQUxVbU9TZ3lua1NPZ0NnWUlLb1pJemowREFRZWhSQU5DQUFTcFVLaFQ0REFDbFhocAplOSt1ekRTRGVTYyswQWc2VWNPZVR4Wk1SMDFFRHFoWC8zQTJGL2JlMTZ6bkxueXozdmlaQ0U4eVJ1b05FbGpHCkhSU0hiNWd2Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=`
+  - `MATCH_GIT_URL` — configured in GitHub Secrets (value redacted)
+  - `MATCH_PASSWORD` — configured in GitHub Secrets (value redacted)
+  - `MATCH_GIT_BASIC_AUTHORIZATION` — configured in GitHub Secrets (value redacted)
+  - `ASC_KEY_ID` — configured in GitHub Secrets (value redacted)
+  - `ASC_ISSUER_ID` — configured in GitHub Secrets (value redacted)
+  - `ASC_PRIVATE_KEY` — configured in GitHub Secrets (value redacted)
 - [ ] **Step 7:** Trigger TestFlight workflow (manual dispatch, match_readonly=false for first run)
 - [ ] **Step 4:** Test on physical iOS device (requires macOS + device)
 - [ ] **Step 8:** Submit for App Store review
