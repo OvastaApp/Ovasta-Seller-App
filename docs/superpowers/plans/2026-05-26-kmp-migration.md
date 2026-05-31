@@ -1991,19 +1991,25 @@ implementation("io.insert-koin:koin-compose-viewmodel:4.1.0")
 - [ ] **Step 3 (remaining):** Create `keystore.properties` with real Play Store keystore, run `./gradlew :androidApp:bundleRelease`
 
 **iOS — Requires Apple Developer setup:**
+- [x] **Step 5:** Configure App Store Connect (bundle ID, provisioning profiles)
+- [x] **Step 6:** Configure GitHub Secrets for TestFlight workflow (Fastlane Match):
+  - `MATCH_GIT_URL` — `https://github.com/OvastaApp/ios-certificates.git`
+  - `MATCH_PASSWORD` — `ovasta-match-2026`
+  - `MATCH_GIT_BASIC_AUTHORIZATION` — `bS5mYXJhaGF0X21heGFiOmdocF83aDdoaEhMVG5UMkU1ZnF2Z21TSmdvR21HdmhrYkkydFBhOFA=`
+  - `ASC_KEY_ID` — `W4G3566GLS`
+  - `ASC_ISSUER_ID` — `0b05f5b5-d42c-4840-90b6-8dd8c86e46c2`
+  - `ASC_PRIVATE_KEY` — `LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZzhyMS9QbHFjemRNKzd5S0sKakVSUVR1T0Z5RVhnWENFekZmdHZqYTVhWm0yZ0NnWUlLb1pJemowREFRZWhSQU5DQUFTQXBKQzN2S3hkcDJ3WQpnNlBmVFFtSlp2TmtPbHEvdElyRVR0bEhyYTVEeEszNUVwcTdGdjdwOWVBbUYvMUFYOG1vNkxiSlN3UWo0WWtuCjRNblE0REE4Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=`
+- [ ] **Step 7:** Trigger TestFlight workflow (manual dispatch, match_readonly=false for first run)
 - [ ] **Step 4:** Test on physical iOS device (requires macOS + device)
-- [ ] **Step 5:** Configure App Store Connect (bundle ID, provisioning profiles)
-- [ ] **Step 6:** Configure GitHub Secrets for TestFlight workflow:
-  - `CERTIFICATES_P12_BASE64` — Distribution certificate (.p12) base64-encoded
-  - `CERTIFICATES_PASSWORD` — Password for the .p12 file
-  - `PROVISIONING_PROFILE_BASE64` — App Store provisioning profile base64-encoded
-  - `SIGNING_IDENTITY` — e.g. `"Apple Distribution: Your Name (H8X427WWQW)"`
-  - `PROVISIONING_PROFILE_NAME` — Name of the profile in Apple portal
-  - `ASC_KEY_ID` — App Store Connect API Key ID
-  - `ASC_ISSUER_ID` — App Store Connect Issuer ID
-  - `ASC_PRIVATE_KEY` — Contents of AuthKey_*.p8 file
-- [ ] **Step 7:** Trigger TestFlight workflow (manual dispatch or tag `v1.0.8`)
 - [ ] **Step 8:** Submit for App Store review
+
+**Apple Developer Credentials (reference):**
+- Team ID: `H8X427WWQW`
+- Bundle ID: `com.ovasta.sellers`
+- App Store Connect API Key ID: `W4G3566GLS`
+- App Store Connect Issuer ID: `0b05f5b5-d42c-4840-90b6-8dd8c86e46c2`
+- GitHub PAT: (stored in GitHub Secrets as MATCH_GIT_BASIC_AUTHORIZATION)
+- Certificates repo: `https://github.com/OvastaApp/ios-certificates.git`
 
 **Both Platforms:**
 - [ ] **Step 9:** Verify push notifications work end-to-end (FCM + APNs)
@@ -2016,3 +2022,5 @@ implementation("io.insert-koin:koin-compose-viewmodel:4.1.0")
 | `9755707` | ProGuard rules + signing config + theme cleanup |
 | `0ab5e0a` | Fix lifecycle-viewmodel-compose for iOS KMP compatibility |
 | `a354c04` | Fix TestFlight workflow (xcodegen + scheme name) |
+| `51723de` | Integrate Fastlane Match for iOS code signing |
+| `9d0419c` | Configure Match for first-run cert generation (no Mac needed) |
