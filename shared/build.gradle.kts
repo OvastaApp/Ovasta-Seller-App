@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.android.lint)
+    id("com.android.library")
     alias(libs.plugins.serialization)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
@@ -9,20 +8,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
-        namespace = "com.ovasta.shared"
-        compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "sharedKit"
 
@@ -98,19 +84,23 @@ kotlin {
             }
         }
 
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.junit)
-            }
-        }
-
         iosMain {
             dependencies {
                 implementation(libs.ktor.client.darwin)
             }
         }
+    }
+}
+
+android {
+    namespace = "com.ovasta.shared"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
