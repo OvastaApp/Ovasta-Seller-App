@@ -13,6 +13,7 @@ import com.ovasta.sellers.shared.resources.valid_amount_required
 import com.ovasta.sellers.shared.resources.valid_phone_required
 import com.ovasta.sellers.ui.base.BaseViewModel
 import com.ovasta.sellers.ui.base.ScreenDirection
+import kotlin.math.round
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,7 +57,7 @@ class CreateOrderViewModel(
                     val value = action.fees.toDoubleOrNull()
                     val min = _viewState.value.minOrderDeliveryPrice
                     val error = if (value == null || value < min)
-                        getString(Res.string.delivery_fees_min_egp_error, "%.2f".format(min)) else null
+                        getString(Res.string.delivery_fees_min_egp_error, min.formatPrice()) else null
                     _viewState.update { it.copy(deliveryFees = action.fees, deliveryFeesError = error) }
                 }
             }
@@ -94,7 +95,7 @@ class CreateOrderViewModel(
         }
         val fees = state.deliveryFees.toDoubleOrNull()
         if (fees == null || fees < state.minOrderDeliveryPrice) {
-            _viewState.update { it.copy(deliveryFeesError = getString(Res.string.delivery_fees_min_egp_error, "%.2f".format(state.minOrderDeliveryPrice))) }
+            _viewState.update { it.copy(deliveryFeesError = getString(Res.string.delivery_fees_min_egp_error, state.minOrderDeliveryPrice.formatPrice())) }
             isValid = false
         }
         if (state.deliveryTiming == DeliveryTiming.LATER) {
@@ -146,5 +147,17 @@ class CreateOrderViewModel(
                     handleError(it)
                 }
         }
+    }
+}
+
+private fun Double.formatPrice(): String {
+    val rounded = round(this * 100) / 100.0
+    val str = rounded.toString()
+    val dot = str.indexOf('.')
+    if (dot == -1) return "$str.00"
+    val decimals = str.length - dot - 1
+    return when {
+        decimals >= 2 -> str.substring(0, dot + 3)
+        else -> str.padEnd(dot + 3, '0')
     }
 }
