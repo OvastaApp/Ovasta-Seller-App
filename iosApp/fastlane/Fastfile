@@ -54,20 +54,17 @@ platform :ios do
     )
   end
 
-  # Helper to build the API key hash - writes to temp file to avoid OpenSSL curve name bug
+  # Helper to build the API key hash
+  # Uses key_content (string) instead of key_filepath to avoid OpenSSL 3.x "invalid curve name" bug
   def get_asc_api_key
     require 'base64'
-    require 'tempfile'
 
     key_content = Base64.decode64(ENV["ASC_PRIVATE_KEY"])
-    key_file = Tempfile.new(['asc_key', '.p8'])
-    key_file.write(key_content)
-    key_file.close
 
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
-      key_filepath: key_file.path,
+      key_content: key_content,
       in_house: false
     )
   end
