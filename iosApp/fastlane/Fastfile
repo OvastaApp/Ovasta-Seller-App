@@ -31,10 +31,10 @@ platform :ios do
 
     api_key = get_asc_api_key
 
+    # stable CI build number (safe for App Store)
     build_number = Time.now.strftime("%Y%m%d%H%M")
 
     increment_build_number(
-      build_number: build_number,
       xcodeproj: "iosApp.xcodeproj"
     )
 
@@ -43,17 +43,15 @@ platform :ios do
       scheme: "iosApp",
       configuration: "Release",
       export_method: "app-store",
+
       output_directory: "build",
       output_name: "OvastaSellers.ipa",
+
       clean: true,
 
-      # 🔥 FINAL CI SIGNING FIX (IMPORTANT)
-      xcargs: "
-        CODE_SIGN_STYLE=Manual
-        DEVELOPMENT_TEAM=H8X427WWQW
-        CODE_SIGN_IDENTITY='Apple Distribution'
-        PROVISIONING_PROFILE_SPECIFIER='match AppStore com.ovasta.sellers'
-      ".strip,
+      # ✅ IMPORTANT FIX:
+      # DO NOT force manual signing in CI
+      # match + Xcode automatic signing will handle everything
 
       export_options: {
         provisioningProfiles: {
