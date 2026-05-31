@@ -12,328 +12,118 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 60
     
+    env:
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+
     steps:
       # ============================================
       # PHASE 1: ENVIRONMENT SETUP
       # ============================================
       
-      - name: 📦 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
       
-      - name: ☕ Setup Java 17
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
       
-      - name: 🍎 Setup Xcode
+      - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '15.2'
       
-      - name: 🔧 Make Gradlew Executable
+      - name: Make Gradlew Executable
         run: chmod +x ./gradlew
 
-      - name: 📋 Display Environment Info
-        run: |
-          echo "=== Environment Information ==="
-          echo "Xcode version:"
-          xcodebuild -version
-          echo ""
-          echo "Swift version:"
-          swift --version
-          echo ""
-          echo "CocoaPods version:"
-          pod --version || echo "CocoaPods not found, will install"
-          echo ""
-          echo "Java version:"
-          java -version
-          echo ""
-          echo "Gradle version:"
-          ./gradlew --version
-      
       # ============================================
       # PHASE 2: BUILD KMP FRAMEWORK
       # ============================================
       
-      - name: 🔨 Build KMP Shared Framework (Release)
+      - name: Build KMP Shared Framework (Release)
         run: |
           echo "Building iOS framework..."
           ./gradlew :shared:linkReleaseFrameworkIosArm64 --stacktrace
-          echo "✅ Framework built successfully"
-          ls -lh shared/build/bin/iosArm64/releaseFramework/ || echo "Framework directory not found"
-      
+          echo "Framework built successfully"
+
       # ============================================
-      # PHASE 3: IOS DEPENDENCIES
+      # PHASE 3: IOS PROJECT SETUP
       # ============================================
       
-      - name: 🔧 Install xcodegen
+      - name: Install xcodegen
         run: brew install xcodegen
 
-      - name: 📋 Generate Xcode Project
+      - name: Generate Xcode Project
         working-directory: iosApp
         run: |
-          echo "Generating Xcode project from project.yml..."
           xcodegen generate
-          echo "✅ Xcode project generated"
+          echo "Xcode project generated"
 
-      - name: 💎 Install CocoaPods
-        run: |
-          sudo gem install cocoapods
-          pod --version
-      
-      - name: 📥 Install Pod Dependencies
+      - name: Install Ruby Dependencies (Fastlane + CocoaPods)
         working-directory: iosApp
         run: |
-          echo "Installing CocoaPods dependencies..."
-          pod install --repo-update
-          echo "✅ Pods installed successfully"
-      
-      # ============================================
-      # PHASE 4: CODE SIGNING SETUP
-      # ============================================
-      
-      - name: 🔐 Import Code Signing Certificates
-        env:
-          CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12_BASE64 }}
-          CERTIFICATES_PASSWORD: ${{ secrets.CERTIFICATES_PASSWORD }}
+          bundle install
+          echo "Fastlane and CocoaPods installed"
+
+      - name: Install Pod Dependencies
+        working-directory: iosApp
         run: |
-          echo "Setting up code signing..."
-          
-          # Decode P12 certificate
-          echo "$CERTIFICATES_P12" | base64 --decode > certificates.p12
-          
-          # Create temporary keychain
+          bundle exec pod install --repo-update
+          echo "Pods installed"
+
+      # ============================================
+      # PHASE 4: BUILD, SIGN & UPLOAD (Fastlane)
+      # ============================================
+
+      - name: Setup Keychain
+        run: |
           security create-keychain -p actions build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p actions build.keychain
           security set-keychain-settings -t 3600 -u build.keychain
-          
-          # Import certificate
-          security import certificates.p12 \
-            -k build.keychain \
-            -P "$CERTIFICATES_PASSWORD" \
-            -T /usr/bin/codesign \
-            -T /usr/bin/xcodebuild
-          
-          # Allow codesign to access keychain
-          security set-key-partition-list \
-            -S apple-tool:,apple:,codesign: \
-            -s -k actions build.keychain
-          
-          # Verify certificate installed
-          echo "Installed certificates:"
-          security find-identity -v -p codesigning
-          
-          echo "✅ Code signing configured"
-      
-      - name: 📄 Install Provisioning Profile
-        env:
-          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
-        run: |
-          echo "Installing provisioning profile..."
-          
-          # Create directory
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          
-          # Decode and install profile
-          echo "$PROVISIONING_PROFILE" | base64 --decode > \
-            ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-          
-          # Verify profile (display info)
-          security cms -D -i ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision | head -20
-          
-          echo "✅ Provisioning profile installed"
-      
-      # ============================================
-      # PHASE 5: BUILD & ARCHIVE IOS APP
-      # ============================================
-      
-      - name: 🔢 Update Build Number
+
+      - name: Run Fastlane Beta (Match + Build + Upload)
         working-directory: iosApp
         run: |
-          # Generate unique build number from timestamp
-          BUILD_NUMBER=$(date +%Y%m%d%H%M)
-          echo "Setting build number to: $BUILD_NUMBER"
-          
-          # Update Info.plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" iosApp/Info.plist
-          
-          # Display current version info
-          echo "App version info:"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" iosApp/Info.plist
-          /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" iosApp/Info.plist
-          
-          # Save build number for later steps
-          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
-      
-      - name: 🏗️ Build & Archive iOS App
-        working-directory: iosApp
-        env:
-          TEAM_ID: H8X427WWQW
-          SIGNING_IDENTITY: ${{ secrets.SIGNING_IDENTITY }}
-          PROVISIONING_PROFILE_NAME: ${{ secrets.PROVISIONING_PROFILE_NAME }}
-        run: |
-          echo "Building and archiving iOS app..."
-          echo "Team ID: $TEAM_ID"
-          echo "Bundle ID: com.ovasta.sellers"
-          
-          xcodebuild archive \
-            -workspace iosApp.xcworkspace \
-            -scheme iosApp \
-            -configuration Release \
-            -archivePath build/OvastaSellers.xcarchive \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="$SIGNING_IDENTITY" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROVISIONING_PROFILE_NAME" \
-            DEVELOPMENT_TEAM="$TEAM_ID" \
-            IPHONEOS_DEPLOYMENT_TARGET=14.0 \
-            | tee build.log
-          
-          echo "✅ Archive created successfully"
-      
+          bundle exec fastlane beta
+          echo "TestFlight deployment complete!"
+
       # ============================================
-      # PHASE 6: EXPORT IPA
+      # PHASE 5: ARTIFACTS & CLEANUP
       # ============================================
-      
-      - name: 📦 Create ExportOptions.plist
-        working-directory: iosApp
-        env:
-          TEAM_ID: H8X427WWQW
-          PROVISIONING_PROFILE_NAME: ${{ secrets.PROVISIONING_PROFILE_NAME }}
-        run: |
-          echo "Creating export options..."
-          cat > ExportOptions.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>app-store</string>
-              <key>teamID</key>
-              <string>$TEAM_ID</string>
-              <key>uploadBitcode</key>
-              <false/>
-              <key>uploadSymbols</key>
-              <true/>
-              <key>compileBitcode</key>
-              <false/>
-              <key>provisioningProfiles</key>
-              <dict>
-                  <key>com.ovasta.sellers</key>
-                  <string>$PROVISIONING_PROFILE_NAME</string>
-              </dict>
-          </dict>
-          </plist>
-          EOF
-          
-          echo "ExportOptions.plist created"
-          cat ExportOptions.plist
-      
-      - name: 📤 Export IPA
-        working-directory: iosApp
-        run: |
-          echo "Exporting IPA..."
-          
-          xcodebuild -exportArchive \
-            -archivePath build/OvastaSellers.xcarchive \
-            -exportPath build/ipa \
-            -exportOptionsPlist ExportOptions.plist \
-            -allowProvisioningUpdates \
-            | tee export.log
-          
-          echo "✅ IPA exported successfully"
-          
-          # Display IPA info
-          echo "Generated IPA file:"
-          ls -lh build/ipa/*.ipa
-      
-      # ============================================
-      # PHASE 7: UPLOAD TO TESTFLIGHT
-      # ============================================
-      
-      - name: 🚀 Upload to TestFlight
-        working-directory: iosApp
-        env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
-        run: |
-          echo "Uploading to TestFlight..."
-          
-          # Save API key to file
-          echo "$ASC_PRIVATE_KEY" > AuthKey.p8
-          
-          # Upload using altool
-          xcrun altool --upload-app \
-            --type ios \
-            --file build/ipa/*.ipa \
-            --apiKey "$ASC_KEY_ID" \
-            --apiIssuer "$ASC_ISSUER_ID" \
-            --verbose
-          
-          echo "✅ Upload to TestFlight completed!"
-          echo ""
-          echo "📱 TestFlight Processing:"
-          echo "   - Processing will take 15-30 minutes"
-          echo "   - Check App Store Connect for status"
-          echo "   - Beta testers will be notified when ready"
-      
-      # ============================================
-      # PHASE 8: ARTIFACTS & CLEANUP
-      # ============================================
-      
-      - name: 📎 Upload IPA Artifact
+
+      - name: Upload IPA Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ovasta-sellers-build-${{ env.BUILD_NUMBER }}.ipa
-          path: iosApp/build/ipa/*.ipa
+          name: ovasta-sellers-ios
+          path: iosApp/build/*.ipa
           retention-days: 30
-      
-      - name: 🐛 Upload dSYM for Crash Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: ovasta-sellers-dsym-${{ env.BUILD_NUMBER }}
-          path: iosApp/build/OvastaSellers.xcarchive/dSYMs/
-          retention-days: 90
-      
-      - name: 📊 Upload Build Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs-${{ env.BUILD_NUMBER }}
-          path: |
-            iosApp/build.log
-            iosApp/export.log
-          retention-days: 7
-      
-      - name: 🧹 Cleanup Keychain
+
+      - name: Cleanup Keychain
         if: always()
         run: |
-          echo "Cleaning up temporary keychain..."
           security delete-keychain build.keychain || true
-          echo "✅ Cleanup complete"
-      
-      - name: 🎉 Deployment Summary
+
+      - name: Deployment Summary
         if: success()
         run: |
-          echo "╔═══════════════════════════════════════════════════╗"
-          echo "║                                                   ║"
-          echo "║    ✅ TESTFLIGHT DEPLOYMENT SUCCESSFUL! ✅        ║"
-          echo "║                                                   ║"
-          echo "╚═══════════════════════════════════════════════════╝"
+          echo "==================================="
+          echo " TESTFLIGHT DEPLOYMENT SUCCESSFUL  "
+          echo "==================================="
           echo ""
-          echo "📱 App: Ovasta Sellers"
-          echo "📦 Bundle ID: com.ovasta.sellers"
-          echo "🔢 Build Number: $BUILD_NUMBER"
-          echo "👥 Team ID: H8X427WWQW"
+          echo "App: Ovasta Sellers"
+          echo "Bundle ID: com.ovasta.sellers"
+          echo "Team ID: H8X427WWQW"
           echo ""
-          echo "🔗 Next Steps:"
-          echo "   1. Go to https://appstoreconnect.apple.com"
-          echo "   2. Navigate to TestFlight tab"
-          echo "   3. Wait for processing (15-30 minutes)"
-          echo "   4. Add beta testers when ready"
-          echo ""
-          echo "📥 Download IPA from GitHub Actions artifacts"
+          echo "Next Steps:"
+          echo "  1. Go to appstoreconnect.apple.com"
+          echo "  2. Wait for processing (15-30 min)"
+          echo "  3. Add beta testers when ready"

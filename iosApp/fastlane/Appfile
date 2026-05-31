@@ -1,0 +1,4 @@
+app_identifier("com.ovasta.sellers")
+apple_id(ENV["APPLE_ID"] || "your-apple-id@email.com")
+team_id("H8X427WWQW")
+itc_team_id(ENV["ITC_TEAM_ID"] || "H8X427WWQW")
