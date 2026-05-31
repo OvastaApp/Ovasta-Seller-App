@@ -21,7 +21,6 @@ platform :ios do
       force_for_new_devices: true
     )
 
-    # 🔥 Debug step (VERY IMPORTANT)
     sh("security find-identity -v -p codesigning")
   end
 
@@ -47,6 +46,10 @@ platform :ios do
       output_directory: "build",
       output_name: "OvastaSellers.ipa",
       clean: true,
+
+      # 🔥 CRITICAL FIX: force manual signing
+      xcargs: "CODE_SIGN_STYLE=Manual",
+
       export_options: {
         provisioningProfiles: {
           "com.ovasta.sellers" => "match AppStore com.ovasta.sellers"
@@ -76,7 +79,6 @@ platform :ios do
     UI.user_error!("ASC_KEY_ID is missing") if key_id.to_s.strip.empty?
     UI.user_error!("ASC_ISSUER_ID is missing") if issuer_id.to_s.strip.empty?
 
-    # Handle base64 or raw PEM
     unless key_value.include?("BEGIN PRIVATE KEY") || key_value.include?("BEGIN EC PRIVATE KEY")
       key_value = Base64.decode64(key_value)
     end
