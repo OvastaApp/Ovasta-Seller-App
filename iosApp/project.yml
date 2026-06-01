@@ -65,7 +65,7 @@ targets:
           # Build the framework using Gradle
           TASK="link${CONFIG}Framework${ARCH}"
           echo "Building sharedKit framework: $TASK"
-          ./gradlew :shared:$TASK --no-daemon
+          ./gradlew :shared:clean :shared:$TASK --no-daemon --no-build-cache
 
           # Verify framework was built
           FRAMEWORK_PATH="$SRCROOT/../shared/build/bin/$(echo $ARCH | sed 's/^Ios/ios/')/${CONFIG_LOWER}Framework/sharedKit.framework"
