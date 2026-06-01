@@ -19,7 +19,7 @@ on:
 jobs:
   deploy-testflight:
     name: Build & Deploy iOS to TestFlight
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
 
     env:
@@ -49,7 +49,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.2'
+          xcode-version: '26.0'
 
       - name: Cache Kotlin/Native Compiler
         uses: actions/cache@v4
@@ -77,6 +77,22 @@ jobs:
 
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
+
+      - name: Generate Placeholder App Icon
+        run: |
+          ICON_DIR="iosApp/iosApp/Assets.xcassets/AppIcon.appiconset"
+          python3 -c "
+          import struct, zlib
+          def create_png(w, h, r, g, b):
+              def chunk(ctype, data):
+                  return struct.pack('>I', len(data)) + ctype + data + struct.pack('>I', zlib.crc32(ctype + data) & 0xffffffff)
+              raw = b''
+              for _ in range(h):
+                  raw += b'\x00' + bytes([r, g, b]) * w
+              return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b'')
+          with open('$ICON_DIR/app_icon_1024.png', 'wb') as f:
+              f.write(create_png(1024, 1024, 42, 100, 220))
+          "
 
       # ============================================
       # PHASE 2: BUILD KMP FRAMEWORK

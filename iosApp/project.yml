@@ -3,7 +3,7 @@ options:
   bundleIdPrefix: com.ovasta
   deploymentTarget:
     iOS: "14.0"
-  xcodeVersion: "15.2"
+  xcodeVersion: "26.0"
 
 settings:
   DEVELOPMENT_TEAM: H8X427WWQW
