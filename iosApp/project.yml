@@ -19,7 +19,7 @@ targets:
       INFOPLIST_FILE: iosApp/Info.plist
       GENERATE_INFOPLIST_FILE: NO
       MARKETING_VERSION: "1.0.0"
-      CURRENT_PROJECT_VERSION: 3
+      CURRENT_PROJECT_VERSION: 4
       VERSIONING_SYSTEM: "apple-generic"
       CODE_SIGN_STYLE: Manual
       CODE_SIGN_IDENTITY: "Apple Distribution"
@@ -27,11 +27,95 @@ targets:
       FRAMEWORK_SEARCH_PATHS:
         - "$(inherited)"
         - "$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework"
+        - "$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework"
+        - "$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework"
         - "$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework"
+        - "$(SRCROOT)/../shared/build/bin/iosX64/debugFramework"
+        - "$(SRCROOT)/../shared/build/bin/iosX64/releaseFramework"
       OTHER_LDFLAGS:
         - "$(inherited)"
         - "-framework"
         - "sharedKit"
       ENABLE_USER_SCRIPT_SANDBOXING: false
-    dependencies: []
-    preBuildScripts: []
+    preBuildScripts:
+      - script: |
+          set -e
+          cd "$SRCROOT/.."
+
+          # Determine architecture based on SDK
+          if [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
+            if [ "$(uname -m)" = "arm64" ]; then
+              ARCH="IosSimulatorArm64"
+            else
+              ARCH="IosX64"
+            fi
+          else
+            ARCH="IosArm64"
+          fi
+
+          # Determine configuration
+          if [ "$CONFIGURATION" = "Debug" ]; then
+            CONFIG="Debug"
+            CONFIG_LOWER="debug"
+          else
+            CONFIG="Release"
+            CONFIG_LOWER="release"
+          fi
+
+          # Build the framework using Gradle
+          TASK="link${CONFIG}Framework${ARCH}"
+          echo "Building sharedKit framework: $TASK"
+          ./gradlew :shared:$TASK --no-daemon
+
+          # Verify framework was built
+          FRAMEWORK_PATH="$SRCROOT/../shared/build/bin/$(echo $ARCH | sed 's/^Ios/ios/')/${CONFIG_LOWER}Framework/sharedKit.framework"
+          if [ ! -d "$FRAMEWORK_PATH" ]; then
+            echo "ERROR: Framework not found at: $FRAMEWORK_PATH"
+            exit 1
+          fi
+
+          echo "Framework built successfully at: $FRAMEWORK_PATH"
+        name: "Build Kotlin Multiplatform Framework"
+        basedOnDependencyAnalysis: false
+    postBuildScripts:
+      - script: |
+          set -e
+
+          # Determine architecture and configuration
+          if [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
+            if [ "$(uname -m)" = "arm64" ]; then
+              ARCH="iosSimulatorArm64"
+            else
+              ARCH="iosX64"
+            fi
+          else
+            ARCH="iosArm64"
+          fi
+
+          if [ "$CONFIGURATION" = "Debug" ]; then
+            CONFIG="debug"
+          else
+            CONFIG="release"
+          fi
+
+          # Source and destination paths
+          FRAMEWORK_PATH="$SRCROOT/../shared/build/bin/$ARCH/${CONFIG}Framework/sharedKit.framework"
+          FRAMEWORKS_DIR="$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH"
+
+          echo "Embedding sharedKit framework from: $FRAMEWORK_PATH"
+
+          mkdir -p "$FRAMEWORKS_DIR"
+
+          if [ -d "$FRAMEWORKS_DIR/sharedKit.framework" ]; then
+            rm -rf "$FRAMEWORKS_DIR/sharedKit.framework"
+          fi
+
+          if [ -d "$FRAMEWORK_PATH" ]; then
+            cp -R "$FRAMEWORK_PATH" "$FRAMEWORKS_DIR/"
+            echo "Framework embedded successfully"
+          else
+            echo "ERROR: Framework not found at: $FRAMEWORK_PATH"
+            exit 1
+          fi
+        name: "Embed Kotlin Framework"
+        basedOnDependencyAnalysis: false
