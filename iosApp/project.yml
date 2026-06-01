@@ -14,8 +14,6 @@ targets:
     platform: iOS
     sources:
       - iosApp
-    info:
-      path: iosApp/Info.plist
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.ovasta.sellers
       INFOPLIST_FILE: iosApp/Info.plist
