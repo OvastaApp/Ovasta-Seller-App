@@ -19,6 +19,9 @@ targets:
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.ovasta.sellers
       INFOPLIST_FILE: iosApp/Info.plist
+      MARKETING_VERSION: "1.0.0"
+      CURRENT_PROJECT_VERSION: 1
+      VERSIONING_SYSTEM: "apple-generic"
       FRAMEWORK_SEARCH_PATHS:
         - "$(inherited)"
         - "$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework"
