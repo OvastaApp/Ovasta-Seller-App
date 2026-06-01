@@ -75,14 +75,19 @@ platform :ios do
 
     key_value = key_value.gsub('\\n', "\n").gsub("\r\n", "\n").strip
 
-    parsed_key = OpenSSL::PKey.read(key_value)
-
-    UI.user_error!("ASC_PRIVATE_KEY must be EC (.p8)") unless parsed_key.is_a?(OpenSSL::PKey::EC)
+    # Validate key is parseable EC key, but pass original content
+    # (altool requires Apple's original .p8 format, not OpenSSL re-encoded PEM)
+    begin
+      parsed_key = OpenSSL::PKey.read(key_value)
+      UI.user_error!("ASC_PRIVATE_KEY must be EC (.p8)") unless parsed_key.is_a?(OpenSSL::PKey::EC)
+    rescue => e
+      UI.user_error!("ASC_PRIVATE_KEY is not a valid private key: #{e.message}")
+    end
 
     app_store_connect_api_key(
       key_id: key_id,
       issuer_id: issuer_id,
-      key_content: parsed_key.to_pem,
+      key_content: key_value,
       in_house: false
     )
   end
