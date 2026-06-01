@@ -11,6 +11,7 @@ on:
         options:
           - 'false'
           - 'true'
+
   push:
     tags:
       - 'v*.*.*'
@@ -20,7 +21,7 @@ jobs:
     name: Build & Deploy iOS to TestFlight
     runs-on: macos-14
     timeout-minutes: 60
-    
+
     env:
       MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
@@ -34,17 +35,17 @@ jobs:
       # ============================================
       # PHASE 1: ENVIRONMENT SETUP
       # ============================================
-      
+
       - name: Checkout Repository
         uses: actions/checkout@v4
-      
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-      
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -80,7 +81,7 @@ jobs:
       # ============================================
       # PHASE 2: BUILD KMP FRAMEWORK
       # ============================================
-      
+
       - name: Build KMP Shared Framework (Release)
         run: |
           echo "Building iOS framework..."
@@ -90,32 +91,32 @@ jobs:
       # ============================================
       # PHASE 3: IOS PROJECT SETUP
       # ============================================
-      
+
       - name: Install xcodegen
         run: brew install xcodegen
 
       - name: Generate Xcode Project
-        working-directory: iosApp
         run: |
+          cd iosApp
           xcodegen generate
           echo "Xcode project generated"
 
       - name: Install Ruby Dependencies (Fastlane + CocoaPods)
-        working-directory: iosApp
         run: |
+          cd iosApp
           bundle config set --local path vendor/bundle
           bundle install --jobs 4
           bundle exec fastlane --version
           echo "Fastlane and CocoaPods installed"
 
       - name: Validate ASC key format
-        working-directory: iosApp
         run: |
+          cd iosApp
           ruby -e 'require "base64"; raw = ENV.fetch("ASC_PRIVATE_KEY", "").strip; abort("ASC_PRIVATE_KEY is missing") if raw.empty?; pem = (raw.include?("BEGIN PRIVATE KEY") || raw.include?("BEGIN EC PRIVATE KEY")) ? raw : Base64.decode64(raw); pem = pem.gsub("\\n", "\n").gsub("\r\n", "\n").strip; abort("ASC key is not PEM") unless pem.include?("BEGIN") && pem.include?("END"); puts "ASC key payload looks valid"'
 
       - name: Install Pod Dependencies
-        working-directory: iosApp
         run: |
+          cd iosApp
           bundle exec pod install --repo-update
           echo "Pods installed"
 
@@ -130,9 +131,21 @@ jobs:
           security unlock-keychain -p actions build.keychain
           security set-keychain-settings -t 3600 -u build.keychain
 
-      - name: Run Fastlane Beta (Match + Build + Upload)
-        working-directory: iosApp
+      - name: Debug Fastlane Detection
         run: |
+          pwd
+          find . -name Fastfile
+
+      - name: Print Fastfile
+        run: |
+          cat iosApp/fastlane/Fastfile
+
+      - name: Run Fastlane Beta (Match + Build + Upload)
+        run: |
+          cd iosApp
+          pwd
+          ls -la
+          ls -la fastlane
           bundle exec fastlane beta
           echo "TestFlight deployment complete!"
 
