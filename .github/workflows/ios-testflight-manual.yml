@@ -92,7 +92,7 @@ jobs:
         run: |
           echo "Building iOS framework..."
           set -o pipefail
-          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace 2>&1 | tee /tmp/gradle-build.log
+          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --rerun-tasks --stacktrace 2>&1 | tee /tmp/gradle-build.log
           echo "Framework built successfully"
           echo "=== Last 50 lines of Gradle output ==="
           tail -50 /tmp/gradle-build.log
@@ -110,8 +110,8 @@ jobs:
           echo "=== Framework Headers ==="
           ls -la "$FRAMEWORK/Headers/" 2>/dev/null || echo "No Headers dir!"
           echo ""
-          echo "=== Searching for initKoin in header ==="
-          grep -i "koin" "$FRAMEWORK/Headers/sharedKit.h" 2>/dev/null || echo "initKoin NOT FOUND in header!"
+          echo "=== Searching for doInitKoin in header ==="
+          grep -i "initKoin\|doInitKoin" "$FRAMEWORK/Headers/sharedKit.h" 2>/dev/null || echo "doInitKoin NOT FOUND in header!"
           echo ""
           echo "=== Main_iosKt class in header ==="
           grep -A 5 "Main_iosKt" "$FRAMEWORK/Headers/sharedKit.h" 2>/dev/null || echo "Main_iosKt NOT FOUND in header!"

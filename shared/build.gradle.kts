@@ -15,21 +15,18 @@ kotlin {
     iosX64 {
         binaries.framework {
             baseName = xcfName
-            isStatic = true
         }
     }
 
     iosArm64 {
         binaries.framework {
             baseName = xcfName
-            isStatic = true
         }
     }
 
     iosSimulatorArm64 {
         binaries.framework {
             baseName = xcfName
-            isStatic = true
         }
     }
 
