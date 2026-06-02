@@ -94,6 +94,28 @@ jobs:
           ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace
           echo "Framework built successfully"
 
+      - name: Verify Framework Exports
+        run: |
+          echo "=== Framework location ==="
+          find shared/build -name "sharedKit.framework" -type d 2>/dev/null
+          FRAMEWORK=$(find shared/build -path "*/Release/sharedKit.framework" -type d | head -1)
+          if [ -z "$FRAMEWORK" ]; then
+            FRAMEWORK=$(find shared/build -name "sharedKit.framework" -type d | head -1)
+          fi
+          echo "Using framework: $FRAMEWORK"
+          echo ""
+          echo "=== Framework Headers ==="
+          ls -la "$FRAMEWORK/Headers/" 2>/dev/null || echo "No Headers dir!"
+          echo ""
+          echo "=== Searching for initKoin in header ==="
+          grep -i "koin" "$FRAMEWORK/Headers/sharedKit.h" 2>/dev/null || echo "initKoin NOT FOUND in header!"
+          echo ""
+          echo "=== Main_iosKt class in header ==="
+          grep -A 5 "Main_iosKt" "$FRAMEWORK/Headers/sharedKit.h" 2>/dev/null || echo "Main_iosKt NOT FOUND in header!"
+          echo ""
+          echo "=== Full header (first 200 lines) ==="
+          head -200 "$FRAMEWORK/Headers/sharedKit.h" 2>/dev/null || echo "Header file not found!"
+
       # ============================================
       # PHASE 3: IOS PROJECT SETUP
       # ============================================
