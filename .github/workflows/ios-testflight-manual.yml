@@ -187,11 +187,24 @@ jobs:
       - name: Print Build Errors on Failure
         if: failure()
         run: |
-          echo "=== BUILD ERRORS ==="
-          grep -i "error:" ~/Library/Logs/gym/iosApp-iosApp.log | head -50 || true
-          echo ""
-          echo "=== LINKER ERRORS ==="
-          grep -i "undefined\|ld:\|linker" ~/Library/Logs/gym/iosApp-iosApp.log | head -30 || true
+          LOG=~/Library/Logs/gym/iosApp-iosApp.log
+          if [ ! -f "$LOG" ]; then
+            echo "No gym log found. Fastlane may have failed before building."
+            echo "=== Fastlane output (last 100 lines) ==="
+            find ~/Library/Logs/gym -name "*.log" -exec tail -100 {} \; 2>/dev/null || true
+          else
+            echo "=== SWIFT/OBJ-C COMPILE ERRORS ==="
+            grep -E "^\/" "$LOG" | grep " error: " | head -30 || echo "None"
+            echo ""
+            echo "=== LINKER ERRORS ==="
+            grep -E "^(ld|Undefined symbols|clang: error)" "$LOG" | head -30 || echo "None"
+            echo ""
+            echo "=== ARCHIVE RESULT ==="
+            grep -E "(ARCHIVE (SUCCEEDED|FAILED)|BUILD (SUCCEEDED|FAILED)|error:.*module)" "$LOG" | tail -20 || echo "None"
+            echo ""
+            echo "=== LAST 50 LINES ==="
+            tail -50 "$LOG"
+          fi
 
       - name: Upload Build Log on Failure
         if: failure()
