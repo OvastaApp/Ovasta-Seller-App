@@ -91,7 +91,7 @@ jobs:
       - name: Build KMP Shared Framework (Release)
         run: |
           echo "Building iOS framework..."
-          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace
+          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace --info 2>&1 | tail -100
           echo "Framework built successfully"
 
       - name: Verify Framework Exports
