@@ -154,6 +154,15 @@ jobs:
       # PHASE 5: ARTIFACTS & CLEANUP
       # ============================================
 
+      - name: Print Build Errors on Failure
+        if: failure()
+        run: |
+          echo "=== BUILD ERRORS ==="
+          grep -i "error:" ~/Library/Logs/gym/iosApp-iosApp.log | head -50 || true
+          echo ""
+          echo "=== LINKER ERRORS ==="
+          grep -i "undefined\|ld:\|linker" ~/Library/Logs/gym/iosApp-iosApp.log | head -30 || true
+
       - name: Upload Build Log on Failure
         if: failure()
         uses: actions/upload-artifact@v4
