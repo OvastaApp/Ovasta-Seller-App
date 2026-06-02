@@ -42,6 +42,21 @@ targets:
           set -e
           cd "$SRCROOT/.."
 
+          # Skip rebuilding on CI - framework is already built by the workflow
+          if [ "$CI" = "true" ]; then
+            echo "CI detected - skipping Gradle build (framework already built by workflow)"
+            ARCH="IosArm64"
+            CONFIG_LOWER="release"
+            FRAMEWORK_PATH="$SRCROOT/../shared/build/bin/iosArm64/${CONFIG_LOWER}Framework/sharedKit.framework"
+            if [ -d "$FRAMEWORK_PATH" ]; then
+              echo "Framework found at: $FRAMEWORK_PATH"
+              exit 0
+            else
+              echo "ERROR: Framework not found at: $FRAMEWORK_PATH (CI should have built it)"
+              exit 1
+            fi
+          fi
+
           # Determine architecture based on SDK
           if [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
             if [ "$(uname -m)" = "arm64" ]; then
