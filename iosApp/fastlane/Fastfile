@@ -40,7 +40,8 @@ platform :ios do
       clean: true,
       codesigning_identity: "Apple Distribution: MOHAMED IBRAHIM (H8X427WWQW)",
       skip_profile_detection: true,
-      xcargs: "DEVELOPMENT_TEAM='H8X427WWQW'",
+      destination: "generic/platform=iOS",
+      xcargs: "DEVELOPMENT_TEAM='H8X427WWQW' COMPILER_INDEX_STORE_ENABLE=NO",
 
       export_options: {
         provisioningProfiles: {
