@@ -8,6 +8,6 @@ fun createComposeViewController() = ComposeUIViewController {
     App()
 }
 
-fun initKoin() {
+fun doInitKoin() {
     initKoinIos()
 }

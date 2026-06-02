@@ -10,7 +10,7 @@ struct OvastaSellersApp: App {
         UserDefaults.standard.synchronize()
 
         // Initialize Koin dependency injection
-        Main_iosKt.initKoin()
+        Main_iosKt.doInitKoin()
     }
 
     var body: some Scene {
