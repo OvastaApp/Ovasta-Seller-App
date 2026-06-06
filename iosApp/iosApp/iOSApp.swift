@@ -5,10 +5,6 @@ import sharedKit
 struct OvastaSellersApp: App {
 
     init() {
-        // Force Arabic as the default app language
-        UserDefaults.standard.set(["ar"], forKey: "AppleLanguages")
-        UserDefaults.standard.synchronize()
-
         // Initialize Koin dependency injection
         Main_iosKt.doInitKoin()
     }
@@ -19,3 +15,4 @@ struct OvastaSellersApp: App {
         }
     }
 }
+
