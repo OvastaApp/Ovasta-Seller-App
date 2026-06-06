@@ -1,6 +1,7 @@
 package com.ovasta.sellers.base.di
 
 import android.app.Application
+import com.ovasta.sellers.base.crashlyticsInfo.di.crashlyticsInfoModule
 import com.ovasta.sellers.base.local.di.resourcesModule
 import com.ovasta.sellers.data.setting.di.settingModule
 import com.ovasta.sellers.presentation.auth.login.di.loginModule
@@ -32,7 +33,8 @@ fun startKoin(application: Application) {
                 createOrderModule,
                 profileModule,
                 orderHistoryModule,
-                walletModule
+                walletModule,
+                crashlyticsInfoModule
             )
         )
     }

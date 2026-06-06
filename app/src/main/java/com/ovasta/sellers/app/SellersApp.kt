@@ -4,11 +4,13 @@ import android.app.Application
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.google.firebase.messaging.FirebaseMessaging
+import com.ovasta.sellers.base.crashlyticsInfo.CrashlyticsUserInfoUseCase
 import com.ovasta.sellers.base.di.startKoin
 import com.ovasta.sellers.base.interceptor.SessionHeaderCache
 import com.ovasta.sellers.base.notification.NotificationHelper
 import com.ovasta.sellers.data.notification.FcmTokenApi
 import com.ovasta.sellers.data.notification.FcmTokenRequest
+import com.ovasta.sellers.data.setting.data.ISettingsRepository
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +32,8 @@ class SellersApp : Application() {
             SessionHeaderCache.initialize(sessionDataStore)
             fetchAndSendFcmToken(sessionDataStore, fcmTokenApi)
         }
+        setUserInfoForCrashlytics()
+
     }
 
     private suspend fun fetchAndSendFcmToken(
@@ -70,4 +74,17 @@ class SellersApp : Application() {
             }
         }
     }
+    private fun setUserInfoForCrashlytics() {
+        val crashlyticsUserInfoUseCase: CrashlyticsUserInfoUseCase by inject()
+        val settingsRepository: ISettingsRepository by inject()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val user = settingsRepository.getUseData()
+                crashlyticsUserInfoUseCase(user)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 }
