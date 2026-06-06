@@ -3,17 +3,22 @@ package com.ovasta.sellers.data.remote
 import com.ovasta.sellers.platform.httpLog
 import com.ovasta.sellers.platform.isDebug
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Interface to provide auth headers dynamically.
@@ -45,13 +50,33 @@ fun createHttpClient(
     sessionHeaderProvider: SessionHeaderProvider,
     enableLogging: Boolean = false,
 ): HttpClient {
+    val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        encodeDefaults = true
+    }
+
     return HttpClient(engine) {
+        expectSuccess = true
+
         install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-                encodeDefaults = true
-            })
+            json(json)
+        }
+
+        HttpResponseValidator {
+            handleResponseExceptionWithRequest { exception, _ ->
+                if (exception !is ResponseException) return@handleResponseExceptionWithRequest
+                val responseBody = exception.response.bodyAsText()
+                val errorMessage = try {
+                    val jsonObject = json.decodeFromString<JsonObject>(responseBody)
+                    (jsonObject["message"] ?: jsonObject["msg"])?.jsonPrimitive?.content
+                } catch (_: Exception) {
+                    null
+                }
+                if (!errorMessage.isNullOrBlank()) {
+                    throw Exception(errorMessage)
+                }
+            }
         }
 
         install(HttpTimeout) {
