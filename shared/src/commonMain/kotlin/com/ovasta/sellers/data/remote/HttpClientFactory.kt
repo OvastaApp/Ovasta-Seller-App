@@ -3,28 +3,33 @@ package com.ovasta.sellers.data.remote
 import com.ovasta.sellers.platform.httpLog
 import com.ovasta.sellers.platform.isDebug
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Interface to provide auth headers dynamically.
- * Implemented per-platform or via DI to read from session storage.
+ * Methods are NOT suspend because they are called from Ktor's defaultRequest block
+ * which does not support coroutines. Implementations must use synchronous reads only.
  */
 interface SessionHeaderProvider {
-    suspend fun getAccessToken(): String
-    suspend fun getDeviceId(): String
-    suspend fun getLanguage(): String
-    suspend fun getIdentifier(): String
+    fun getAccessToken(): String
+    fun getDeviceId(): String
+    fun getLanguage(): String
+    fun getIdentifier(): String
 }
 
 object HttpClientFactory {
@@ -45,13 +50,33 @@ fun createHttpClient(
     sessionHeaderProvider: SessionHeaderProvider,
     enableLogging: Boolean = false,
 ): HttpClient {
+    val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        encodeDefaults = true
+    }
+
     return HttpClient(engine) {
+        expectSuccess = true
+
         install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-                encodeDefaults = true
-            })
+            json(json)
+        }
+
+        HttpResponseValidator {
+            handleResponseExceptionWithRequest { exception, _ ->
+                if (exception !is ResponseException) return@handleResponseExceptionWithRequest
+                val responseBody = exception.response.bodyAsText()
+                val errorMessage = try {
+                    val jsonObject = json.decodeFromString<JsonObject>(responseBody)
+                    (jsonObject["message"] ?: jsonObject["msg"])?.jsonPrimitive?.content
+                } catch (_: Exception) {
+                    null
+                }
+                if (!errorMessage.isNullOrBlank()) {
+                    throw Exception(errorMessage)
+                }
+            }
         }
 
         install(HttpTimeout) {
@@ -75,16 +100,10 @@ fun createHttpClient(
             url(ApiConstants.BASE_URL)
             contentType(ContentType.Application.Json)
             header(ApiConstants.Headers.ACCEPT, "application/json")
-            // Note: Using runBlocking here is not ideal but Ktor's defaultRequest doesn't support suspend
-            // In production, consider refactoring to use an interceptor instead
-            val identifier = runBlocking { sessionHeaderProvider.getIdentifier() }
-            val lang = runBlocking { sessionHeaderProvider.getLanguage() }
-            val deviceId = runBlocking { sessionHeaderProvider.getDeviceId() }
-            val token = runBlocking { sessionHeaderProvider.getAccessToken() }
-            
-            header(ApiConstants.Headers.IDENTIFIER, identifier)
-            header(ApiConstants.Headers.LANG, lang)
-            header(ApiConstants.Headers.DEVICE_ID, deviceId)
+            header(ApiConstants.Headers.IDENTIFIER, sessionHeaderProvider.getIdentifier())
+            header(ApiConstants.Headers.LANG, sessionHeaderProvider.getLanguage())
+            header(ApiConstants.Headers.DEVICE_ID, sessionHeaderProvider.getDeviceId())
+            val token = sessionHeaderProvider.getAccessToken()
             if (token.isNotEmpty()) {
                 header(ApiConstants.Headers.AUTHORIZATION, "Bearer $token")
             }

@@ -30,27 +30,27 @@ val xsRegular: TextStyle
     @Composable get() = TextStyle(
         color = BaseWhite,
         fontFamily = RegularFontFamily,
-        fontSize = 12.sp,
+        fontSize = 13.sp,
     )
 
 val xsMedium: TextStyle
     @Composable get() = TextStyle(
         color = Gray500,
         fontFamily = MediumFontFamily,
-        fontSize = 12.sp,
+        fontSize = 13.sp,
     )
 
 val smNormal: TextStyle
     @Composable get() = TextStyle(
         color = Gray800,
         fontFamily = RegularFontFamily,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
     )
 
 val smMedium: TextStyle
     @Composable get() = TextStyle(
         color = Gray700,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
         fontFamily = MediumFontFamily,
     )
 
@@ -58,13 +58,13 @@ val smSemiBold: TextStyle
     @Composable get() = TextStyle(
         color = Gray800,
         fontFamily = SemiBoldFontFamily,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
     )
 
 val mdRegular: TextStyle
     @Composable get() = TextStyle(
         color = Gray500,
-        fontSize = 16.sp,
+        fontSize = 18.sp,
         fontFamily = RegularFontFamily,
     )
 
@@ -72,33 +72,33 @@ val mdMedium: TextStyle
     @Composable get() = TextStyle(
         color = Gray600,
         fontFamily = MediumFontFamily,
-        fontSize = 16.sp,
+        fontSize = 18.sp,
     )
 
 val mdSemiBold: TextStyle
     @Composable get() = TextStyle(
         color = Gray800,
         fontFamily = SemiBoldFontFamily,
-        fontSize = 16.sp,
+        fontSize = 18.sp,
     )
 
 val lgMedium: TextStyle
     @Composable get() = TextStyle(
         color = Gray900,
         fontFamily = MediumFontFamily,
-        fontSize = 18.sp,
+        fontSize = 20.sp,
     )
 
 val lgSemiBold: TextStyle
     @Composable get() = TextStyle(
         color = Gray800,
         fontFamily = SemiBoldFontFamily,
-        fontSize = 18.sp,
+        fontSize = 20.sp,
     )
 
 val xlSemiBold: TextStyle
     @Composable get() = TextStyle(
         color = BLACK,
-        fontSize = 20.sp,
+        fontSize = 22.sp,
         fontFamily = SemiBoldFontFamily,
     )

@@ -25,11 +25,13 @@ actual fun platformModule(): Module = module {
 
     // Session header provider for HTTP client
     single<SessionHeaderProvider> {
+        val secureStorage = get<SecureStorage>()
+        val deviceInfoProvider = get<DeviceInfoProvider>()
         object : SessionHeaderProvider {
-            override suspend fun getDeviceId(): String = get<DeviceInfoProvider>().getDeviceId()
-            override suspend fun getAccessToken(): String = get<com.ovasta.sellers.domain.repository.ISettingsRepository>().getAccessToken()
-            override suspend fun getLanguage(): String = "ar" // TODO: Make this dynamic
-            override suspend fun getIdentifier(): String = "android" // Platform identifier
+            override fun getDeviceId(): String = deviceInfoProvider.getDeviceId()
+            override fun getAccessToken(): String = secureStorage.getString("access_token") ?: ""
+            override fun getLanguage(): String = "ar" // TODO: Make this dynamic
+            override fun getIdentifier(): String = "android" // Platform identifier
         }
     }
 }

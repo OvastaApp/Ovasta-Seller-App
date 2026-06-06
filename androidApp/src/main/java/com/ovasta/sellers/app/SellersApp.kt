@@ -1,6 +1,9 @@
 package com.ovasta.sellers.app
 
 import android.app.Application
+import android.content.Context
+import com.ovasta.sellers.base.LocaleHelper
+import java.util.Locale
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -18,8 +21,14 @@ import org.koin.android.ext.android.inject
 import kotlin.getValue
 
 class SellersApp : Application() {
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LocaleHelper.wrapContext(base))
+    }
+
     override fun onCreate() {
         super.onCreate()
+        Locale.setDefault(Locale("ar"))
         startKoin(this@SellersApp)
         NotificationHelper.createNotificationChannel(this)
 

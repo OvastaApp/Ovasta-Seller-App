@@ -1,0 +1,8 @@
+git_url(ENV["MATCH_GIT_URL"] || "https://github.com/OvastaApp/ios-certificates.git")
+storage_mode("git")
+type("appstore")
+app_identifier("com.ovasta.sellers")
+team_id("H8X427WWQW")
+# Set readonly to false for first run (Match will generate certs)
+# After first successful run, change to: readonly(true)
+readonly(false)

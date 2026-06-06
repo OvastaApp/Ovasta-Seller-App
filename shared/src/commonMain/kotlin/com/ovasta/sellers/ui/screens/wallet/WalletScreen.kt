@@ -307,7 +307,7 @@ private fun PointsHistoryTab(history: List<PointsHistory>) {
                         Column {
                             Text(text = item.description ?: "", style = smMedium)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = item.createdAt ?: "", style = xsRegular, color = Gray500)
+                            Text(text = formatReadableDate(item.createdAt), style = xsRegular, color = Gray500)
                         }
                         Text(
                             text = "${item.amount ?: 0}",
@@ -357,7 +357,7 @@ private fun WithdrawRequestsTab(requests: List<WithdrawRequests>) {
                                 style = smSemiBold
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = request.createdAt ?: "", style = xsRegular, color = Gray500)
+                            Text(text = formatReadableDate(request.createdAt), style = xsRegular, color = Gray500)
                         }
                         WithdrawStatusBadge(request.status)
                     }
@@ -384,5 +384,39 @@ private fun WithdrawStatusBadge(statusId: Int) {
             text = text, style = xsMedium, color = color,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
         )
+    }
+}
+
+private fun formatReadableDate(isoDate: String?): String {
+    if (isoDate.isNullOrEmpty()) return ""
+    return try {
+        // Input: "2025-05-31T14:30:00.000000Z" or "2025-05-31T14:30:00Z"
+        val datePart = isoDate.substringBefore("T") // "2025-05-31"
+        val timePart = isoDate.substringAfter("T").substringBefore("Z").substringBefore(".") // "14:30:00"
+
+        val parts = datePart.split("-")
+        val year = parts[0]
+        val month = parts[1].toInt()
+        val day = parts[2]
+
+        val hour24 = timePart.split(":")[0].toInt()
+        val minute = timePart.split(":")[1]
+
+        val arabicMonths = listOf(
+            "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+            "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+        )
+        val monthName = arabicMonths[month - 1]
+
+        val period = if (hour24 < 12) "ص" else "م"
+        val hour12 = when {
+            hour24 == 0 -> 12
+            hour24 > 12 -> hour24 - 12
+            else -> hour24
+        }
+
+        "$day $monthName $year - $hour12:$minute $period"
+    } catch (e: Exception) {
+        isoDate
     }
 }

@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -195,7 +196,8 @@ private fun ProfileInfoCard(
                 Icon(
                     painter = painterResource(Res.drawable.arrow_narrow_left),
                     contentDescription = null,
-                    tint = Gray600
+                    tint = Gray600,
+                    modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
                 )
             }
         }
