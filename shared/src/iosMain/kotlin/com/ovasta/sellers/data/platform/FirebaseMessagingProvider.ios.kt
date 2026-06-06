@@ -1,18 +1,22 @@
 package com.ovasta.sellers.data.platform
 
+import platform.Foundation.NSUserDefaults
+
 /**
- * iOS Firebase Messaging stub implementation.
- * TODO: Implement with Firebase iOS SDK + APNs in Phase 12 (requires CocoaPods setup).
- * For now, using stubs to enable compilation.
+ * iOS Firebase Messaging implementation.
+ * The FCM token is obtained from the Swift side (via Firebase SDK)
+ * and stored in NSUserDefaults for Kotlin to read.
  */
 actual class FirebaseMessagingProvider {
+    private val userDefaults = NSUserDefaults.standardUserDefaults
+    private val fcmTokenKey = "firebase_fcm_token"
+
     actual suspend fun getToken(): String {
-        // TODO: Implement with Firebase iOS SDK
-        return "ios_stub_fcm_token"
+        return userDefaults.stringForKey(fcmTokenKey) ?: ""
     }
     
     actual suspend fun deleteToken() {
-        // TODO: Implement with Firebase iOS SDK
-        println("iOS: FirebaseMessagingProvider.deleteToken() - stub implementation")
+        userDefaults.removeObjectForKey(fcmTokenKey)
+        userDefaults.synchronize()
     }
 }

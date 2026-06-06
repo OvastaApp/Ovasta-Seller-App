@@ -77,6 +77,16 @@ targets:
             CONFIG_LOWER="release"
           fi
 
+          # Set JAVA_HOME if not already set
+          if [ -z "$JAVA_HOME" ]; then
+            if [ -d "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home" ]; then
+              export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
+            elif [ -x "/usr/libexec/java_home" ]; then
+              export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null || true)
+            fi
+            export PATH="$JAVA_HOME/bin:$PATH"
+          fi
+
           # Build the framework using Gradle
           TASK="link${CONFIG}Framework${ARCH}"
           echo "Building sharedKit framework: $TASK"
@@ -131,6 +141,19 @@ targets:
           else
             echo "ERROR: Framework not found at: $FRAMEWORK_PATH"
             exit 1
+          fi
+
+          # Copy Compose resources to app bundle
+          COMPOSE_RESOURCES_DIR="$SRCROOT/../shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources"
+          APP_RESOURCES_DIR="$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/compose-resources/composeResources/com.ovasta.sellers.shared.resources"
+          
+          if [ -d "$COMPOSE_RESOURCES_DIR" ]; then
+            echo "Copying Compose resources to app bundle..."
+            mkdir -p "$APP_RESOURCES_DIR"
+            cp -R "$COMPOSE_RESOURCES_DIR/" "$APP_RESOURCES_DIR/"
+            echo "Compose resources copied successfully"
+          else
+            echo "WARNING: Compose resources not found at: $COMPOSE_RESOURCES_DIR"
           fi
         name: "Embed Kotlin Framework"
         basedOnDependencyAnalysis: false
