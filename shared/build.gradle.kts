@@ -15,18 +15,21 @@ kotlin {
     iosX64 {
         binaries.framework {
             baseName = xcfName
+            binaryOption("bundleId", "com.ovasta.sellers.shared")
         }
     }
 
     iosArm64 {
         binaries.framework {
             baseName = xcfName
+            binaryOption("bundleId", "com.ovasta.sellers.shared")
         }
     }
 
     iosSimulatorArm64 {
         binaries.framework {
             baseName = xcfName
+            binaryOption("bundleId", "com.ovasta.sellers.shared")
         }
     }
 
