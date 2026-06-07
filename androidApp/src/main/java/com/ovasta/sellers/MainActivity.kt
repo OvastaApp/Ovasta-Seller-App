@@ -13,7 +13,9 @@ import com.ovasta.sellers.ui.App
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocaleHelper.wrapContext(newBase))
+        // Get user's language preference and apply to activity context
+        val language = LocaleHelper.getLanguageFromPrefs(newBase)
+        super.attachBaseContext(LocaleHelper.wrapContext(newBase, language))
     }
 
     private val permissions = arrayOf(

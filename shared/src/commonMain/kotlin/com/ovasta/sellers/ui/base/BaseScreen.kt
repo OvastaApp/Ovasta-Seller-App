@@ -2,10 +2,7 @@ package com.ovasta.sellers.ui.base
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,7 +10,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
+import com.ovasta.sellers.shared.resources.Res
+import com.ovasta.sellers.shared.resources.an_error_occurred
+import com.ovasta.sellers.shared.resources.dismiss
+import com.ovasta.sellers.shared.resources.generic_unknown_error
+import com.ovasta.sellers.shared.resources.ic_error
+import com.ovasta.sellers.ui.components.BaseDialog
 import com.ovasta.sellers.ui.theme.Primary
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BaseScreen(
@@ -26,18 +31,17 @@ fun BaseScreen(
     // Handle error dialog
     val exception by viewModel.appExceptionEvent.collectAsState()
     exception?.let { error ->
-        AlertDialog(
-            onDismissRequest = { viewModel.emitAppException(null) },
-            title = { Text(error.title ?: "Error") },
-            text = { Text(error.message ?: "An unknown error occurred") },
-            confirmButton = {
-                TextButton(onClick = {
-                    error.actions.forEach { it.invoke() }
-                    viewModel.emitAppException(null)
-                }) {
-                    Text("OK")
-                }
-            }
+        BaseDialog(
+            icon = painterResource(Res.drawable.ic_error),
+            title = error.title ?: stringResource(Res.string.an_error_occurred),
+            message = error.message ?: stringResource(Res.string.generic_unknown_error),
+            primaryButtonText = stringResource(Res.string.dismiss),
+            dismissOnClickOutside = true,
+            onPrimaryClick = {
+                error.actions.forEach { it.invoke() }
+                viewModel.emitAppException(null)
+            },
+            onDismiss = { viewModel.emitAppException(null) }
         )
     }
 

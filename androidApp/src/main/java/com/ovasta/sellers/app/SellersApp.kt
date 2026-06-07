@@ -23,12 +23,16 @@ import kotlin.getValue
 class SellersApp : Application() {
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(LocaleHelper.wrapContext(base))
+        // Get user's language preference and apply to app context
+        val language = LocaleHelper.getLanguageFromPrefs(base)
+        super.attachBaseContext(LocaleHelper.wrapContext(base, language))
     }
 
     override fun onCreate() {
         super.onCreate()
-        Locale.setDefault(Locale("ar"))
+        // Set default locale from user preferences
+        val language = LocaleHelper.getLanguageFromPrefs(this)
+        Locale.setDefault(LocaleHelper.getLocale(language))
         startKoin(this@SellersApp)
         NotificationHelper.createNotificationChannel(this)
 
