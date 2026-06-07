@@ -17,26 +17,27 @@ import androidx.navigation3.ui.NavDisplay
 import com.ovasta.sellers.base.Primary
 import com.ovasta.sellers.base.components.sharedComposable.LocalNavigator
 import com.ovasta.sellers.base.components.sharedComposable.Navigator
-import com.ovasta.sellers.presentation.auth.login.presentation.LoginScreen
-import com.ovasta.sellers.presentation.auth.login.presentation.LoginViewModel
-import com.ovasta.sellers.presentation.auth.splash.SplashScreen
-import com.ovasta.sellers.presentation.auth.splash.SplashViewModel
-import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderScreen
-import com.ovasta.sellers.presentation.createOrder.presentation.CreateOrderViewModel
-import com.ovasta.sellers.presentation.home.presentation.HomeScreen
-import com.ovasta.sellers.presentation.home.presentation.HomeViewModel
-import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileScreen
-import com.ovasta.sellers.presentation.profile.profile.presentation.ProfileViewModel
+import com.ovasta.sellers.ui.screens.*
+import com.ovasta.sellers.ui.screens.login.LoginScreen
+import com.ovasta.sellers.ui.screens.login.LoginViewModel
+import com.ovasta.sellers.ui.screens.splash.SplashScreen
+import com.ovasta.sellers.ui.screens.splash.SplashViewModel
+import com.ovasta.sellers.ui.screens.createorder.CreateOrderScreen
+import com.ovasta.sellers.ui.screens.createorder.CreateOrderViewModel
+import com.ovasta.sellers.ui.screens.home.HomeScreen
+import com.ovasta.sellers.ui.screens.home.HomeViewModel
+import com.ovasta.sellers.ui.screens.profile.ProfileScreen
+import com.ovasta.sellers.ui.screens.profile.ProfileViewModel
 import com.ovasta.sellers.base.smSemiBold
 import com.ovasta.sellers.base.xsMedium
 import org.koin.androidx.compose.koinViewModel
 import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import com.ovasta.sellers.R
-import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewModel
-import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrdersScreen
-import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletScreen
-import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
+import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryViewModel
+import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryScreen
+import com.ovasta.sellers.ui.screens.wallet.WalletScreen
+import com.ovasta.sellers.ui.screens.wallet.WalletViewModel
 
 
 private sealed class BottomNavItem(
@@ -113,9 +114,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                         is CreateOrder -> NavEntry(key) {
                             val viewModel: CreateOrderViewModel =
                                 koinViewModel(key = key.id.toString())
-                            CreateOrderScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navigator.pop() })
+                            CreateOrderScreen(viewModel = viewModel)
                         }
 
                         is Profile -> NavEntry(key) {
@@ -125,16 +124,12 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
                         is LastOrders -> NavEntry(key) {
                             val viewModel: OrderHistoryViewModel = koinViewModel()
-                            OrdersScreen(
-                                viewModel,
-                                onNavigateBack = { navigator.pop() })
+                            OrderHistoryScreen(viewModel)
                         }
 
                         is Wallet -> NavEntry(key) {
                             val viewModel: WalletViewModel = koinViewModel()
-                            WalletScreen(
-                                viewModel,
-                                onNavigateBack = { navigator.pop() })
+                            WalletScreen(viewModel)
                         }
 
                         else -> NavEntry(Unit) { Text("Unknown route") }

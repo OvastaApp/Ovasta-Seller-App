@@ -1,6 +1,7 @@
 package com.ovasta.sellers.data.notification
 
 import com.ovasta.sellers.domain.model.ApiResponse
+import com.ovasta.sellers.domain.model.FcmTokenRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 

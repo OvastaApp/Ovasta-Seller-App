@@ -11,7 +11,7 @@ import com.ovasta.sellers.base.di.startKoin
 import com.ovasta.sellers.base.interceptor.SessionHeaderCache
 import com.ovasta.sellers.base.notification.NotificationHelper
 import com.ovasta.sellers.data.notification.FcmTokenApi
-import com.ovasta.sellers.data.notification.FcmTokenRequest
+import com.ovasta.sellers.domain.model.FcmTokenRequest
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

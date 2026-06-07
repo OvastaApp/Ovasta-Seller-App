@@ -5,7 +5,7 @@ import androidx.datastore.core.DataStore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.ovasta.sellers.data.notification.FcmTokenApi
-import com.ovasta.sellers.data.notification.FcmTokenRequest
+import com.ovasta.sellers.domain.model.FcmTokenRequest
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

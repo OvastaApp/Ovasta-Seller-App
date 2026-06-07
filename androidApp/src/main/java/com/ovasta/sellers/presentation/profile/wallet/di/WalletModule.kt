@@ -1,6 +1,6 @@
 package com.ovasta.sellers.presentation.profile.wallet.di
 
-import com.ovasta.sellers.presentation.profile.wallet.presentation.WalletViewModel
+import com.ovasta.sellers.ui.screens.wallet.WalletViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

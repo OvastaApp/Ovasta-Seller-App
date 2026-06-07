@@ -1,6 +1,6 @@
 package com.ovasta.sellers.presentation.profile.orderhistory.di
 
-import com.ovasta.sellers.presentation.profile.orderhistory.presentation.OrderHistoryViewModel
+import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

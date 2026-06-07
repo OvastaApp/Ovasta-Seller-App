@@ -1,6 +1,6 @@
 package com.ovasta.sellers.presentation.home.di
 
-import com.ovasta.sellers.presentation.home.presentation.HomeViewModel
+import com.ovasta.sellers.ui.screens.home.HomeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
