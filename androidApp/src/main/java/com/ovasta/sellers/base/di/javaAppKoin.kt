@@ -26,7 +26,7 @@ fun startKoin(application: Application) {
                 sharedModule,
                 platformModule(),
                 // Legacy Android modules (UI layer)
-                localModule,
+                //localModule,
                 remoteModule,
                 settingModule,
                 firebaseModule,
