@@ -71,7 +71,8 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
 
             CompositionLocalProvider(LocalNavigator provides navigator) {
                 val currentScreen = backStack.lastOrNull() ?: Splash
-                val canGoBack = backStack.size > 1 && currentScreen !is Home && currentScreen !is Profile
+                val canGoBack =
+                    backStack.size > 1 && currentScreen !is Home && currentScreen !is Profile
 
                 PlatformBackHandler(enabled = canGoBack) {
                     navigator.pop()
@@ -80,6 +81,7 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
                 val showBottomBar = currentScreen is Home || currentScreen is Profile
 
                 Scaffold(
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
                         if (showBottomBar) {
                             AppBottomBar(
@@ -104,26 +106,32 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
                                 val viewModel = koinViewModel<SplashViewModel>()
                                 SplashScreen(viewModel)
                             }
+
                             is Login -> {
                                 val viewModel = koinViewModel<LoginViewModel>()
                                 LoginScreen(viewModel)
                             }
+
                             is Home -> {
                                 val viewModel = koinViewModel<HomeViewModel>()
                                 HomeScreen(viewModel)
                             }
+
                             is CreateOrder -> {
                                 val viewModel = koinViewModel<CreateOrderViewModel>()
                                 CreateOrderScreen(viewModel)
                             }
+
                             is Profile -> {
                                 val viewModel = koinViewModel<ProfileViewModel>()
                                 ProfileScreen(viewModel)
                             }
+
                             is LastOrders -> {
                                 val viewModel = koinViewModel<OrderHistoryViewModel>()
                                 OrderHistoryScreen(viewModel)
                             }
+
                             is Wallet -> {
                                 val viewModel = koinViewModel<WalletViewModel>()
                                 WalletScreen(viewModel)
@@ -142,67 +150,63 @@ private fun AppBottomBar(
     onHomeClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
-    Surface(
-        color = Color.White,
+    NavigationBar(
+        containerColor = Color.White,
         tonalElevation = 8.dp,
-        modifier = Modifier.fillMaxWidth()
+        windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
-        NavigationBar(
-            containerColor = Color.Transparent,
-            tonalElevation = 0.dp
-        ) {
-            val homeSelected = currentScreen is Home
-            val profileSelected = currentScreen is Profile
+        val homeSelected = currentScreen is Home
+        val profileSelected = currentScreen is Profile
 
-            NavigationBarItem(
-                selected = homeSelected,
-                onClick = onHomeClick,
-                icon = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_home),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                },
-                label = {
-                    Text(
-                        text = stringResource(Res.string.home),
-                        style = if (homeSelected) smSemiBold else xsMedium
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Primary,
-                    selectedTextColor = Primary,
-                    unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
-                    unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
-                    indicatorColor = Color.Transparent
+        NavigationBarItem(
+            selected = homeSelected,
+            onClick = onHomeClick,
+            icon = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_home),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
+            },
+            label = {
+                Text(
+                    text = stringResource(Res.string.home),
+                    style = if (homeSelected) smSemiBold else xsMedium
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Primary,
+                selectedTextColor = Primary,
+                unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
+                unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
+                indicatorColor = Color.Transparent
             )
+        )
 
-            NavigationBarItem(
-                selected = profileSelected,
-                onClick = onProfileClick,
-                icon = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_profile),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                },
-                label = {
-                    Text(
-                        text = stringResource(Res.string.profile),
-                        style = if (profileSelected) smSemiBold else xsMedium
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Primary,
-                    selectedTextColor = Primary,
-                    unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
-                    unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
-                    indicatorColor = Color.Transparent
+        NavigationBarItem(
+            selected = profileSelected,
+            onClick = onProfileClick,
+            icon = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_profile),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
+            },
+            label = {
+                Text(
+                    text = stringResource(Res.string.profile),
+                    style = if (profileSelected) smSemiBold else xsMedium
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Primary,
+                selectedTextColor = Primary,
+                unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
+                unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
+                indicatorColor = Color.Transparent
             )
-        }
+        )
     }
 }
+
