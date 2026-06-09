@@ -7,15 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -94,8 +92,6 @@ private fun OrderHistoryContent(
     onNavigateBack: () -> Unit = {}
 ) {
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {
                 CenteredTextAppBar(
@@ -108,9 +104,14 @@ private fun OrderHistoryContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .background(Gray100),
-            contentPadding = PaddingValues(12.dp),
+            contentPadding = PaddingValues(
+                start = 12.dp,
+                end = 12.dp,
+                top = paddingValues.calculateTopPadding() + 12.dp,
+                bottom = paddingValues.calculateBottomPadding() + 12.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             val orders = viewState.deliveryOrdersResponse?.orders.orEmpty()

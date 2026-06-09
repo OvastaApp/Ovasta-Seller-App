@@ -16,6 +16,7 @@ import com.ovasta.sellers.shared.resources.dismiss
 import com.ovasta.sellers.shared.resources.generic_unknown_error
 import com.ovasta.sellers.shared.resources.ic_error
 import com.ovasta.sellers.ui.components.BaseDialog
+import com.ovasta.sellers.ui.platform.showToast
 import com.ovasta.sellers.ui.theme.Primary
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -25,6 +26,13 @@ fun BaseScreen(
     viewModel: BaseViewModel,
     content: @Composable () -> Unit
 ) {
+    // Handle toast messages
+    LaunchedEffect(Unit) {
+        viewModel.messageEvent.collect { message ->
+            message?.let { showToast(it) }
+        }
+    }
+
     // Handle navigation events
     ScreenDirectionEventHandler(viewModel)
 

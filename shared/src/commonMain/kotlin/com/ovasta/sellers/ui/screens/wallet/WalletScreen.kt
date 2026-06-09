@@ -8,15 +8,13 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -138,11 +136,8 @@ private fun WalletContent(
     )
 
     Scaffold(
-        modifier = Modifier
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .background(Color.White),
+        modifier = Modifier.background(Color.White),
         containerColor = Color.White,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {
                 CenteredTextAppBar(
@@ -155,6 +150,7 @@ private fun WalletContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .consumeWindowInsets(paddingValues)
                 .padding(paddingValues)
         ) {
             viewState.wallet?.let { wallet ->
@@ -267,15 +263,15 @@ private fun WalletContent(
 
             // Tab Content
             when (viewState.selectedTab) {
-                0 -> PointsHistoryTab(viewState.wallet?.pointsHistory.orEmpty())
-                1 -> WithdrawRequestsTab(viewState.withdrawRequests)
+                0 -> PointsHistoryTab(viewState.wallet?.pointsHistory.orEmpty(), paddingValues)
+                1 -> WithdrawRequestsTab(viewState.withdrawRequests, paddingValues)
             }
         }
     }
 }
 
 @Composable
-private fun PointsHistoryTab(history: List<PointsHistory>) {
+private fun PointsHistoryTab(history: List<PointsHistory>, paddingValues: PaddingValues) {
     if (history.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize().padding(top = 40.dp),
@@ -289,7 +285,12 @@ private fun PointsHistoryTab(history: List<PointsHistory>) {
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = paddingValues.calculateBottomPadding() + 16.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(history) { _, item ->
@@ -322,7 +323,7 @@ private fun PointsHistoryTab(history: List<PointsHistory>) {
 }
 
 @Composable
-private fun WithdrawRequestsTab(requests: List<WithdrawRequests>) {
+private fun WithdrawRequestsTab(requests: List<WithdrawRequests>, paddingValues: PaddingValues) {
     if (requests.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize().padding(top = 40.dp),
@@ -336,7 +337,12 @@ private fun WithdrawRequestsTab(requests: List<WithdrawRequests>) {
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = paddingValues.calculateBottomPadding() + 16.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(requests) { _, request ->

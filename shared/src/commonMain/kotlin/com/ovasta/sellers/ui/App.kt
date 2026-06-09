@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -81,7 +82,6 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
                 val showBottomBar = currentScreen is Home || currentScreen is Profile
 
                 Scaffold(
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
                         if (showBottomBar) {
                             AppBottomBar(
@@ -99,10 +99,8 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
                             )
                         }
                     }
-                ) { innerPadding ->
-                    Box(
-                        modifier = if (showBottomBar) Modifier.padding(innerPadding) else Modifier
-                    ) {
+                ) {
+                    Box {
                         when (currentScreen) {
                             is Splash -> {
                                 val viewModel = koinViewModel<SplashViewModel>()
@@ -149,7 +147,9 @@ private fun AppBottomBar(
     Surface(
         color = Color.White,
         tonalElevation = 8.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .safeDrawingPadding()
     ) {
         Row(
             modifier = Modifier

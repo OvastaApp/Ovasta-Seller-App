@@ -3,11 +3,16 @@ package com.ovasta.sellers.ui.screens.wallet
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.domain.repository.ISettingsRepository
 import com.ovasta.sellers.domain.repository.IWalletRepository
+    import com.ovasta.sellers.shared.resources.Res
+import com.ovasta.sellers.shared.resources.mini_redeem_message
+import com.ovasta.sellers.shared.resources.no_wallet_balance_to_withdraw
+import com.ovasta.sellers.shared.resources.request_submitted_successfully
 import com.ovasta.sellers.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class WalletViewModel(
     private val walletRepository: IWalletRepository,
@@ -28,7 +33,9 @@ class WalletViewModel(
             WalletAction.RequestWithdraw -> {
                 val balance = _viewState.value.wallet?.walletBalance ?: 0.0
                 if (balance <= 0.0) {
-                    emitMessage("No wallet balance available to withdraw")
+                    viewModelScope.launch {
+                        emitMessage(getString(Res.string.no_wallet_balance_to_withdraw))
+                    }
                 } else {
                     _viewState.update { it.copy(showWithdrawConfirmDialog = true) }
                 }
@@ -46,7 +53,9 @@ class WalletViewModel(
                     val available = _viewState.value.wallet?.points ?: 0.0
                     val min = _viewState.value.minimumRedeemPoints
                     if (available < min) {
-                        emitMessage("Minimum redeem points: ${min.toInt()} point")
+                        viewModelScope.launch {
+                            emitMessage(getString(Res.string.mini_redeem_message, min.toInt().toString()))
+                        }
                     } else {
                         _viewState.update { it.copy(showRedeemBottomSheet = true, redeemPointsInput = "", redeemPointsError = null) }
                     }
@@ -92,9 +101,11 @@ class WalletViewModel(
             setLoading(true)
             runCatching { walletRepository.requestWithdraw(amount) }
                 .onSuccess {
+                    viewModelScope.launch {
+                        emitMessage(getString(Res.string.request_submitted_successfully))
+                    }
                     setLoading(false)
                     _viewState.update { it.copy(showWithdrawSuccessDialog = true, selectedTab = 1) }
-                    emitMessage("Request submitted successfully")
                     getWalletTransactions()
                     getWithdrawRequests()
                 }
@@ -114,8 +125,10 @@ class WalletViewModel(
             setLoading(true)
             runCatching { walletRepository.redeemPoints(_viewState.value.pointsToRedeem) }
                 .onSuccess {
+                    viewModelScope.launch {
+                        emitMessage(getString(Res.string.request_submitted_successfully))
+                    }
                     setLoading(false)
-                    emitMessage("Request submitted successfully")
                     getWalletTransactions()
                 }
                 .onFailure { setLoading(false); handleError(it) }
