@@ -130,6 +130,14 @@ private fun WalletContent(
         )
     }
 
+    // Redeem Points Bottom Sheet
+    if (viewState.showRedeemBottomSheet) {
+        RedeemPointsBottomSheet(
+            viewState = viewState,
+            onAction = onAction
+        )
+    }
+
     val tabs = listOf(
         stringResource(Res.string.the_points),
         stringResource(Res.string.withdraw_requests)
