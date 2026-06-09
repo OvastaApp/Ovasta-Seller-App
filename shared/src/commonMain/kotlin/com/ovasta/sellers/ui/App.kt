@@ -149,8 +149,7 @@ private fun AppBottomBar(
     ) {
         NavigationBar(
             containerColor = Color.Transparent,
-            tonalElevation = 0.dp,
-            windowInsets = WindowInsets(0, 0, 0, 0)
+            tonalElevation = 0.dp
         ) {
             val homeSelected = currentScreen is Home
             val profileSelected = currentScreen is Profile
