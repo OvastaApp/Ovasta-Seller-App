@@ -263,15 +263,15 @@ private fun WalletContent(
 
             // Tab Content
             when (viewState.selectedTab) {
-                0 -> PointsHistoryTab(viewState.wallet?.pointsHistory.orEmpty(), paddingValues)
-                1 -> WithdrawRequestsTab(viewState.withdrawRequests, paddingValues)
+                0 -> PointsHistoryTab(viewState.wallet?.pointsHistory.orEmpty())
+                1 -> WithdrawRequestsTab(viewState.withdrawRequests)
             }
         }
     }
 }
 
 @Composable
-private fun PointsHistoryTab(history: List<PointsHistory>, paddingValues: PaddingValues) {
+private fun PointsHistoryTab(history: List<PointsHistory>) {
     if (history.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize().padding(top = 40.dp),
@@ -289,7 +289,7 @@ private fun PointsHistoryTab(history: List<PointsHistory>, paddingValues: Paddin
                 start = 16.dp,
                 end = 16.dp,
                 top = 16.dp,
-                bottom = paddingValues.calculateBottomPadding() + 16.dp
+                bottom = 16.dp
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -323,7 +323,7 @@ private fun PointsHistoryTab(history: List<PointsHistory>, paddingValues: Paddin
 }
 
 @Composable
-private fun WithdrawRequestsTab(requests: List<WithdrawRequests>, paddingValues: PaddingValues) {
+private fun WithdrawRequestsTab(requests: List<WithdrawRequests>) {
     if (requests.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize().padding(top = 40.dp),
@@ -341,7 +341,7 @@ private fun WithdrawRequestsTab(requests: List<WithdrawRequests>, paddingValues:
                 start = 16.dp,
                 end = 16.dp,
                 top = 16.dp,
-                bottom = paddingValues.calculateBottomPadding() + 16.dp
+                bottom = 16.dp
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {

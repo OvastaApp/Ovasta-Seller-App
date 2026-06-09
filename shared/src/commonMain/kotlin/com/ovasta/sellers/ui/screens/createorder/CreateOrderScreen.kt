@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -60,6 +60,10 @@ fun CreateOrderScreen(viewModel: CreateOrderViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     val navigator = LocalNavigator.current
 
+    LaunchedEffect(Unit) {
+        viewModel.onAction(CreateOrderScreenActions.ResetState)
+    }
+
     BaseScreen(viewModel = viewModel) {
         CreateOrderContent(
             viewState = viewState,
@@ -79,8 +83,7 @@ private fun CreateOrderContent(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding(),
+            .fillMaxSize(),
         containerColor = Color.White,
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {

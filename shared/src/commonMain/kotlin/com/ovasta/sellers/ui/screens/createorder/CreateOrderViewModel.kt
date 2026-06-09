@@ -74,6 +74,10 @@ class CreateOrderViewModel(
             }
             is CreateOrderScreenActions.OnDismissConfirmDialog ->
                 _viewState.update { it.copy(showConfirmDialog = false) }
+            CreateOrderScreenActions.ResetState -> {
+                _viewState.value = CreateOrderViewState()
+                getMinDeliveryPrice()
+            }
         }
     }
 
