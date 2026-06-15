@@ -13,15 +13,15 @@
     <string name="no_internet_connection">There is no internet connection</string>
     <string name="timeout_error_message">An error has occurred, please try again later</string>
     <string name="generic_unknown_error">An unknown error has occurred</string>
-    <string name="version_name" translatable="false">V%s</string>
+    <string name="version_name" translatable="false">V%1$s</string>
     <string name="view_cart">View cart</string>
     <string name="product">Product</string>
-    <string name="products_count">%s product</string>
+    <string name="products_count">%1$s product</string>
     <string name="unknown_product">unknown product</string>
     <string name="cart">Cart</string>
     <string name="order_summary">Order summary</string>
     <string name="total_price">Total price</string>
-    <string name="price_currency">%s EGP</string>
+    <string name="price_currency">%1$s EGP</string>
     <string name="empty_cart">Empty cart</string>
     <string name="add_products_to_start">Add products to start</string>
     <string name="checkout">Checkout</string>
@@ -38,8 +38,8 @@
     <string name="cash_on_delivery">Cash on Delivery</string>
     <string name="pay_with_cash">Pay when your order arrives</string>
     <string name="order_placed_successfully">Order Placed Successfully!</string>
-    <string name="order_number">Order Number: %s</string>
-    <string name="rate">Rate %s</string>
+    <string name="order_number">Order Number: %1$s</string>
+    <string name="rate">Rate %1$s</string>
     <string name="order_confirmation_message">Thank you for your order. We will notify you when your order is ready for delivery.</string>
     <string name="track_order">Track Order</string>
     <string name="continue_shopping">Continue Shopping</string>
@@ -80,11 +80,11 @@
     <string name="order_details">Order Details</string>
     <string name="order_items">Order Items</string>
     <string name="no_order_details">No order details available</string>
-    <string name="delivered_at">Delivered at %s</string>
+    <string name="delivered_at">Delivered at %1$s</string>
     <string name="branch">Branch</string>
     <string name="delivery_address">Delivery Address</string>
     <string name="notes">Notes</string>
-    <string name="item_price">%s SAR</string>
+    <string name="item_price">%1$s EGP</string>
     <string name="pricing_summary">Pricing Summary</string>
     <string name="order_price">Order Price</string>
     <string name="discount">Discount</string>
@@ -101,7 +101,7 @@
     <string name="preparing">Preparing</string>
     <string name="prepared">prepared</string>
     <string name="delivery_fees_min_egp_error">
-    Minimum delivery fees is %1$.2f EGP
+    Minimum delivery fees is %1$s EGP
 </string>
     <!-- Delivery Home Screen -->
     <string name="search_by_task_id">Search by Task ID</string>
@@ -125,7 +125,7 @@
     <string name="back">Back</string>
     <string name="message_on_whatsapp">Message on WhatsApp</string>
     <string name="copy">copy</string>
-    <string name="hash_task">#%s</string>
+    <string name="hash_task">#%1$s</string>
     <string name="no_address">No Address</string>
     <string name="phone_number_not_available">Phone number not available</string>
     <string name="location_not_available">Location not available</string>
@@ -169,15 +169,15 @@
     <string name="statistics">Statistics</string>
     <string name="orders_progress">Orders Progress</string>
     <string name="orders_progress_count">%1$d / %2$d orders</string>
-    <string name="target_end_date">Target ends: %s</string>
+    <string name="target_end_date">Target ends: %1$s</string>
     <string name="incentives">Incentives</string>
-    <string name="incentives_month">Month: %s</string>
+    <string name="incentives_month">Month: %1$s</string>
     <string name="current_bonus">Current Bonus</string>
-    <string name="bonus_percentage">%d%%</string>
-    <string name="bonus_amount_format">Bonus: %s</string>
+    <string name="bonus_percentage">%1$d%%</string>
+    <string name="bonus_amount_format">Bonus: %1$s</string>
     <string name="milestone_target">%1$d orders → %2$d%%</string>
-    <string name="remaining_orders">%d remaining</string>
-    <string name="milestone_bonus">Reward: %s</string>
+    <string name="remaining_orders">%1$d remaining</string>
+    <string name="milestone_bonus">Reward: %1$s</string>
     <string name="achieved">Achieved ✓</string>
     <string name="completed_orders_count">%1$d completed</string>
 
@@ -196,9 +196,9 @@
     <string name="price">Price</string>
     <string name="source">Source</string>
     <string name="no_products_available">No products available</string>
-    <string name="product_quantity">Qty: %d</string>
-    <string name="product_price_format">%.2f EGP</string>
-    <string name="source_label">Source: %s</string>
+    <string name="product_quantity">Qty: %1$d</string>
+    <string name="product_price_format">%1$.2f EGP</string>
+    <string name="source_label">Source: %1$s</string>
 
     <!-- Seller Home -->
     <string name="your_points">Your Points</string>
@@ -242,7 +242,7 @@
     <string name="empty_withdraw_history">No points yet</string>
     <string name="withdraw">Withdraw</string>
     <string name="convert_to_money">Convert points</string>
-    <string name="withdraw_confirmation_message">Are you sure you want to withdraw %s EGP?</string>
+    <string name="withdraw_confirmation_message">Are you sure you want to withdraw %1$s EGP?</string>
     <string name="success">Success</string>
     <string name="withdraw_request_success">Your withdraw request has been submitted successfully</string>
     <string name="ok">OK</string>
