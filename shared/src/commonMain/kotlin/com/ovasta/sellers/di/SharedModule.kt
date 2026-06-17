@@ -7,6 +7,7 @@ import com.ovasta.sellers.data.remote.HttpClientFactory
 import com.ovasta.sellers.data.remote.LoginApiService
 import com.ovasta.sellers.data.remote.OrderHistoryApiService
 import com.ovasta.sellers.data.remote.SettingsApiService
+import com.ovasta.sellers.data.remote.UnauthorizedHandler
 import com.ovasta.sellers.data.remote.WalletApiService
 import com.ovasta.sellers.data.repository.CreateOrderRepository
 import com.ovasta.sellers.data.repository.HomeRepository
@@ -47,8 +48,11 @@ import org.koin.dsl.module
  * - SessionHeaderProvider (for HTTP client auth headers)
  */
 val sharedModule = module {
+    // Unauthorized Handler
+    singleOf(::UnauthorizedHandler)
+    
     // HTTP Client
-    single { HttpClientFactory.create(get()) }
+    single { HttpClientFactory.create(get(), get()) }
 
     // API Services
     singleOf(::LoginApiService)

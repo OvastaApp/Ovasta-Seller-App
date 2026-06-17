@@ -4,19 +4,51 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import java.io.File
+import java.security.GeneralSecurityException
 
-actual class SecureStorage(context: Context) {
+actual class SecureStorage(private val context: Context) {
+    private val prefsFileName = "ovasta_secure_prefs"
+    
     private val masterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
 
-    private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "ovasta_secure_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private val prefs: SharedPreferences = createEncryptedPreferences()
+
+    private fun createEncryptedPreferences(): SharedPreferences {
+        return try {
+            EncryptedSharedPreferences.create(
+                context,
+                prefsFileName,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: GeneralSecurityException) {
+            // Handle corrupted keystore by deleting the encrypted preferences file
+            // and recreating it
+            deleteCorruptedPrefs()
+            EncryptedSharedPreferences.create(
+                context,
+                prefsFileName,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
+    }
+
+    private fun deleteCorruptedPrefs() {
+        try {
+            val prefsFile = File(context.filesDir.parent, "shared_prefs/$prefsFileName.xml")
+            if (prefsFile.exists()) {
+                prefsFile.delete()
+            }
+        } catch (e: Exception) {
+            // Ignore deletion errors
+        }
+    }
 
     actual fun getString(key: String): String? = prefs.getString(key, null)
 

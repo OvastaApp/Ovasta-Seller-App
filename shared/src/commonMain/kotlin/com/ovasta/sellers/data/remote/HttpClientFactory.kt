@@ -14,8 +14,12 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -33,8 +37,8 @@ interface SessionHeaderProvider {
 }
 
 object HttpClientFactory {
-    fun create(sessionHeaderProvider: SessionHeaderProvider): HttpClient {
-        return createHttpClient(getHttpClientEngine(), sessionHeaderProvider, enableLogging = isDebug)
+    fun create(sessionHeaderProvider: SessionHeaderProvider, unauthorizedHandler: UnauthorizedHandler): HttpClient {
+        return createHttpClient(getHttpClientEngine(), sessionHeaderProvider, unauthorizedHandler, enableLogging = isDebug)
     }
 }
 
@@ -48,6 +52,7 @@ expect fun getHttpClientEngine(): io.ktor.client.engine.HttpClientEngine
 fun createHttpClient(
     engine: io.ktor.client.engine.HttpClientEngine,
     sessionHeaderProvider: SessionHeaderProvider,
+    unauthorizedHandler: UnauthorizedHandler,
     enableLogging: Boolean = false,
 ): HttpClient {
     val json = Json {
@@ -66,6 +71,15 @@ fun createHttpClient(
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
                 if (exception !is ResponseException) return@handleResponseExceptionWithRequest
+                
+                // Handle 401 Unauthorized
+                if (exception.response.status == HttpStatusCode.Unauthorized) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        unauthorizedHandler.onUnauthorized()
+                    }
+                    throw Exception("Session expired. Please login again.")
+                }
+                
                 val responseBody = exception.response.bodyAsText()
                 val errorMessage = try {
                     val jsonObject = json.decodeFromString<JsonObject>(responseBody)
