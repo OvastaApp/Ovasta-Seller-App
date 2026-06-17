@@ -3,8 +3,8 @@ platform :ios, '14.0'
 target 'iosApp' do
   use_frameworks!
 
-  # Firebase - only need Messaging for FCM tokens
   pod 'Firebase/Messaging'
+  pod 'Firebase/Crashlytics'
 end
 
 post_install do |installer|

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.ovasta.sellers.platform.recordException
 import org.koin.core.component.KoinComponent
 
 open class BaseViewModel : ViewModel(), KoinComponent {
@@ -43,6 +44,7 @@ open class BaseViewModel : ViewModel(), KoinComponent {
     }
 
     protected fun handleError(throwable: Throwable, retryAction: () -> Unit = {}) {
+        recordException(throwable)
         val exception = AppException(
             message = throwable.message ?: "An unknown error occurred",
             actions = listOf(retryAction)
