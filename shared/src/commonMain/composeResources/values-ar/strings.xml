@@ -84,7 +84,7 @@
     <string name="delivered_at">تم التوصيل في %1$s</string>
     <string name="branch">الفرع</string>
     <string name="notes">ملاحظات</string>
-    <string name="item_price">%1$s ريال</string>
+    <string name="item_price">%1$s ج.م</string>
     <string name="pricing_summary">ملخص التسعير</string>
     <string name="order_price">سعر الطلب</string>
     <string name="discount">الخصم</string>
