@@ -24,20 +24,30 @@
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		1F97B979AE5CFB016D4E3B35 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
-	1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
-		isa = PBXGroup;
-		children = (
-			E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */,
-			F543015C899423D4B01CEB2E /* Assets.xcassets */,
-			CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
-			A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
-			C117AD187833E2513BD2F553 /* Info.plist */,
-			668CECA83ACC03A83C85A623 /* iOSApp.swift */,
-		);
-		path = iosApp;
-		sourceTree = "<group>";
-	};
+		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
+			isa = PBXGroup;
+			children = (
+				E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */,
+				F543015C899423D4B01CEB2E /* Assets.xcassets */,
+				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
+				A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
+				C117AD187833E2513BD2F553 /* Info.plist */,
+				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+			);
+			path = iosApp;
+			sourceTree = "<group>";
+		};
 		38B69C3F79CD97858CF7B609 = {
 			isa = PBXGroup;
 			children = (
@@ -65,14 +75,13 @@
 				297B59D9CE634556D6007C40 /* Sources */,
 				1623B02D10928C8101C1F806 /* Resources */,
 				C220D971EA5251EC3D9A7733 /* Embed Kotlin Framework */,
+				1F97B979AE5CFB016D4E3B35 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = iosApp;
-			packageProductDependencies = (
-			);
 			productName = iosApp;
 			productReference = 86038AE1032E284E79B32AD6 /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -159,16 +168,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-	297B59D9CE634556D6007C40 /* Sources */ = {
-		isa = PBXSourcesBuildPhase;
-		buildActionMask = 2147483647;
-		files = (
-			D4F123AB5C8D9E7A1F2B3456 /* AppDelegate.swift in Sources */,
-			56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
-			307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
-		);
-		runOnlyForDeploymentPostprocessing = 0;
-	};
+		297B59D9CE634556D6007C40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4F123AB5C8D9E7A1F2B3456 /* AppDelegate.swift in Sources */,
+				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
+				307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -309,48 +318,48 @@
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework",
 				);
-			"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
-				"$(inherited)",
-				"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
-			);
-			GENERATE_INFOPLIST_FILE = NO;
-			INFOPLIST_FILE = iosApp/Info.plist;
-			LD_RUNPATH_SEARCH_PATHS = (
-				"$(inherited)",
-				"@executable_path/Frameworks",
-			);
-			MARKETING_VERSION = 1.0.0;
-			OTHER_LDFLAGS = (
-				"$(inherited)",
-				"-framework",
-				sharedKit,
-			);
-			PRODUCT_BUNDLE_IDENTIFIER = com.ovasta.sellers;
-			PROVISIONING_PROFILE_SPECIFIER = "";
-			SDKROOT = iphoneos;
-			TARGETED_DEVICE_FAMILY = "1,2";
-			VERSIONING_SYSTEM = "apple-generic";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
+				);
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iosApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					sharedKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ovasta.sellers;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
 		};
-		name = Debug;
-	};
-	AF835BFF1220CA5AB5B867E4 /* Release */ = {
-		isa = XCBuildConfiguration;
-		buildSettings = {
-			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-			CODE_SIGN_IDENTITY = "Apple Development";
-			CODE_SIGN_STYLE = Automatic;
-			CURRENT_PROJECT_VERSION = 5;
-			DEVELOPMENT_TEAM = H8X427WWQW;
-			ENABLE_USER_SCRIPT_SANDBOXING = NO;
-			FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-			"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
-				"$(inherited)",
-				"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
-			);
-			"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
-				"$(inherited)",
-				"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
-			);
+		AF835BFF1220CA5AB5B867E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = H8X427WWQW;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
+				);
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
+				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
