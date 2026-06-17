@@ -8,6 +8,7 @@ data class ProfileViewState(
     val userInfo: User? = null,
     val walletBalance: Double = 0.0,
     val points: Double = 0.0,
+    val selectedLanguage: String = "ar",
 )
 
 sealed interface ProfileScreenActions {
@@ -15,4 +16,5 @@ sealed interface ProfileScreenActions {
     data object OnWalletClicked : ProfileScreenActions
     data object OnOrderHistoryTabClicked : ProfileScreenActions
     data object OnLogout : ProfileScreenActions
+    data class OnLanguageSelected(val languageCode: String) : ProfileScreenActions
 }

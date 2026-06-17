@@ -15,4 +15,6 @@ interface ISettingsRepository {
     suspend fun getAccessToken(): String
     suspend fun getFcmToken(): String
     suspend fun saveFcmToken(token: String)
+    suspend fun saveLanguage(languageCode: String)
+    fun getLanguage(): String
 }

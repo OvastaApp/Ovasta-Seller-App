@@ -67,7 +67,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
+fun App(layoutDirection: LayoutDirection) {
     AppTheme {
         CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
             val backStack = remember { mutableStateListOf<Any>(Splash as Any) }

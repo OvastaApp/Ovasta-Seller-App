@@ -6,14 +6,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import com.ovasta.sellers.base.LocaleHelper
+import com.ovasta.sellers.platform.LanguageChangeSignal
 import com.ovasta.sellers.ui.App
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        // Get user's language preference and apply to activity context
         val language = LocaleHelper.getLanguageFromPrefs(newBase)
         super.attachBaseContext(LocaleHelper.wrapContext(newBase, language))
     }
@@ -28,12 +31,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        ActivityCompat.requestPermissions(
-            this, permissions, 100
-        )
+        ActivityCompat.requestPermissions(this, permissions, 100)
+
+        lifecycleScope.launch {
+            LanguageChangeSignal.recreateFlow.collect {
+                recreate()
+            }
+        }
+
+        // Read the saved language AFTER attachBaseContext has applied the locale,
+        // so this always reflects the language that is currently active in the UI.
+        val language = LocaleHelper.getLanguageFromPrefs(this)
+        val layoutDirection = if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
 
         setContent {
-            App()
+            App(layoutDirection = layoutDirection)
         }
     }
 }

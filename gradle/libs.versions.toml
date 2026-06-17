@@ -52,9 +52,11 @@ gitliveFirebase = "2.1.0"
 datastoreCore = "1.1.7"
 coroutines = "1.10.2"
 composeMultiplatform = "1.8.0"
+appcompat = "1.7.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.9.3" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }

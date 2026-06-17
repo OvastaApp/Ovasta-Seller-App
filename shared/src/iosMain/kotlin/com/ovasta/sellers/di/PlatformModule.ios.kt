@@ -37,30 +37,16 @@ actual fun platformModule(): Module = module {
     single { FirebaseMessagingProvider() }
 
     // Session header provider for HTTP client
-    // All reads use NSUserDefaults which is thread-safe
+    // All reads use SecureStorage (NSUserDefaults) which is thread-safe
     single<SessionHeaderProvider> {
-        val userDefaults = platform.Foundation.NSUserDefaults.standardUserDefaults
+        val secureStorage = get<SecureStorage>()
+        val deviceInfoProvider = get<DeviceInfoProvider>()
         object : SessionHeaderProvider {
-            override fun getDeviceId(): String {
-                val savedId = userDefaults.stringForKey("device_id")
-                if (savedId != null && savedId.isNotEmpty()) return savedId
-                val newId = platform.UIKit.UIDevice.currentDevice.identifierForVendor?.UUIDString
-                    ?: platform.Foundation.NSUUID().UUIDString()
-                userDefaults.setObject(newId, forKey = "device_id")
-                return newId
-            }
-            
-            override fun getAccessToken(): String {
-                return userDefaults.stringForKey("secure_access_token") ?: ""
-            }
-            
-            override fun getLanguage(): String {
-                return "ar"
-            }
-            
-            override fun getIdentifier(): String {
-                return "\$2a\$12\$BeuZVyrk1vlnlws5ljkRnuHA5UypUwVW3gyGoFaGvpdF5sgeSzXr2"
-            }
+            override fun getDeviceId(): String = deviceInfoProvider.getDeviceId()
+            override fun getAccessToken(): String = secureStorage.getString("access_token") ?: ""
+            override fun getLanguage(): String = secureStorage.getString("language") ?: "ar"
+            override fun getIdentifier(): String =
+                "\$2a\$12\$BeuZVyrk1vlnlws5ljkRnuHA5UypUwVW3gyGoFaGvpdF5sgeSzXr2"
         }
     }
 }

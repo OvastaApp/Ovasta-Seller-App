@@ -7,27 +7,38 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,8 +49,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.shared.resources.Res
 import com.ovasta.sellers.shared.resources.arrow_narrow_left
+import com.ovasta.sellers.shared.resources.confirm
 import com.ovasta.sellers.shared.resources.ic_logout
 import com.ovasta.sellers.shared.resources.ic_profile_circle
+import com.ovasta.sellers.shared.resources.language
+import com.ovasta.sellers.shared.resources.language_arabic
+import com.ovasta.sellers.shared.resources.language_english
 import com.ovasta.sellers.shared.resources.last_orders
 import com.ovasta.sellers.shared.resources.logout
 import com.ovasta.sellers.shared.resources.logout_message
@@ -57,6 +72,7 @@ import com.ovasta.sellers.ui.theme.Gray600
 import com.ovasta.sellers.ui.theme.Primary
 import com.ovasta.sellers.ui.theme.smMedium
 import com.ovasta.sellers.ui.theme.smNormal
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -72,12 +88,16 @@ fun ProfileScreen(viewModel: ProfileViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileContent(
     viewState: ProfileViewState,
     onAction: (ProfileScreenActions) -> Unit
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showLanguageSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -145,6 +165,19 @@ private fun ProfileContent(
                 title = stringResource(Res.string.last_orders),
                 onClick = { onAction(ProfileScreenActions.OnOrderHistoryTabClicked) }
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            val currentLangLabel = if (viewState.selectedLanguage == "ar")
+                stringResource(Res.string.language_arabic)
+            else
+                stringResource(Res.string.language_english)
+
+            ProfileInfoCard(
+                title = stringResource(Res.string.language),
+                value = currentLangLabel,
+                onClick = { showLanguageSheet = true }
+            )
         }
     }
 
@@ -162,6 +195,114 @@ private fun ProfileContent(
             onDismiss = { showLogoutDialog = false },
             dismissOnClickOutside = false
         )
+    }
+
+    if (showLanguageSheet) {
+        LanguagePickerBottomSheet(
+            currentLanguage = viewState.selectedLanguage,
+            sheetState = sheetState,
+            onConfirm = { selectedLang ->
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    showLanguageSheet = false
+                    onAction(ProfileScreenActions.OnLanguageSelected(selectedLang))
+                }
+            },
+            onDismiss = {
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    showLanguageSheet = false
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LanguagePickerBottomSheet(
+    currentLanguage: String,
+    sheetState: SheetState,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    // Pending selection is independent of the confirmed state so the user can
+    // browse options before hitting Confirm.
+    var pendingLanguage by remember(currentLanguage) { mutableStateOf(currentLanguage) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = Color.White,
+        contentWindowInsets = { WindowInsets.navigationBars },
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 24.dp)
+        ) {
+            Text(
+                text = stringResource(Res.string.language),
+                style = smMedium,
+                color = Gray600,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                textAlign = TextAlign.Center
+            )
+
+            HorizontalDivider(color = Gray100)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LanguageOption(
+                label = stringResource(Res.string.language_arabic),
+                selected = pendingLanguage == "ar",
+                onClick = { pendingLanguage = "ar" }
+            )
+
+            LanguageOption(
+                label = stringResource(Res.string.language_english),
+                selected = pendingLanguage == "en",
+                onClick = { pendingLanguage = "en" }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { onConfirm(pendingLanguage) },
+                enabled = pendingLanguage != currentLanguage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+            ) {
+                Text(
+                    text = stringResource(Res.string.confirm),
+                    style = smMedium,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageOption(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = onClick,
+            colors = RadioButtonDefaults.colors(selectedColor = Primary)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = label, style = smNormal, color = Gray600)
     }
 }
 

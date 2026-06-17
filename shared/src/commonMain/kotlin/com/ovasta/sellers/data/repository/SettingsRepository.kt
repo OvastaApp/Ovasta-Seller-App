@@ -32,6 +32,8 @@ class SettingsRepository(
         private const val SECURE_TOKEN_KEY = "access_token"
         private const val SECURE_FCM_TOKEN_KEY = "fcm_token"
         private const val SECURE_DEVICE_ID_KEY = "device_id"
+        private const val SECURE_LANGUAGE_KEY = "language"
+        const val DEFAULT_LANGUAGE = "ar"
     }
 
     override suspend fun saveUserData(user: User) {
@@ -97,5 +99,13 @@ class SettingsRepository(
 
     override suspend fun saveFcmToken(token: String) {
         secureStorage.putString(SECURE_FCM_TOKEN_KEY, token)
+    }
+
+    override suspend fun saveLanguage(languageCode: String) {
+        secureStorage.putString(SECURE_LANGUAGE_KEY, languageCode)
+    }
+
+    override fun getLanguage(): String {
+        return secureStorage.getString(SECURE_LANGUAGE_KEY) ?: DEFAULT_LANGUAGE
     }
 }

@@ -2,6 +2,7 @@ package com.ovasta.sellers.ui.screens.profile
 
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.domain.repository.ISettingsRepository
+import com.ovasta.sellers.platform.applyAppLanguage
 import com.ovasta.sellers.ui.base.BaseViewModel
 import com.ovasta.sellers.ui.base.ScreenDirection
 import com.ovasta.sellers.ui.screens.LastOrders
@@ -22,6 +23,7 @@ class ProfileViewModel(
 
     init {
         loadProfileData()
+        _viewState.update { it.copy(selectedLanguage = settingsRepository.getLanguage()) }
     }
 
     fun onScreenAction(action: ProfileScreenActions) {
@@ -32,6 +34,7 @@ class ProfileViewModel(
             is ProfileScreenActions.OnOrderHistoryTabClicked ->
                 emitScreenDirection(ScreenDirection.Push(LastOrders))
             is ProfileScreenActions.OnLogout -> logout()
+            is ProfileScreenActions.OnLanguageSelected -> changeLanguage(action.languageCode)
         }
     }
 
@@ -58,6 +61,14 @@ class ProfileViewModel(
             userResult.onSuccess { user ->
                 _viewState.update { it.copy(userInfo = user) }
             }.onFailure { handleError(it) }
+        }
+    }
+
+    private fun changeLanguage(languageCode: String) {
+        viewModelScope.launch {
+            settingsRepository.saveLanguage(languageCode)
+            _viewState.update { it.copy(selectedLanguage = languageCode) }
+            applyAppLanguage(languageCode)
         }
     }
 

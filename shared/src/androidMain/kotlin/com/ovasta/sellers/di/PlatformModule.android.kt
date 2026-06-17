@@ -1,5 +1,6 @@
 package com.ovasta.sellers.di
 
+import android.content.Context
 import com.ovasta.sellers.data.platform.DataStoreProvider
 import com.ovasta.sellers.data.platform.DeviceInfoProvider
 import com.ovasta.sellers.data.platform.FirebaseAuthProvider
@@ -30,11 +31,16 @@ actual fun platformModule(): Module = module {
     single<SessionHeaderProvider> {
         val secureStorage = get<SecureStorage>()
         val deviceInfoProvider = get<DeviceInfoProvider>()
+        val appContext = androidContext()
         object : SessionHeaderProvider {
             override fun getDeviceId(): String = deviceInfoProvider.getDeviceId()
             override fun getAccessToken(): String = secureStorage.getString("access_token") ?: ""
-            override fun getLanguage(): String = "ar" // TODO: Make this dynamic
-            override fun getIdentifier(): String = "android" // Platform identifier
+            // Read from the same SharedPreferences that LocaleHelper uses so
+            // the HTTP lang header always matches the displayed UI language.
+            override fun getLanguage(): String =
+                appContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                    .getString("language", "ar") ?: "ar"
+            override fun getIdentifier(): String = "android"
         }
     }
 }

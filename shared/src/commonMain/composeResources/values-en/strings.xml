@@ -69,6 +69,8 @@
     <string name="notifications">Notifications</string>
     <string name="language">Language</string>
     <string name="selected_lang">English</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="language_english">English</string>
     <string name="mood">mood</string>
     <string name="light">Light</string>
     <string name="support">Support</string>

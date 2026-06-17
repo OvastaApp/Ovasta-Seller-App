@@ -7,34 +7,26 @@ import com.ovasta.sellers.ui.base.ScreenDirection
 import com.ovasta.sellers.ui.screens.Home
 import com.ovasta.sellers.ui.screens.Login
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SplashViewModel(
     private val settingsRepository: ISettingsRepository,
 ) : BaseViewModel() {
 
+    // StateFlow so the destination is always replayed to new collectors.
+    // This survives activity recreation (ViewModel is retained on config change).
+    private val _destination = MutableStateFlow<ScreenDirection?>(null)
+    val destination = _destination.asStateFlow()
+
     init {
         viewModelScope.launch {
-            ensureDeviceId()
-            navNextScreen()
-        }
-    }
-
-    private suspend fun ensureDeviceId() {
-        val savedId = settingsRepository.getDeviceId()
-        if (savedId.isEmpty()) {
-            // Device ID will be provided by platform-specific DeviceInfoProvider
-            // which is already wired into SettingsRepository
-        }
-    }
-
-    private suspend fun navNextScreen() {
-        delay(500)
-        val loggedIn = settingsRepository.getUserData()?.deliveryId != null
-        if (loggedIn) {
-            emitScreenDirection(ScreenDirection.Replace(Home))
-        } else {
-            emitScreenDirection(ScreenDirection.Replace(Login))
+            settingsRepository.getDeviceId()
+            delay(500)
+            val loggedIn = settingsRepository.getUserData()?.deliveryId != null
+            _destination.value = if (loggedIn) ScreenDirection.Replace(Home)
+                                  else ScreenDirection.Replace(Login)
         }
     }
 }

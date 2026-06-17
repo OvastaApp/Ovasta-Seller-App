@@ -71,6 +71,8 @@
     <string name="notifications">الإشعارات</string>
     <string name="language">اللغة</string>
     <string name="selected_lang">الإنجليزية</string>
+    <string name="language_arabic">العربية</string>
+    <string name="language_english">الإنجليزية</string>
     <string name="mood">الوضع</string>
     <string name="light">فاتح</string>
     <string name="support">الدعم</string>
