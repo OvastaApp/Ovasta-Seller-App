@@ -1,17 +1,19 @@
 import UIKit
+import FirebaseCore
+import FirebaseMessaging
 import UserNotifications
 import sharedKit
 
-class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        // Set up notification center delegate
-        UNUserNotificationCenter.current().delegate = self
+        FirebaseApp.configure()
+        Messaging.messaging().delegate = self
         
-        // Request notification permissions and register for remote notifications
+        UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if granted {
                 DispatchQueue.main.async {
@@ -27,10 +29,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        print("APNs device token: \(token)")
-        UserDefaults.standard.set(token, forKey: "apns_device_token")
-        UserDefaults.standard.synchronize()
+        Messaging.messaging().apnsToken = deviceToken
     }
 
     func application(
@@ -39,8 +38,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     ) {
         print("Failed to register for remote notifications: \(error.localizedDescription)")
     }
+
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let token = fcmToken else { return }
+        print("FCM token: \(token)")
+        UserDefaults.standard.set(token, forKey: "firebase_fcm_token")
+        UserDefaults.standard.synchronize()
+    }
     
-    // Handle foreground notifications
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -49,7 +54,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         completionHandler([.banner, .badge, .sound])
     }
     
-    // Handle notification tap
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
