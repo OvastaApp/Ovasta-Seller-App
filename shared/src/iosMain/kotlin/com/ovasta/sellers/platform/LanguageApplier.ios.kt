@@ -1,6 +1,6 @@
 package com.ovasta.sellers.platform
 
-import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatform
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSUserDefaults
 
@@ -12,12 +12,13 @@ actual fun applyAppLanguage(languageCode: String) {
     NSUserDefaults.standardUserDefaults.synchronize()
 
     // Also write via SecureStorage so SettingsRepository.getLanguage() stays in sync
-    val secureStorage = GlobalContext.get().get<com.ovasta.sellers.data.platform.SecureStorage>()
+    val koin = KoinPlatform.getKoin()
+    val secureStorage = koin.get<com.ovasta.sellers.data.platform.SecureStorage>()
     secureStorage.putString("language", languageCode)
 
     // Signal Swift to recreate the Compose view controller so the new locale takes effect
     NSNotificationCenter.defaultCenter.postNotificationName(
-        name = LANGUAGE_CHANGED_NOTIFICATION,
+        aName = LANGUAGE_CHANGED_NOTIFICATION,
         `object` = null
     )
 }
