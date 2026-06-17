@@ -29,6 +29,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
+        let apnsToken = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        print("APNs token received: \(apnsToken)")
         Messaging.messaging().apnsToken = deviceToken
     }
 
@@ -51,6 +53,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
+        print("Remote notification received: \(userInfo)")
         Messaging.messaging().appDidReceiveMessage(userInfo)
         completionHandler(.noData)
     }
@@ -60,6 +63,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
+        print("Foreground notification received: \(notification.request.content.userInfo)")
         completionHandler([.banner, .badge, .sound])
     }
     
