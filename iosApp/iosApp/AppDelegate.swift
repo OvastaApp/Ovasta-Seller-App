@@ -2,7 +2,6 @@ import UIKit
 import FirebaseCore
 import FirebaseMessaging
 import UserNotifications
-import sharedKit
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
