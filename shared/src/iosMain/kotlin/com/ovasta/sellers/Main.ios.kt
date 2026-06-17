@@ -7,8 +7,14 @@ import com.ovasta.sellers.ui.App
 import platform.Foundation.NSUserDefaults
 
 fun createComposeViewController() = ComposeUIViewController {
-    // "secure_language" is the key used by iOS SecureStorage (prefix "secure_" + "language")
-    val language = NSUserDefaults.standardUserDefaults.stringForKey("secure_language") ?: "ar"
+    val userDefaults = NSUserDefaults.standardUserDefaults
+    val language = userDefaults.stringForKey("secure_language") ?: "ar"
+
+    // Set AppleLanguages so Compose Multiplatform resources resolve to the correct language.
+    // This must happen before any stringResource() call inside App().
+    userDefaults.setObject(listOf(language), forKey = "AppleLanguages")
+    userDefaults.synchronize()
+
     val layoutDirection = if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
     App(layoutDirection = layoutDirection)
 }
