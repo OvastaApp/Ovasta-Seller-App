@@ -6,6 +6,7 @@ import com.ovasta.sellers.base.LocaleHelper
 import java.util.Locale
 import android.util.Log
 import androidx.datastore.core.DataStore
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ovasta.sellers.base.di.startKoin
 import com.ovasta.sellers.base.interceptor.SessionHeaderCache
@@ -33,6 +34,7 @@ class SellersApp : Application() {
         // Set default locale from user preferences
         val language = LocaleHelper.getLanguageFromPrefs(this)
         Locale.setDefault(LocaleHelper.getLocale(language))
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
         startKoin(this@SellersApp)
         NotificationHelper.createNotificationChannel(this)
 

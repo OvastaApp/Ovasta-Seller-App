@@ -81,6 +81,7 @@ kotlin {
                 // Firebase (using platform BOM from androidApp)
                 implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.firebase.auth)
+                implementation(libs.firebase.crashlytics)
                 implementation(libs.firebase.firestore)
                 implementation(libs.firebase.messaging)
                 // Coroutines support for Firebase
