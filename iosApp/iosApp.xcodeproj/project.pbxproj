@@ -22,6 +22,7 @@
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88CAFC9744280342B137B9C4 /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
 		A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B9C1D2E3F4A5123456789098 /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -40,19 +41,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
-			isa = PBXGroup;
-			children = (
-				E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */,
-				F543015C899423D4B01CEB2E /* Assets.xcassets */,
-				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
-				A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
-				C117AD187833E2513BD2F553 /* Info.plist */,
-				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
-			);
-			path = iosApp;
-			sourceTree = "<group>";
-		};
+	1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
+		isa = PBXGroup;
+		children = (
+			E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */,
+			F543015C899423D4B01CEB2E /* Assets.xcassets */,
+			CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
+			A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
+			C117AD187833E2513BD2F553 /* Info.plist */,
+			B9C1D2E3F4A5123456789098 /* iosApp.entitlements */,
+			668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+		);
+		path = iosApp;
+		sourceTree = "<group>";
+	};
 		38B69C3F79CD97858CF7B609 = {
 			isa = PBXGroup;
 			children = (
@@ -375,6 +377,7 @@
 			baseConfigurationReference = 6282C785ACED2718B3CBFBD4 /* Pods-iosApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
@@ -414,6 +417,7 @@
 			baseConfigurationReference = 88CAFC9744280342B137B9C4 /* Pods-iosApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;

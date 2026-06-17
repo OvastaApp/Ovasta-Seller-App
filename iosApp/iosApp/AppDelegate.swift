@@ -41,9 +41,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
-        print("FCM token: \(token)")
+        print("FCM token (delegate): \(token)")
         UserDefaults.standard.set(token, forKey: "firebase_fcm_token")
         UserDefaults.standard.synchronize()
+    }
+
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        Messaging.messaging().appDidReceiveMessage(userInfo)
+        completionHandler(.noData)
     }
     
     func userNotificationCenter(
