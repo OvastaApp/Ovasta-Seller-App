@@ -254,4 +254,13 @@
     <string name="approved">Approved</string>
     <string name="rejected">Rejected</string>
 
+    <!-- Permissions -->
+    <string name="notification_permission_title">Enable Notifications</string>
+    <string name="notification_permission_message">Stay updated with your orders and delivery notifications</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="not_now">Not Now</string>
+    <string name="notification_permission_denied">Notification Permission Denied</string>
+    <string name="notification_permission_denied_message">To receive order updates, please enable notifications in Settings</string>
+    <string name="open_settings">Open Settings</string>
+
 </resources>

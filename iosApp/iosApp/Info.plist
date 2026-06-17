@@ -57,6 +57,8 @@
     <true/>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>NSUserNotificationsUsageDescription</key>
+    <string>Receive order updates, delivery notifications, and important alerts about your seller account</string>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSExceptionDomains</key>

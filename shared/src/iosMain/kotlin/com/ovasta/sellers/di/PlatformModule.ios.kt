@@ -6,6 +6,7 @@ import com.ovasta.sellers.data.platform.FirebaseAuthProvider
 import com.ovasta.sellers.data.platform.FirebaseMessagingProvider
 import com.ovasta.sellers.data.platform.FirestoreProvider
 import com.ovasta.sellers.data.platform.HapticFeedback
+import com.ovasta.sellers.data.platform.PermissionManager
 import com.ovasta.sellers.data.platform.SecureStorage
 import com.ovasta.sellers.data.remote.SessionHeaderProvider
 import org.koin.core.context.startKoin
@@ -28,6 +29,7 @@ actual fun platformModule(): Module = module {
     single { DataStoreProvider() }
     single { DeviceInfoProvider() }
     single { HapticFeedback() }
+    single { PermissionManager() }
     
     // Firebase services (stub implementations for now)
     single { FirebaseAuthProvider() }

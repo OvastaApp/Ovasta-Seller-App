@@ -3,9 +3,9 @@ import sharedKit
 
 @main
 struct OvastaSellersApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
-        // Initialize Koin dependency injection
         Main_iosKt.doInitKoin()
     }
 

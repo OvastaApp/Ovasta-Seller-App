@@ -74,6 +74,8 @@ import com.ovasta.sellers.ui.base.BaseScreen
 import com.ovasta.sellers.ui.components.BaseDialog
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
 import com.ovasta.sellers.ui.model.OrderSteps
+import com.ovasta.sellers.ui.permissions.PermissionDialogHandler
+import com.ovasta.sellers.ui.permissions.PermissionViewModel
 import com.ovasta.sellers.ui.platform.openDialer
 import com.ovasta.sellers.ui.theme.Amber
 import com.ovasta.sellers.ui.theme.Gray100
@@ -90,10 +92,14 @@ import com.ovasta.sellers.ui.theme.xsMedium
 import com.ovasta.sellers.ui.theme.xsRegular
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
     val viewState by viewModel.viewState.collectAsState()
+    val permissionViewModel = koinInject<PermissionViewModel>()
+
+    PermissionDialogHandler(permissionViewModel)
 
     LaunchedEffect(Unit) {
         viewModel.onScreenAction(HomeScreenActions.RefreshHome)
