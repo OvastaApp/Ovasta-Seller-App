@@ -11,6 +11,7 @@
 		307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CECA83ACC03A83C85A623 /* iOSApp.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */; };
+		D4F123AB5C8D9E7A1F2B3456 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,22 +20,24 @@
 		A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C117AD187833E2513BD2F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
-			isa = PBXGroup;
-			children = (
-				F543015C899423D4B01CEB2E /* Assets.xcassets */,
-				CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
-				A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
-				C117AD187833E2513BD2F553 /* Info.plist */,
-				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
-			);
-			path = iosApp;
-			sourceTree = "<group>";
-		};
+	1DB4B685CAEE8BEFEBBAEF94 /* iosApp */ = {
+		isa = PBXGroup;
+		children = (
+			E5A234BC6D9EAF8B2G3C4567 /* AppDelegate.swift */,
+			F543015C899423D4B01CEB2E /* Assets.xcassets */,
+			CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */,
+			A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
+			C117AD187833E2513BD2F553 /* Info.plist */,
+			668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+		);
+		path = iosApp;
+		sourceTree = "<group>";
+	};
 		38B69C3F79CD97858CF7B609 = {
 			isa = PBXGroup;
 			children = (
@@ -156,15 +159,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		297B59D9CE634556D6007C40 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
-				307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+	297B59D9CE634556D6007C40 /* Sources */ = {
+		isa = PBXSourcesBuildPhase;
+		buildActionMask = 2147483647;
+		files = (
+			D4F123AB5C8D9E7A1F2B3456 /* AppDelegate.swift in Sources */,
+			56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
+			307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
+		);
+		runOnlyForDeploymentPostprocessing = 0;
+	};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
