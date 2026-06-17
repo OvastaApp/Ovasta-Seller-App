@@ -3,7 +3,6 @@ import FirebaseCore
 import FirebaseCrashlytics
 import FirebaseMessaging
 import UserNotifications
-import sharedKit
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
