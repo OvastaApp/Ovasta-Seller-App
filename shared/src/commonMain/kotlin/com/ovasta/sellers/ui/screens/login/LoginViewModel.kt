@@ -62,7 +62,9 @@ class LoginViewModel(
 
         viewModelScope.launch(dispatcher + handler) {
             setLoading(true)
-            val fcmToken = try { settingsRepository.getFcmToken() } catch (_: Exception) { null }
+            val fcmToken = try {
+                settingsRepository.getFcmToken().takeIf { it.isNotEmpty() }
+            } catch (_: Exception) { null }
             runCatching {
                 loginRepository.login(phone, password, userType.typeId, fcmToken)
             }.onSuccess { response ->

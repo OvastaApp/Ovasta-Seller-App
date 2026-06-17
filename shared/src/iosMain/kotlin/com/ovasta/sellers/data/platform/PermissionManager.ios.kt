@@ -26,7 +26,7 @@ actual class PermissionManager {
             when (status) {
                 UNAuthorizationStatusAuthorized,
                 UNAuthorizationStatusProvisional -> {
-                    UIApplication.sharedApplication.registerForRemoteNotifications()
+                    // Remote notification registration is handled by AppDelegate
                     continuation.resume(true)
                 }
                 UNAuthorizationStatusDenied -> {
@@ -44,9 +44,7 @@ actual class PermissionManager {
                             println("PermissionManager: error= ${error.localizedDescription}")
                             continuation.resume(false)
                         } else {
-                            if (granted) {
-                                UIApplication.sharedApplication.registerForRemoteNotifications()
-                            }
+                            // Remote notification registration is handled by AppDelegate
                             continuation.resume(granted)
                         }
                     }
@@ -69,8 +67,8 @@ actual class PermissionManager {
     actual fun openAppSettings() {
         val settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
         settingsUrl?.let {
-            if (UIApplication.sharedApplication.canOpenURL(it)) {
-                UIApplication.sharedApplication.openURL(it)
+            if (UIApplication.sharedApplication().canOpenURL(it)) {
+                UIApplication.sharedApplication().openURL(it)
             }
         }
     }

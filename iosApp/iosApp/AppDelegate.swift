@@ -1,9 +1,10 @@
 import UIKit
-import Firebase
+import FirebaseCore
 import FirebaseMessaging
+import UserNotifications
 import sharedKit
 
-class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
     func application(
         _ application: UIApplication,
@@ -11,6 +12,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     ) -> Bool {
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
+        
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if granted {
+                DispatchQueue.main.async {
+                    application.registerForRemoteNotifications()
+                }
+            }
+        }
+        
         return true
     }
 
@@ -30,8 +41,34 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
-        print("Firebase FCM token: \(token)")
+        print("FCM token (delegate): \(token)")
         UserDefaults.standard.set(token, forKey: "firebase_fcm_token")
         UserDefaults.standard.synchronize()
+    }
+
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        Messaging.messaging().appDidReceiveMessage(userInfo)
+        completionHandler(.noData)
+    }
+    
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .badge, .sound])
+    }
+    
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        print("User tapped notification: \(response.notification.request.content.userInfo)")
+        completionHandler()
     }
 }

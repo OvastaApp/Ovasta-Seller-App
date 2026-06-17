@@ -90,9 +90,11 @@ class SettingsRepository(
 
     override suspend fun getFcmToken(): String {
         var token = secureStorage.getString(SECURE_FCM_TOKEN_KEY)
-        if (token == null) {
+        if (token.isNullOrEmpty()) {
             token = firebaseMessaging.getToken()
-            secureStorage.putString(SECURE_FCM_TOKEN_KEY, token)
+            if (token.isNotEmpty()) {
+                secureStorage.putString(SECURE_FCM_TOKEN_KEY, token)
+            }
         }
         return token
     }
