@@ -84,7 +84,7 @@
     <string name="branch">Branch</string>
     <string name="delivery_address">Delivery Address</string>
     <string name="notes">Notes</string>
-    <string name="item_price">%s SAR</string>
+    <string name="item_price">%s EGP</string>
     <string name="pricing_summary">Pricing Summary</string>
     <string name="order_price">Order Price</string>
     <string name="discount">Discount</string>

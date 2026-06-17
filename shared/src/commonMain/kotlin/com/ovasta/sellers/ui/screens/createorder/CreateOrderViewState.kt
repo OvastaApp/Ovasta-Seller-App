@@ -48,4 +48,5 @@ sealed class CreateOrderScreenActions {
     data object OnSubmitOrder : CreateOrderScreenActions()
     data object OnConfirmSubmit : CreateOrderScreenActions()
     data object OnDismissConfirmDialog : CreateOrderScreenActions()
+    data object ResetState : CreateOrderScreenActions()
 }

@@ -1,11 +1,7 @@
 package com.ovasta.sellers.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -72,7 +71,8 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
 
             CompositionLocalProvider(LocalNavigator provides navigator) {
                 val currentScreen = backStack.lastOrNull() ?: Splash
-                val canGoBack = backStack.size > 1 && currentScreen !is Home && currentScreen !is Profile
+                val canGoBack =
+                    backStack.size > 1 && currentScreen !is Home && currentScreen !is Profile
 
                 PlatformBackHandler(enabled = canGoBack) {
                     navigator.pop()
@@ -99,35 +99,39 @@ fun App(layoutDirection: LayoutDirection = LayoutDirection.Rtl) {
                             )
                         }
                     }
-                ) { innerPadding ->
-                    Box(
-                        modifier = if (showBottomBar) Modifier.padding(innerPadding) else Modifier
-                    ) {
+                ) {
+                    Box {
                         when (currentScreen) {
                             is Splash -> {
                                 val viewModel = koinViewModel<SplashViewModel>()
                                 SplashScreen(viewModel)
                             }
+
                             is Login -> {
                                 val viewModel = koinViewModel<LoginViewModel>()
                                 LoginScreen(viewModel)
                             }
+
                             is Home -> {
                                 val viewModel = koinViewModel<HomeViewModel>()
                                 HomeScreen(viewModel)
                             }
+
                             is CreateOrder -> {
                                 val viewModel = koinViewModel<CreateOrderViewModel>()
                                 CreateOrderScreen(viewModel)
                             }
+
                             is Profile -> {
                                 val viewModel = koinViewModel<ProfileViewModel>()
                                 ProfileScreen(viewModel)
                             }
+
                             is LastOrders -> {
                                 val viewModel = koinViewModel<OrderHistoryViewModel>()
                                 OrderHistoryScreen(viewModel)
                             }
+
                             is Wallet -> {
                                 val viewModel = koinViewModel<WalletViewModel>()
                                 WalletScreen(viewModel)
@@ -146,58 +150,62 @@ private fun AppBottomBar(
     onHomeClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
-    Surface(
-        color = Color.White,
-        tonalElevation = 8.dp,
-        modifier = Modifier.fillMaxWidth()
+    NavigationBar(
+        containerColor = Color.White,
+        tonalElevation = 8.dp
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val homeSelected = currentScreen is Home
-            val profileSelected = currentScreen is Profile
+        val homeSelected = currentScreen is Home
+        val profileSelected = currentScreen is Profile
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable(onClick = onHomeClick)
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            ) {
+        NavigationBarItem(
+            selected = homeSelected,
+            onClick = onHomeClick,
+            icon = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_home),
                     contentDescription = null,
-                    tint = if (homeSelected) Primary else Color.Gray.copy(alpha = 0.5f),
                     modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+            },
+            label = {
                 Text(
                     text = stringResource(Res.string.home),
-                    color = if (homeSelected) Primary else Color.Gray.copy(alpha = 0.5f),
                     style = if (homeSelected) smSemiBold else xsMedium
                 )
-            }
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Primary,
+                selectedTextColor = Primary,
+                unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
+                unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
+                indicatorColor = Color.Transparent
+            )
+        )
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable(onClick = onProfileClick)
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            ) {
+        NavigationBarItem(
+            selected = profileSelected,
+            onClick = onProfileClick,
+            icon = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_profile),
                     contentDescription = null,
-                    tint = if (profileSelected) Primary else Color.Gray.copy(alpha = 0.5f),
                     modifier = Modifier.size(24.dp)
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+            },
+            label = {
                 Text(
                     text = stringResource(Res.string.profile),
-                    color = if (profileSelected) Primary else Color.Gray.copy(alpha = 0.5f),
                     style = if (profileSelected) smSemiBold else xsMedium
                 )
-            }
-        }
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Primary,
+                selectedTextColor = Primary,
+                unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
+                unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
+                indicatorColor = Color.Transparent
+            )
+        )
     }
 }
+

@@ -81,7 +81,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2650;
 			};
 			buildConfigurationList = FF7CA1CA754D017066F1822F /* Build configuration list for PBXProject "iosApp" */;
 			developmentRegion = en;
@@ -151,7 +151,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\n# Determine architecture and configuration\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  if [ \"$(uname -m)\" = \"arm64\" ]; then\n    ARCH=\"iosSimulatorArm64\"\n  else\n    ARCH=\"iosX64\"\n  fi\nelse\n  ARCH=\"iosArm64\"\nfi\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  CONFIG=\"debug\"\nelse\n  CONFIG=\"release\"\nfi\n\n# Source and destination paths\nFRAMEWORK_PATH=\"$SRCROOT/../shared/build/bin/$ARCH/${CONFIG}Framework/sharedKit.framework\"\nFRAMEWORKS_DIR=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH\"\n\necho \"Embedding sharedKit framework from: $FRAMEWORK_PATH\"\n\nmkdir -p \"$FRAMEWORKS_DIR\"\n\nif [ -d \"$FRAMEWORKS_DIR/sharedKit.framework\" ]; then\n  rm -rf \"$FRAMEWORKS_DIR/sharedKit.framework\"\nfi\n\nif [ -d \"$FRAMEWORK_PATH\" ]; then\n  cp -R \"$FRAMEWORK_PATH\" \"$FRAMEWORKS_DIR/\"\n  echo \"Framework embedded successfully\"\nelse\n  echo \"ERROR: Framework not found at: $FRAMEWORK_PATH\"\n  exit 1\nfi\n\n# Copy Compose resources to app bundle\nCOMPOSE_RESOURCES_DIR=\"$SRCROOT/../shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources\"\nAPP_RESOURCES_DIR=\"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/compose-resources/composeResources/com.ovasta.sellers.shared.resources\"\n\nif [ -d \"$COMPOSE_RESOURCES_DIR\" ]; then\n  echo \"Copying Compose resources to app bundle...\"\n  mkdir -p \"$APP_RESOURCES_DIR\"\n  cp -R \"$COMPOSE_RESOURCES_DIR/\" \"$APP_RESOURCES_DIR/\"\n  echo \"Compose resources copied successfully\"\nelse\n  echo \"WARNING: Compose resources not found at: $COMPOSE_RESOURCES_DIR\"\nfi\n";
+			shellScript = "set -e\n\n# Determine architecture and configuration\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  if [ \"$(uname -m)\" = \"arm64\" ]; then\n    ARCH=\"iosSimulatorArm64\"\n  else\n    ARCH=\"iosX64\"\n  fi\nelse\n  ARCH=\"iosArm64\"\nfi\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  CONFIG=\"debug\"\nelse\n  CONFIG=\"release\"\nfi\n\n# Source and destination paths\nFRAMEWORK_PATH=\"$SRCROOT/../shared/build/bin/$ARCH/${CONFIG}Framework/sharedKit.framework\"\nDSYM_PATH=\"$SRCROOT/../shared/build/bin/$ARCH/${CONFIG}Framework/sharedKit.framework.dSYM\"\nFRAMEWORKS_DIR=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH\"\n\necho \"Embedding sharedKit framework from: $FRAMEWORK_PATH\"\n\nmkdir -p \"$FRAMEWORKS_DIR\"\n\nif [ -d \"$FRAMEWORKS_DIR/sharedKit.framework\" ]; then\n  rm -rf \"$FRAMEWORKS_DIR/sharedKit.framework\"\nfi\n\nif [ -d \"$FRAMEWORK_PATH\" ]; then\n  cp -R \"$FRAMEWORK_PATH\" \"$FRAMEWORKS_DIR/\"\n  echo \"Framework embedded successfully\"\nelse\n  echo \"ERROR: Framework not found at: $FRAMEWORK_PATH\"\n  exit 1\nfi\n\n# Copy dSYM for archiving\nif [ -d \"$DSYM_PATH\" ]; then\n  DSYM_DEST=\"$DWARF_DSYM_FOLDER_PATH/sharedKit.framework.dSYM\"\n  echo \"Copying dSYM from: $DSYM_PATH to: $DSYM_DEST\"\n  mkdir -p \"$DWARF_DSYM_FOLDER_PATH\"\n  cp -R \"$DSYM_PATH\" \"$DSYM_DEST\"\n  echo \"dSYM copied successfully\"\nelse\n  echo \"WARNING: dSYM not found at: $DSYM_PATH\"\nfi\n\n# Copy Compose resources to app bundle\nCOMPOSE_RESOURCES_DIR=\"$SRCROOT/../shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources\"\nAPP_RESOURCES_DIR=\"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/compose-resources/composeResources/com.ovasta.sellers.shared.resources\"\n\nif [ -d \"$COMPOSE_RESOURCES_DIR\" ]; then\n  echo \"Copying Compose resources to app bundle...\"\n  mkdir -p \"$APP_RESOURCES_DIR\"\n  cp -R \"$COMPOSE_RESOURCES_DIR/\" \"$APP_RESOURCES_DIR/\"\n  echo \"Compose resources copied successfully\"\nelse\n  echo \"WARNING: Compose resources not found at: $COMPOSE_RESOURCES_DIR\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -219,6 +219,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -283,6 +284,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -294,57 +296,57 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = H8X427WWQW;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
 					"$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
-					"$(SRCROOT)/../shared/build/bin/iosX64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosX64/releaseFramework",
 				);
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = iosApp/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0.0;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					sharedKit,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ovasta.sellers;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Debug;
+			"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+				"$(inherited)",
+				"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
+			);
+			GENERATE_INFOPLIST_FILE = NO;
+			INFOPLIST_FILE = iosApp/Info.plist;
+			LD_RUNPATH_SEARCH_PATHS = (
+				"$(inherited)",
+				"@executable_path/Frameworks",
+			);
+			MARKETING_VERSION = 1.0.0;
+			OTHER_LDFLAGS = (
+				"$(inherited)",
+				"-framework",
+				sharedKit,
+			);
+			PRODUCT_BUNDLE_IDENTIFIER = com.ovasta.sellers;
+			PROVISIONING_PROFILE_SPECIFIER = "";
+			SDKROOT = iphoneos;
+			TARGETED_DEVICE_FAMILY = "1,2";
+			VERSIONING_SYSTEM = "apple-generic";
 		};
-		AF835BFF1220CA5AB5B867E4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
-					"$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
-					"$(SRCROOT)/../shared/build/bin/iosX64/debugFramework",
-					"$(SRCROOT)/../shared/build/bin/iosX64/releaseFramework",
-				);
+		name = Debug;
+	};
+	AF835BFF1220CA5AB5B867E4 /* Release */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+			CODE_SIGN_IDENTITY = "Apple Development";
+			CODE_SIGN_STYLE = Automatic;
+			CURRENT_PROJECT_VERSION = 5;
+			DEVELOPMENT_TEAM = H8X427WWQW;
+			ENABLE_USER_SCRIPT_SANDBOXING = NO;
+			FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+			"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = (
+				"$(inherited)",
+				"$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework",
+			);
+			"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+				"$(inherited)",
+				"$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework",
+			);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = iosApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

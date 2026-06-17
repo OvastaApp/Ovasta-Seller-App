@@ -27,6 +27,7 @@ import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryViewModel
 import com.ovasta.sellers.ui.screens.profile.ProfileViewModel
 import com.ovasta.sellers.ui.screens.splash.SplashViewModel
 import com.ovasta.sellers.ui.screens.wallet.WalletViewModel
+import com.ovasta.sellers.ui.permissions.PermissionViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -74,6 +75,7 @@ val sharedModule = module {
     viewModelOf(::ProfileViewModel)
     viewModelOf(::OrderHistoryViewModel)
     viewModelOf(::WalletViewModel)
+    viewModelOf(::PermissionViewModel)
 }
 
 /**

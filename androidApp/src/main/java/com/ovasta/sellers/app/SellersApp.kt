@@ -11,8 +11,8 @@ import com.ovasta.sellers.base.di.startKoin
 import com.ovasta.sellers.base.interceptor.SessionHeaderCache
 import com.ovasta.sellers.base.notification.NotificationHelper
 import com.ovasta.sellers.data.notification.FcmTokenApi
-import com.ovasta.sellers.data.notification.FcmTokenRequest
 import com.ovasta.sellers.data.setting.data.datastore.SessionPreferences
+import com.ovasta.sellers.domain.model.FcmTokenRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -23,12 +23,16 @@ import kotlin.getValue
 class SellersApp : Application() {
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(LocaleHelper.wrapContext(base))
+        // Get user's language preference and apply to app context
+        val language = LocaleHelper.getLanguageFromPrefs(base)
+        super.attachBaseContext(LocaleHelper.wrapContext(base, language))
     }
 
     override fun onCreate() {
         super.onCreate()
-        Locale.setDefault(Locale("ar"))
+        // Set default locale from user preferences
+        val language = LocaleHelper.getLanguageFromPrefs(this)
+        Locale.setDefault(LocaleHelper.getLocale(language))
         startKoin(this@SellersApp)
         NotificationHelper.createNotificationChannel(this)
 

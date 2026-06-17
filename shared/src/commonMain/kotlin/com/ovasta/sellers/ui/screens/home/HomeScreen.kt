@@ -7,15 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,14 +21,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,8 @@ import com.ovasta.sellers.ui.base.BaseScreen
 import com.ovasta.sellers.ui.components.BaseDialog
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
 import com.ovasta.sellers.ui.model.OrderSteps
+import com.ovasta.sellers.ui.permissions.PermissionDialogHandler
+import com.ovasta.sellers.ui.permissions.PermissionViewModel
 import com.ovasta.sellers.ui.platform.openDialer
 import com.ovasta.sellers.ui.theme.Amber
 import com.ovasta.sellers.ui.theme.Gray100
@@ -89,10 +92,18 @@ import com.ovasta.sellers.ui.theme.xsMedium
 import com.ovasta.sellers.ui.theme.xsRegular
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
     val viewState by viewModel.viewState.collectAsState()
+    val permissionViewModel = koinInject<PermissionViewModel>()
+
+    PermissionDialogHandler(permissionViewModel)
+
+    LaunchedEffect(Unit) {
+        viewModel.onScreenAction(HomeScreenActions.RefreshHome)
+    }
 
     BaseScreen(viewModel = viewModel) {
         SellerHomeContent(
@@ -102,6 +113,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SellerHomeContent(
     viewState: HomeViewState,
@@ -111,8 +123,6 @@ private fun SellerHomeContent(
     var showCancelDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             CenteredTextAppBar(
                 title = stringResource(Res.string.home),
@@ -120,14 +130,26 @@ private fun SellerHomeContent(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        PullToRefreshBox(
+            isRefreshing = viewState.isRefreshing == true,
+            onRefresh = { onAction(HomeScreenActions.RefreshHome) },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Gray100),
-            contentPadding = PaddingValues(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(paddingValues)
+                    .background(Gray100),
+                contentPadding = PaddingValues(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 12.dp,
+                    bottom = 12.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             // Points card
             item(key = "points") {
                 PointsCard(
@@ -204,6 +226,7 @@ private fun SellerHomeContent(
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
+            }
         }
     }
 

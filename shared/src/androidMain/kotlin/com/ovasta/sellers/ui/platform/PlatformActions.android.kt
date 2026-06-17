@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -31,4 +32,8 @@ actual fun copyToClipboard(text: String) {
     val clipboard = AndroidPlatform.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText("Copied", text)
     clipboard.setPrimaryClip(clip)
+}
+
+actual fun showToast(message: String) {
+    Toast.makeText(AndroidPlatform.context, message, Toast.LENGTH_SHORT).show()
 }

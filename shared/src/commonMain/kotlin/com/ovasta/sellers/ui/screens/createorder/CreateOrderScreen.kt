@@ -1,15 +1,15 @@
 package com.ovasta.sellers.ui.screens.createorder
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -21,11 +21,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.shared.resources.Res
@@ -60,6 +62,10 @@ fun CreateOrderScreen(viewModel: CreateOrderViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     val navigator = LocalNavigator.current
 
+    LaunchedEffect(Unit) {
+        viewModel.onAction(CreateOrderScreenActions.ResetState)
+    }
+
     BaseScreen(viewModel = viewModel) {
         CreateOrderContent(
             viewState = viewState,
@@ -76,11 +82,11 @@ private fun CreateOrderContent(
     onNavigateBack: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
+    val keyboard = LocalSoftwareKeyboardController.current
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding(),
+            .fillMaxSize(),
         containerColor = Color.White,
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {
@@ -91,18 +97,18 @@ private fun CreateOrderContent(
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .imePadding()
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .weight(1f)
                     .verticalScroll(scrollState)
-                    .padding(16.dp)
-                    .padding(bottom = 80.dp)
-                    .imePadding(),
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 OrderTextField(
@@ -113,7 +119,10 @@ private fun CreateOrderContent(
                     },
                     label = stringResource(Res.string.phone_number),
                     error = viewState.customerPhoneError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Next
+                    ),
                     maxLines = 1
                 )
 
@@ -122,6 +131,9 @@ private fun CreateOrderContent(
                     onValueChange = { onAction(CreateOrderScreenActions.OnCustomerAddressChanged(it)) },
                     label = stringResource(Res.string.delivery_address),
                     error = viewState.customerAddressError,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    ),
                     minLines = 2
                 )
 
@@ -133,7 +145,10 @@ private fun CreateOrderContent(
                     },
                     label = stringResource(Res.string.collection_amount),
                     error = viewState.collectionAmountError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Next
+                    ),
                     maxLines = 1
                 )
 
@@ -145,7 +160,10 @@ private fun CreateOrderContent(
                     },
                     label = stringResource(Res.string.delivery_fees),
                     error = viewState.deliveryFeesError,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal,
+                        imeAction = ImeAction.Next
+                    ),
                     maxLines = 1
                 )
 
@@ -158,21 +176,32 @@ private fun CreateOrderContent(
                     },
                     label = stringResource(Res.string.notes),
                     error = null,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboard?.hide()
+                        }
+                    ),
                     minLines = 1,
                     maxLines = 4,
                 )
+
+                Spacer(modifier = Modifier.padding(bottom = 20.dp))
             }
 
-            // Submit Button
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter),
+                    .fillMaxWidth(),
                 color = Color.White,
                 shadowElevation = 2.dp
             ) {
                 Button(
-                    onClick = { onAction(CreateOrderScreenActions.OnSubmitOrder) },
+                    onClick = {
+                        keyboard?.hide()
+                        onAction(CreateOrderScreenActions.OnSubmitOrder)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
@@ -216,6 +245,7 @@ private fun OrderTextField(
     label: String,
     error: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     modifier: Modifier = Modifier
@@ -229,6 +259,7 @@ private fun OrderTextField(
             { Text(it, color = MaterialTheme.colorScheme.error, style = xsMedium) }
         },
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         minLines = minLines,
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),

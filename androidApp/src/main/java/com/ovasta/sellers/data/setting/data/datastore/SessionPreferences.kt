@@ -1,7 +1,7 @@
 package com.ovasta.sellers.data.setting.data.datastore
 
 import androidx.datastore.core.Serializer
-import com.ovasta.sellers.data.setting.model.RemoteConfigModel
+import com.ovasta.sellers.domain.model.RemoteConfigModel
 import com.ovasta.sellers.base.constants.LocalConstants.LANGUAGE_AR_ISO
 import com.ovasta.sellers.base.encryption.Crypto
 import com.ovasta.sellers.domain.model.User

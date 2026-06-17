@@ -6,8 +6,10 @@ import com.ovasta.sellers.data.platform.FirebaseAuthProvider
 import com.ovasta.sellers.data.platform.FirebaseMessagingProvider
 import com.ovasta.sellers.data.platform.FirestoreProvider
 import com.ovasta.sellers.data.platform.HapticFeedback
+import com.ovasta.sellers.data.platform.PermissionManager
 import com.ovasta.sellers.data.platform.SecureStorage
 import com.ovasta.sellers.data.remote.SessionHeaderProvider
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -17,6 +19,7 @@ actual fun platformModule(): Module = module {
     single { DataStoreProvider(get()) }
     single { DeviceInfoProvider(get()) }
     single { HapticFeedback(get()) }
+    single { PermissionManager(androidContext()) }
     
     // Firebase services (no Context needed)
     single { FirebaseAuthProvider() }

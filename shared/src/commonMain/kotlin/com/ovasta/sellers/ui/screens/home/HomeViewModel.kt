@@ -3,6 +3,9 @@ package com.ovasta.sellers.ui.screens.home
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.domain.repository.IHomeRepository
 import com.ovasta.sellers.domain.repository.ISettingsRepository
+import com.ovasta.sellers.shared.resources.Res
+import com.ovasta.sellers.shared.resources.mini_redeem_message
+import com.ovasta.sellers.shared.resources.order_cancelled_successfully
 import com.ovasta.sellers.ui.base.BaseViewModel
 import com.ovasta.sellers.ui.base.ScreenDirection
 import com.ovasta.sellers.ui.screens.CreateOrder
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class HomeViewModel(
     private val homeRepository: IHomeRepository,
@@ -57,9 +61,13 @@ class HomeViewModel(
         when (action) {
             is HomeScreenActions.ChangeLogoutDialogStatus ->
                 _viewState.update { it.copy(isLogoutDialogVisible = action.isVisible) }
+
             is HomeScreenActions.CreateOrder ->
                 emitScreenDirection(ScreenDirection.Push(CreateOrder()))
-            is HomeScreenActions.OrderClicked -> { /* TODO */ }
+
+            is HomeScreenActions.OrderClicked -> { /* TODO */
+            }
+
             is HomeScreenActions.RefreshHome -> loadHomeData(isRefresh = true)
             is HomeScreenActions.CancelOrder -> cancelOrder(action.orderId)
             is HomeScreenActions.NavigateToWallet ->
@@ -73,7 +81,7 @@ class HomeViewModel(
             runCatching { homeRepository.cancelOrder(orderId) }
                 .onSuccess {
                     setLoading(false)
-                    emitMessage("Order cancelled successfully")
+                    emitMessage(getString(Res.string.order_cancelled_successfully))
                     loadHomeData(isRefresh = true)
                 }
                 .onFailure {

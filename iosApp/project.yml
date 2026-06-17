@@ -30,8 +30,6 @@ targets:
         - "$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/releaseFramework"
         - "$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework"
         - "$(SRCROOT)/../shared/build/bin/iosArm64/releaseFramework"
-        - "$(SRCROOT)/../shared/build/bin/iosX64/debugFramework"
-        - "$(SRCROOT)/../shared/build/bin/iosX64/releaseFramework"
       OTHER_LDFLAGS:
         - "$(inherited)"
         - "-framework"

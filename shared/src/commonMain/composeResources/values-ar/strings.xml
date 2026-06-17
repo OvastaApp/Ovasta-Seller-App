@@ -84,7 +84,7 @@
     <string name="delivered_at">تم التوصيل في %1$s</string>
     <string name="branch">الفرع</string>
     <string name="notes">ملاحظات</string>
-    <string name="item_price">%1$s ريال</string>
+    <string name="item_price">%1$s ج.م</string>
     <string name="pricing_summary">ملخص التسعير</string>
     <string name="order_price">سعر الطلب</string>
     <string name="discount">الخصم</string>
@@ -253,5 +253,14 @@
     <string name="order_cancelled_successfully">تم إلغاء الطلب بنجاح</string>
     <string name="approved">تم الموافقه</string>
     <string name="rejected">مرفوض</string>
+
+    <!-- Permissions -->
+    <string name="notification_permission_title">تفعيل الإشعارات</string>
+    <string name="notification_permission_message">ابقَ على اطلاع بطلباتك وإشعارات التوصيل</string>
+    <string name="enable_notifications">تفعيل الإشعارات</string>
+    <string name="not_now">ليس الآن</string>
+    <string name="notification_permission_denied">تم رفض إذن الإشعارات</string>
+    <string name="notification_permission_denied_message">لتلقي تحديثات الطلبات، يرجى تفعيل الإشعارات في الإعدادات</string>
+    <string name="open_settings">فتح الإعدادات</string>
 
 </resources>
