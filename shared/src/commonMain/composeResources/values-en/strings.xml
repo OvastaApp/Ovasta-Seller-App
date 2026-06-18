@@ -265,4 +265,17 @@
     <string name="notification_permission_denied_message">To receive order updates, please enable notifications in Settings</string>
     <string name="open_settings">Open Settings</string>
 
+    <!-- My Products -->
+    <string name="my_products">My Products</string>
+    <string name="no_categories">No categories</string>
+    <string name="sales_price">Sales Price</string>
+    <string name="purchase_price">Purchase Price</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="shown">Shown</string>
+    <string name="hidden">Hidden</string>
+    <string name="show_in_app">Show in app</string>
+    <string name="update_product">Update Product</string>
+    <string name="product_updated_successfully">Product updated successfully</string>
+
 </resources>

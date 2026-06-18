@@ -7,6 +7,7 @@ import com.ovasta.sellers.ui.base.BaseViewModel
 import com.ovasta.sellers.ui.base.ScreenDirection
 import com.ovasta.sellers.ui.screens.LastOrders
 import com.ovasta.sellers.ui.screens.Login
+import com.ovasta.sellers.ui.screens.ProductCategories
 import com.ovasta.sellers.ui.screens.Wallet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +34,8 @@ class ProfileViewModel(
                 emitScreenDirection(ScreenDirection.Push(Wallet))
             is ProfileScreenActions.OnOrderHistoryTabClicked ->
                 emitScreenDirection(ScreenDirection.Push(LastOrders))
+            is ProfileScreenActions.OnMyProductsClicked ->
+                emitScreenDirection(ScreenDirection.Push(ProductCategories))
             is ProfileScreenActions.OnLogout -> logout()
             is ProfileScreenActions.OnLanguageSelected -> changeLanguage(action.languageCode)
         }

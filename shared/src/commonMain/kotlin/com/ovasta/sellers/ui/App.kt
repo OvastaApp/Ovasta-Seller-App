@@ -35,10 +35,12 @@ import com.ovasta.sellers.shared.resources.profile
 import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.base.Navigator
 import com.ovasta.sellers.ui.platform.PlatformBackHandler
+import com.ovasta.sellers.ui.screens.CategoryProducts
 import com.ovasta.sellers.ui.screens.CreateOrder
 import com.ovasta.sellers.ui.screens.Home
 import com.ovasta.sellers.ui.screens.LastOrders
 import com.ovasta.sellers.ui.screens.Login
+import com.ovasta.sellers.ui.screens.ProductCategories
 import com.ovasta.sellers.ui.screens.Profile
 import com.ovasta.sellers.ui.screens.Splash
 import com.ovasta.sellers.ui.screens.Wallet
@@ -50,6 +52,10 @@ import com.ovasta.sellers.ui.screens.login.LoginScreen
 import com.ovasta.sellers.ui.screens.login.LoginViewModel
 import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryScreen
 import com.ovasta.sellers.ui.screens.orderhistory.OrderHistoryViewModel
+import com.ovasta.sellers.ui.screens.products.CategoryProductsScreen
+import com.ovasta.sellers.ui.screens.products.CategoryProductsViewModel
+import com.ovasta.sellers.ui.screens.products.ProductCategoriesScreen
+import com.ovasta.sellers.ui.screens.products.ProductCategoriesViewModel
 import com.ovasta.sellers.ui.screens.profile.ProfileScreen
 import com.ovasta.sellers.ui.screens.profile.ProfileViewModel
 import com.ovasta.sellers.ui.screens.splash.SplashScreen
@@ -148,6 +154,16 @@ fun App(layoutDirection: LayoutDirection) {
                             is Wallet -> {
                                 val viewModel = koinViewModel<WalletViewModel>()
                                 WalletScreen(viewModel)
+                            }
+
+                            is ProductCategories -> {
+                                val viewModel = koinViewModel<ProductCategoriesViewModel>()
+                                ProductCategoriesScreen(viewModel)
+                            }
+
+                            is CategoryProducts -> {
+                                val viewModel = koinViewModel<CategoryProductsViewModel>()
+                                CategoryProductsScreen(viewModel, currentScreen.categoryId)
                             }
                         }
                     }

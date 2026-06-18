@@ -10,4 +10,5 @@ data class HomeInfo(
     @SerialName("points_per_pound") val pointsPerPound: Double? = null,
     @SerialName("min_redeem_points") val minRedeemPoints: Double? = null,
     @SerialName("min_order_delivery_price") val minOrderDeliveryPrice: Double? = null,
+    @SerialName("can_update_products") val canUpdateProducts: Boolean? = false,
 )
