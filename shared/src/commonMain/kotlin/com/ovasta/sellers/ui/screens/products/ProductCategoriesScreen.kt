@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ import com.ovasta.sellers.shared.resources.products_count
 import com.ovasta.sellers.ui.base.BaseScreen
 import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
+import com.ovasta.sellers.ui.components.shimmer
 import com.ovasta.sellers.ui.theme.Gray100
 import com.ovasta.sellers.ui.theme.Gray500
 import com.ovasta.sellers.ui.theme.Gray600
@@ -48,6 +50,7 @@ import com.ovasta.sellers.ui.theme.mdRegular
 import com.ovasta.sellers.ui.theme.smMedium
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProductCategoriesScreen(viewModel: ProductCategoriesViewModel) {
@@ -98,7 +101,11 @@ private fun ProductCategoriesContent(
             ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (viewState.categories.isEmpty()) {
+            if (viewState.isLoading) {
+                items(count = 6, key = { "shimmer_$it" }) {
+                    CategoryShimmerCard()
+                }
+            } else if (viewState.categories.isEmpty()) {
                 item(key = "empty") {
                     Box(
                         modifier = Modifier
@@ -122,6 +129,39 @@ private fun ProductCategoriesContent(
                 }
             }
             item { Spacer(modifier = Modifier.height(16.dp)) }
+        }
+    }
+}
+
+@Composable
+private fun CategoryShimmerCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(140.dp)
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmer()
+            )
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmer()
+            )
         }
     }
 }
@@ -160,4 +200,30 @@ private fun CategoryCard(category: ProductCategory, onClick: () -> Unit) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun ProductCategoriesContentPreview() {
+    ProductCategoriesContent(
+        viewState = ProductCategoriesViewState(
+            isLoading = false,
+            categories = listOf(
+                ProductCategory(id = 1, name = "المعلم", count = 5),
+                ProductCategory(id = 2, name = "البقالة", count = 3),
+            )
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun ProductCategoriesLoadingPreview() {
+    ProductCategoriesContent(viewState = ProductCategoriesViewState(isLoading = true))
+}
+
+@Preview
+@Composable
+private fun ProductCategoriesEmptyPreview() {
+    ProductCategoriesContent(viewState = ProductCategoriesViewState(isLoading = false))
 }

@@ -277,5 +277,7 @@
     <string name="show_in_app">Show in app</string>
     <string name="update_product">Update Product</string>
     <string name="product_updated_successfully">Product updated successfully</string>
+    <string name="add_product">Add Product</string>
+    <string name="product_added_successfully">Product added successfully</string>
 
 </resources>

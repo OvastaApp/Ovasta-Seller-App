@@ -32,8 +32,17 @@ data class SellerProduct(
 @Serializable
 data class UpdateProductPriceRequest(
     @SerialName("product_id") val productId: Int,
-    @SerialName("sales_price") val salesPrice: Double,
-    @SerialName("purchase_price") val purchasePrice: Double,
+    @SerialName("name") val name: String,
+    @SerialName("sales_price") val price: Double,
+    @SerialName("show") val show: Boolean,
+    @SerialName("active") val active: Boolean,
+)
+
+@Serializable
+data class AddProductRequest(
+    @SerialName("sub_category_id") val subCategoryId: Int,
+    @SerialName("name") val name: String,
+    @SerialName("sales_price") val price: Double,
     @SerialName("show") val show: Boolean,
     @SerialName("active") val active: Boolean,
 )

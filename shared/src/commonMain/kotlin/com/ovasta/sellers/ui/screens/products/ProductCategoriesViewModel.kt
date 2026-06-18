@@ -27,18 +27,17 @@ class ProductCategoriesViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            setLoading(true)
+            _viewState.update { it.copy(isLoading = true) }
             runCatching { productRepository.getCategories() }
                 .onSuccess { categories ->
-                    setLoading(false)
-                    _viewState.update { it.copy(categories = categories) }
+                    _viewState.update { it.copy(categories = categories, isLoading = false) }
                     // Single-category shortcut: skip the list and go straight to products.
                     if (categories.size == 1) {
                         emitScreenDirection(ScreenDirection.Replace(CategoryProducts(categories.first().id)))
                     }
                 }
                 .onFailure {
-                    setLoading(false)
+                    _viewState.update { it.copy(isLoading = false) }
                     handleError(it)
                 }
         }

@@ -1,6 +1,8 @@
 package com.ovasta.sellers.ui.screens.profile
 
 import androidx.lifecycle.viewModelScope
+import com.ovasta.sellers.data.repository.ProductDummyData
+import com.ovasta.sellers.domain.model.HomeInfo
 import com.ovasta.sellers.domain.repository.ISettingsRepository
 import com.ovasta.sellers.platform.applyAppLanguage
 import com.ovasta.sellers.ui.base.BaseViewModel
@@ -54,7 +56,10 @@ class ProfileViewModel(
             homeResult.onSuccess { homeResponse ->
                 _viewState.update {
                     it.copy(
-                        homeInfo = homeResponse,
+                        // Force the My Products tab visible while testing with dummy data.
+                        homeInfo = if (ProductDummyData.USE_DUMMY)
+                            (homeResponse ?: HomeInfo()).copy(canUpdateProducts = true)
+                        else homeResponse,
                         walletBalance = homeResponse?.walletBalance ?: 0.0,
                         points = homeResponse?.pointsCount ?: 0.0
                     )

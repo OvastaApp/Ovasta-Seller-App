@@ -2,6 +2,8 @@ package com.ovasta.sellers.ui.screens.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -27,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,26 +51,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.KeyboardOptions
+import com.ovasta.sellers.domain.model.ProductSubCategory
 import com.ovasta.sellers.domain.model.SellerProduct
 import com.ovasta.sellers.shared.resources.Res
 import com.ovasta.sellers.shared.resources.active
+import com.ovasta.sellers.shared.resources.add_product
 import com.ovasta.sellers.shared.resources.confirm
+import com.ovasta.sellers.shared.resources.hidden
+import com.ovasta.sellers.shared.resources.ic_add
+import com.ovasta.sellers.shared.resources.ic_edit_task
 import com.ovasta.sellers.shared.resources.inactive
 import com.ovasta.sellers.shared.resources.my_products
 import com.ovasta.sellers.shared.resources.no_products_available
+import com.ovasta.sellers.shared.resources.price
 import com.ovasta.sellers.shared.resources.price_currency
-import com.ovasta.sellers.shared.resources.purchase_price
-import com.ovasta.sellers.shared.resources.sales_price
+import com.ovasta.sellers.shared.resources.product_name
 import com.ovasta.sellers.shared.resources.show_in_app
-import com.ovasta.sellers.shared.resources.hidden
 import com.ovasta.sellers.shared.resources.shown
 import com.ovasta.sellers.shared.resources.update_product
 import com.ovasta.sellers.ui.base.BaseScreen
 import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
+import com.ovasta.sellers.ui.components.shimmer
+import androidx.compose.ui.draw.clip
 import com.ovasta.sellers.ui.theme.Gray100
 import com.ovasta.sellers.ui.theme.Gray500
 import com.ovasta.sellers.ui.theme.Gray600
@@ -74,9 +85,14 @@ import com.ovasta.sellers.ui.theme.Primary
 import com.ovasta.sellers.ui.theme.mdRegular
 import com.ovasta.sellers.ui.theme.mdSemiBold
 import com.ovasta.sellers.ui.theme.smMedium
+import com.ovasta.sellers.ui.theme.smNormal
 import com.ovasta.sellers.ui.theme.smSemiBold
 import com.ovasta.sellers.ui.theme.xsMedium
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private const val CHIP_LABEL_MAX_CHARS = 12
 
 @Composable
 fun CategoryProductsScreen(viewModel: CategoryProductsViewModel, categoryId: Int) {
@@ -107,7 +123,18 @@ private fun CategoryProductsContent(
             Surface(shadowElevation = 2.dp, color = Color.White) {
                 CenteredTextAppBar(
                     viewState.categoryName.ifEmpty { stringResource(Res.string.my_products) },
-                    onBackButtonPressed = { onNavigateBack() }
+                    onBackButtonPressed = { onNavigateBack() },
+                    actions = {
+                        if (viewState.selectedSubCategoryId != null) {
+                            IconButton(onClick = { onAction(CategoryProductsAction.OnAddProductClicked) }) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.ic_add),
+                                    contentDescription = stringResource(Res.string.add_product),
+                                    tint = Primary
+                                )
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -130,10 +157,23 @@ private fun CategoryProductsContent(
                 ) {
                     items(items = viewState.subCategories, key = { it.id }) { sub ->
                         val selected = sub.id == viewState.selectedSubCategoryId
+                        val label = if (sub.name.length > CHIP_LABEL_MAX_CHARS)
+                            sub.name.take(CHIP_LABEL_MAX_CHARS) + ".." else sub.name
                         FilterChip(
                             selected = selected,
                             onClick = { onAction(CategoryProductsAction.OnSubCategorySelected(sub.id)) },
-                            label = { Text(text = sub.name, style = smMedium) },
+                            modifier = Modifier.width(110.dp),
+                            label = {
+                                Text(
+                                    text = label,
+                                    style = smMedium,
+                                    color = if (selected) Color.White else Gray600,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = Primary,
                                 selectedLabelColor = Color.White,
@@ -154,7 +194,11 @@ private fun CategoryProductsContent(
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (products.isEmpty()) {
+                if (viewState.isLoading) {
+                    items(count = 6, key = { "shimmer_$it" }) {
+                        ProductShimmerCard()
+                    }
+                } else if (products.isEmpty()) {
                     item(key = "empty") {
                         Box(
                             modifier = Modifier
@@ -182,14 +226,26 @@ private fun CategoryProductsContent(
         }
     }
 
-    viewState.editingProduct?.let { product ->
-        EditProductBottomSheet(
-            product = product,
-            onSubmit = { sales, purchase, show, active ->
-                onAction(CategoryProductsAction.OnEditSubmitted(sales, purchase, show, active))
-            },
-            onDismiss = { onAction(CategoryProductsAction.DismissEdit) }
-        )
+    when {
+        viewState.editingProduct != null -> {
+            ProductEditorBottomSheet(
+                product = viewState.editingProduct,
+                onSubmit = { name, price, show, active ->
+                    onAction(CategoryProductsAction.OnEditSubmitted(name, price, show, active))
+                },
+                onDismiss = { onAction(CategoryProductsAction.DismissEditor) }
+            )
+        }
+
+        viewState.isAddingProduct -> {
+            ProductEditorBottomSheet(
+                product = null,
+                onSubmit = { name, price, show, active ->
+                    onAction(CategoryProductsAction.OnNewProductSubmitted(name, price, show, active))
+                },
+                onDismiss = { onAction(CategoryProductsAction.DismissEditor) }
+            )
+        }
     }
 }
 
@@ -244,6 +300,72 @@ private fun ProductCard(product: SellerProduct, onClick: () -> Unit) {
                     )
                 }
             }
+            // Edit affordance so the seller knows the row is editable.
+            Icon(
+                painter = painterResource(Res.drawable.ic_edit_task),
+                contentDescription = stringResource(Res.string.update_product),
+                tint = Primary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProductShimmerCard() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .shimmer()
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .shimmer()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .shimmer()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .shimmer()
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .shimmer()
+                    )
+                }
+            }
         }
     }
 }
@@ -266,17 +388,31 @@ private fun StatusPill(text: String, color: Color) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditProductBottomSheet(
-    product: SellerProduct,
-    onSubmit: (Double, Double, Boolean, Boolean) -> Unit,
+private fun ProductEditorBottomSheet(
+    product: SellerProduct?,
+    onSubmit: (String, Double, Boolean, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val isAdd = product == null
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val editorKey = product?.id ?: 0
 
-    var salesPrice by remember(product.id) { mutableStateOf(product.salesPrice.toString()) }
-    var purchasePrice by remember(product.id) { mutableStateOf(product.purchasePrice.toString()) }
-    var active by remember(product.id) { mutableStateOf(product.active) }
-    var show by remember(product.id) { mutableStateOf(product.show) }
+    var name by remember(editorKey) { mutableStateOf(product?.name.orEmpty()) }
+    var price by remember(editorKey) {
+        mutableStateOf(product?.salesPrice?.toString().orEmpty())
+    }
+    var active by remember(editorKey) { mutableStateOf(product?.active ?: true) }
+    var show by remember(editorKey) { mutableStateOf(product?.show ?: true) }
+
+    val parsedPrice = price.toDoubleOrNull()
+    val isValid = name.isNotBlank() && parsedPrice != null
+
+    val hasChanges = isAdd || (
+        name != product?.name.orEmpty() ||
+            parsedPrice != product?.salesPrice ||
+            active != product.active ||
+            show != product.show
+        )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -287,27 +423,25 @@ private fun EditProductBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .imePadding()
                 .padding(horizontal = 24.dp, vertical = 8.dp)
         ) {
             Text(
-                text = stringResource(Res.string.update_product),
+                text = stringResource(if (isAdd) Res.string.add_product else Res.string.update_product),
                 style = mdSemiBold,
                 color = Color.Black,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-
-            if (!product.name.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = product.name, style = smMedium, color = Gray500)
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = salesPrice,
-                onValueChange = { salesPrice = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text(stringResource(Res.string.sales_price)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(stringResource(Res.string.product_name), style = smNormal) },
+                textStyle = smNormal,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -315,9 +449,10 @@ private fun EditProductBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = purchasePrice,
-                onValueChange = { purchasePrice = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text(stringResource(Res.string.purchase_price)) },
+                value = price,
+                onValueChange = { price = it.filter { c -> c.isDigit() || c == '.' } },
+                label = { Text(stringResource(Res.string.price), style = smNormal) },
+                textStyle = smNormal,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -338,23 +473,28 @@ private fun EditProductBottomSheet(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val enabled = isValid && hasChanges
             Button(
                 onClick = {
                     onSubmit(
-                        salesPrice.toDoubleOrNull() ?: 0.0,
-                        purchasePrice.toDoubleOrNull() ?: 0.0,
+                        name.trim(),
+                        parsedPrice ?: 0.0,
                         show,
                         active
                     )
                 },
+                enabled = enabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Primary,
+                    disabledContainerColor = Primary.copy(alpha = 0.4f)
+                )
             ) {
                 Text(
-                    text = stringResource(Res.string.confirm),
+                    text = stringResource(if (isAdd) Res.string.add_product else Res.string.confirm),
                     style = smMedium,
                     color = Color.White
                 )
@@ -384,4 +524,65 @@ private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean
             )
         )
     }
+}
+
+private val previewProductsState = CategoryProductsViewState(
+    isLoading = false,
+    categoryName = "المعلم",
+    selectedSubCategoryId = 1,
+    subCategories = listOf(
+        ProductSubCategory(
+            id = 1,
+            name = "ساندويتشات",
+            products = listOf(
+                SellerProduct(id = 101, name = "ساندويتش فراخ", active = true, show = true, salesPrice = 45.0),
+                SellerProduct(id = 102, name = "ساندويتش لحمة", active = true, show = false, salesPrice = 60.0),
+                SellerProduct(id = 103, name = "ساندويتش طعمية", active = false, show = false, salesPrice = 15.0),
+            )
+        ),
+        ProductSubCategory(id = 2, name = "مشروبات", products = emptyList()),
+    )
+)
+
+@Preview
+@Composable
+private fun CategoryProductsContentPreview() {
+    CategoryProductsContent(viewState = previewProductsState, onAction = {})
+}
+
+@Preview
+@Composable
+private fun CategoryProductsLoadingPreview() {
+    CategoryProductsContent(
+        viewState = CategoryProductsViewState(isLoading = true, categoryName = "المعلم"),
+        onAction = {}
+    )
+}
+
+@Preview
+@Composable
+private fun CategoryProductsEmptyPreview() {
+    CategoryProductsContent(
+        viewState = previewProductsState.copy(selectedSubCategoryId = 2),
+        onAction = {}
+    )
+}
+
+@Preview
+@Composable
+private fun ProductCardPreview() {
+    ProductCard(
+        product = SellerProduct(id = 1, name = "ساندويتش فراخ", active = true, show = true, salesPrice = 45.0),
+        onClick = {}
+    )
+}
+
+@Preview
+@Composable
+private fun ProductEditorBottomSheetPreview() {
+    ProductEditorBottomSheet(
+        product = SellerProduct(id = 1, name = "ساندويتش فراخ", active = true, show = true, salesPrice = 45.0),
+        onSubmit = { _, _, _, _ -> },
+        onDismiss = {}
+    )
 }

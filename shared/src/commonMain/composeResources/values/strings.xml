@@ -278,5 +278,7 @@
     <string name="show_in_app">العرض في التطبيق</string>
     <string name="update_product">تحديث المنتج</string>
     <string name="product_updated_successfully">تم تحديث المنتج بنجاح</string>
+    <string name="add_product">إضافة منتج</string>
+    <string name="product_added_successfully">تمت إضافة المنتج بنجاح</string>
 
 </resources>
