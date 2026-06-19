@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -81,7 +85,8 @@ fun OrderHistoryScreen(viewModel: OrderHistoryViewModel) {
     BaseScreen(viewModel = viewModel) {
         OrderHistoryContent(
             viewState = viewState,
-            onNavigateBack = { navigator.pop() }
+            onNavigateBack = { navigator.pop() },
+            onLoadMore = { viewModel.onScreenAction(OrderHistoryAction.LoadMore) }
         )
     }
 }
@@ -89,8 +94,24 @@ fun OrderHistoryScreen(viewModel: OrderHistoryViewModel) {
 @Composable
 private fun OrderHistoryContent(
     viewState: OrderHistoryViewState,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onLoadMore: () -> Unit = {}
 ) {
+    val listState = rememberLazyListState()
+
+    // Trigger loading the next page once the user scrolls near the end of the list.
+    val shouldLoadMore by remember(viewState.canLoadMore) {
+        derivedStateOf {
+            if (!viewState.canLoadMore) return@derivedStateOf false
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: return@derivedStateOf false
+            lastVisible >= listState.layoutInfo.totalItemsCount - 3
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) onLoadMore()
+    }
+
     Scaffold(
         topBar = {
             Surface(shadowElevation = 2.dp, color = Color.White) {
@@ -102,6 +123,7 @@ private fun OrderHistoryContent(
         }
     ) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .consumeWindowInsets(paddingValues)
@@ -114,7 +136,7 @@ private fun OrderHistoryContent(
             ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val orders = viewState.deliveryOrdersResponse?.orders.orEmpty()
+            val orders = viewState.orders
             if (orders.isEmpty()) {
                 item(key = "empty") {
                     Box(
@@ -141,6 +163,24 @@ private fun OrderHistoryContent(
                     )
                 }
             }
+
+            if (viewState.isLoadingMore) {
+                item(key = "loading_more") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(28.dp),
+                            color = Primary,
+                            strokeWidth = 2.dp
+                        )
+                    }
+                }
+            }
+
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }

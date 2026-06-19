@@ -5,39 +5,41 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import java.io.File
-import java.security.GeneralSecurityException
 
 actual class SecureStorage(private val context: Context) {
     private val prefsFileName = "ovasta_secure_prefs"
-    
-    private val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
 
     private val prefs: SharedPreferences = createEncryptedPreferences()
 
+    private fun buildMasterKey(): MasterKey =
+        MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
     private fun createEncryptedPreferences(): SharedPreferences {
         return try {
-            EncryptedSharedPreferences.create(
-                context,
-                prefsFileName,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        } catch (e: GeneralSecurityException) {
-            // Handle corrupted keystore by deleting the encrypted preferences file
-            // and recreating it
+            createPrefs(buildMasterKey())
+        } catch (e: Exception) {
+            // A corrupted keystore or encrypted prefs file can throw a variety of
+            // exceptions (GeneralSecurityException / AEADBadTagException, IOException,
+            // KeyStoreException). None are recoverable in place, so wipe the encrypted
+            // prefs AND the master key and recreate from scratch. Without this the app
+            // crashes on startup, since SecureStorage is created eagerly during Koin
+            // initialization (UnauthorizedHandler -> SettingsRepository -> SecureStorage).
             deleteCorruptedPrefs()
-            EncryptedSharedPreferences.create(
-                context,
-                prefsFileName,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+            deleteMasterKey()
+            createPrefs(buildMasterKey())
         }
     }
+
+    private fun createPrefs(masterKey: MasterKey): SharedPreferences =
+        EncryptedSharedPreferences.create(
+            context,
+            prefsFileName,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
 
     private fun deleteCorruptedPrefs() {
         try {
@@ -47,6 +49,18 @@ actual class SecureStorage(private val context: Context) {
             }
         } catch (e: Exception) {
             // Ignore deletion errors
+        }
+    }
+
+    private fun deleteMasterKey() {
+        try {
+            val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore")
+            keyStore.load(null)
+            if (keyStore.containsAlias(MasterKey.DEFAULT_MASTER_KEY_ALIAS)) {
+                keyStore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            }
+        } catch (e: Exception) {
+            // Ignore keystore errors
         }
     }
 
