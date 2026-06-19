@@ -55,7 +55,6 @@ import com.ovasta.sellers.shared.resources.status_delivered
 import com.ovasta.sellers.shared.resources.status_pending
 import com.ovasta.sellers.shared.resources.status_picked
 import com.ovasta.sellers.ui.base.BaseScreen
-import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
 import com.ovasta.sellers.ui.model.OrderSteps
 import com.ovasta.sellers.ui.platform.openDialer
@@ -76,7 +75,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun OrderHistoryScreen(viewModel: OrderHistoryViewModel) {
     val viewState by viewModel.viewState.collectAsState()
-    val navigator = LocalNavigator.current
 
     LaunchedEffect(Unit) {
         viewModel.onScreenAction(OrderHistoryAction.LoadOrderHistory)
@@ -85,7 +83,6 @@ fun OrderHistoryScreen(viewModel: OrderHistoryViewModel) {
     BaseScreen(viewModel = viewModel) {
         OrderHistoryContent(
             viewState = viewState,
-            onNavigateBack = { navigator.pop() },
             onLoadMore = { viewModel.onScreenAction(OrderHistoryAction.LoadMore) }
         )
     }
@@ -94,7 +91,6 @@ fun OrderHistoryScreen(viewModel: OrderHistoryViewModel) {
 @Composable
 private fun OrderHistoryContent(
     viewState: OrderHistoryViewState,
-    onNavigateBack: () -> Unit = {},
     onLoadMore: () -> Unit = {}
 ) {
     val listState = rememberLazyListState()
@@ -117,7 +113,7 @@ private fun OrderHistoryContent(
             Surface(shadowElevation = 2.dp, color = Color.White) {
                 CenteredTextAppBar(
                     stringResource(Res.string.last_orders),
-                    onBackButtonPressed = { onNavigateBack() }
+                    showBackButton = false
                 )
             }
         }

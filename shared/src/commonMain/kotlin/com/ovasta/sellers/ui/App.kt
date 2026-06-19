@@ -3,6 +3,7 @@ package com.ovasta.sellers.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,8 +30,10 @@ import androidx.compose.ui.unit.dp
 import com.ovasta.sellers.data.remote.UnauthorizedHandler
 import com.ovasta.sellers.shared.resources.Res
 import com.ovasta.sellers.shared.resources.home
+import com.ovasta.sellers.shared.resources.ic_history
 import com.ovasta.sellers.shared.resources.ic_home
 import com.ovasta.sellers.shared.resources.ic_profile
+import com.ovasta.sellers.shared.resources.last_orders
 import com.ovasta.sellers.shared.resources.profile
 import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.base.Navigator
@@ -91,13 +94,15 @@ fun App(layoutDirection: LayoutDirection) {
             CompositionLocalProvider(LocalNavigator provides navigator) {
                 val currentScreen = backStack.lastOrNull() ?: Splash
                 val canGoBack =
-                    backStack.size > 1 && currentScreen !is Home && currentScreen !is Profile
+                    backStack.size > 1 && currentScreen !is Home &&
+                        currentScreen !is Profile && currentScreen !is LastOrders
 
                 PlatformBackHandler(enabled = canGoBack) {
                     navigator.pop()
                 }
 
-                val showBottomBar = currentScreen is Home || currentScreen is Profile
+                val showBottomBar =
+                    currentScreen is Home || currentScreen is Profile || currentScreen is LastOrders
 
                 Scaffold(
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -110,6 +115,11 @@ fun App(layoutDirection: LayoutDirection) {
                                         navigator.replaceAll(Home)
                                     }
                                 },
+                                onOrdersClick = {
+                                    if (currentScreen !is LastOrders) {
+                                        navigator.replaceAll(LastOrders)
+                                    }
+                                },
                                 onProfileClick = {
                                     if (currentScreen !is Profile) {
                                         navigator.replaceAll(Profile)
@@ -118,8 +128,12 @@ fun App(layoutDirection: LayoutDirection) {
                             )
                         }
                     }
-                ) {
-                    Box {
+                ) { innerPadding ->
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .consumeWindowInsets(innerPadding)
+                    ) {
                         when (currentScreen) {
                             is Splash -> {
                                 val viewModel = koinViewModel<SplashViewModel>()
@@ -177,64 +191,66 @@ fun App(layoutDirection: LayoutDirection) {
 private fun AppBottomBar(
     currentScreen: Any,
     onHomeClick: () -> Unit,
+    onOrdersClick: () -> Unit,
     onProfileClick: () -> Unit
 ) {
     NavigationBar(
         containerColor = Color.White,
         tonalElevation = 8.dp
     ) {
-        val homeSelected = currentScreen is Home
-        val profileSelected = currentScreen is Profile
-
-        NavigationBarItem(
-            selected = homeSelected,
+        BottomBarItem(
+            selected = currentScreen is Home,
             onClick = onHomeClick,
-            icon = {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_home),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(Res.string.home),
-                    style = if (homeSelected) smSemiBold else xsMedium
-                )
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Primary,
-                selectedTextColor = Primary,
-                unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
-                unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
-                indicatorColor = Color.Transparent
-            )
+            icon = Res.drawable.ic_home,
+            label = stringResource(Res.string.home)
         )
 
-        NavigationBarItem(
-            selected = profileSelected,
+        BottomBarItem(
+            selected = currentScreen is LastOrders,
+            onClick = onOrdersClick,
+            icon = Res.drawable.ic_history,
+            label = stringResource(Res.string.last_orders)
+        )
+
+        BottomBarItem(
+            selected = currentScreen is Profile,
             onClick = onProfileClick,
-            icon = {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_profile),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(Res.string.profile),
-                    style = if (profileSelected) smSemiBold else xsMedium
-                )
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Primary,
-                selectedTextColor = Primary,
-                unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
-                unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
-                indicatorColor = Color.Transparent
-            )
+            icon = Res.drawable.ic_profile,
+            label = stringResource(Res.string.profile)
         )
     }
+}
+
+@Composable
+private fun androidx.compose.foundation.layout.RowScope.BottomBarItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: org.jetbrains.compose.resources.DrawableResource,
+    label: String
+) {
+    NavigationBarItem(
+        selected = selected,
+        onClick = onClick,
+        icon = {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        },
+        label = {
+            Text(
+                text = label,
+                style = if (selected) smSemiBold else xsMedium
+            )
+        },
+        colors = NavigationBarItemDefaults.colors(
+            selectedIconColor = Primary,
+            selectedTextColor = Primary,
+            unselectedIconColor = Color.Gray.copy(alpha = 0.5f),
+            unselectedTextColor = Color.Gray.copy(alpha = 0.5f),
+            indicatorColor = Color.Transparent
+        )
+    )
 }
 

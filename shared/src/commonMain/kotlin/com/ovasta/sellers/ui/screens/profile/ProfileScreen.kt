@@ -55,7 +55,6 @@ import com.ovasta.sellers.shared.resources.ic_profile_circle
 import com.ovasta.sellers.shared.resources.language
 import com.ovasta.sellers.shared.resources.language_arabic
 import com.ovasta.sellers.shared.resources.language_english
-import com.ovasta.sellers.shared.resources.last_orders
 import com.ovasta.sellers.shared.resources.logout
 import com.ovasta.sellers.shared.resources.logout_message
 import com.ovasta.sellers.shared.resources.my_products
@@ -158,13 +157,6 @@ private fun ProfileContent(
                 title = stringResource(Res.string.wallet),
                 value = stringResource(Res.string.price_currency, viewState.walletBalance.toString()),
                 onClick = { onAction(ProfileScreenActions.OnWalletClicked) }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            ProfileInfoCard(
-                title = stringResource(Res.string.last_orders),
-                onClick = { onAction(ProfileScreenActions.OnOrderHistoryTabClicked) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

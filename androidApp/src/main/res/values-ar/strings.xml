@@ -46,8 +46,8 @@
     <string name="estimated_delivery">موعد التوصيل المتوقع</string>
     <string name="home">الرئيسية</string>
     <string name="orders">الطلبات</string>
-    <string name="last_orders">طلباتك السابقة</string>
-    <string name="profile">الملف الشخصي</string>
+    <string name="last_orders">طلباتك</string>
+    <string name="profile">بياناتك</string>
     <string name="profile_image">صورة الملف الشخصي</string>
     <string name="wallet">المحفظة</string>
     <string name="the_points">النقاط</string>
