@@ -105,6 +105,7 @@
 				C220D971EA5251EC3D9A7733 /* Embed Kotlin Framework */,
 				1F97B979AE5CFB016D4E3B35 /* Frameworks */,
 				86A71B9EEA21C1373EF2715C /* [CP] Embed Pods Frameworks */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* Upload dSYMs to Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -232,6 +233,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\n# Determine architecture and configuration\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  if [ \"$(uname -m)\" = \"arm64\" ]; then\n    ARCH=\"iosSimulatorArm64\"\n  else\n    ARCH=\"iosX64\"\n  fi\nelse\n  ARCH=\"iosArm64\"\nfi\n\nif [ \"$CONFIGURATION\" = \"Debug\" ]; then\n  CONFIG=\"debug\"\nelse\n  CONFIG=\"release\"\nfi\n\n# Source and destination paths\nFRAMEWORK_PATH=\"$SRCROOT/../shared/build/bin/$ARCH/${CONFIG}Framework/sharedKit.framework\"\nDSYM_PATH=\"$SRCROOT/../shared/build/bin/$ARCH/${CONFIG}Framework/sharedKit.framework.dSYM\"\nFRAMEWORKS_DIR=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH\"\n\necho \"Embedding sharedKit framework from: $FRAMEWORK_PATH\"\n\nmkdir -p \"$FRAMEWORKS_DIR\"\n\nif [ -d \"$FRAMEWORKS_DIR/sharedKit.framework\" ]; then\n  rm -rf \"$FRAMEWORKS_DIR/sharedKit.framework\"\nfi\n\nif [ -d \"$FRAMEWORK_PATH\" ]; then\n  cp -R \"$FRAMEWORK_PATH\" \"$FRAMEWORKS_DIR/\"\n  echo \"Framework embedded successfully\"\nelse\n  echo \"ERROR: Framework not found at: $FRAMEWORK_PATH\"\n  exit 1\nfi\n\n# Copy dSYM for archiving\nif [ -d \"$DSYM_PATH\" ]; then\n  DSYM_DEST=\"$DWARF_DSYM_FOLDER_PATH/sharedKit.framework.dSYM\"\n  echo \"Copying dSYM from: $DSYM_PATH to: $DSYM_DEST\"\n  mkdir -p \"$DWARF_DSYM_FOLDER_PATH\"\n  cp -R \"$DSYM_PATH\" \"$DSYM_DEST\"\n  echo \"dSYM copied successfully\"\nelse\n  echo \"WARNING: dSYM not found at: $DSYM_PATH\"\nfi\n\n# Copy Compose resources to app bundle\nCOMPOSE_RESOURCES_DIR=\"$SRCROOT/../shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources\"\nAPP_RESOURCES_DIR=\"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/compose-resources/composeResources/com.ovasta.sellers.shared.resources\"\n\nif [ -d \"$COMPOSE_RESOURCES_DIR\" ]; then\n  echo \"Copying Compose resources to app bundle...\"\n  mkdir -p \"$APP_RESOURCES_DIR\"\n  cp -R \"$COMPOSE_RESOURCES_DIR/\" \"$APP_RESOURCES_DIR/\"\n  echo \"Compose resources copied successfully\"\nelse\n  echo \"WARNING: Compose resources not found at: $COMPOSE_RESOURCES_DIR\"\nfi\n\n# Code sign the embedded framework (required for device install)\nif [ -d \"$FRAMEWORKS_DIR/sharedKit.framework\" ]; then\n  /usr/bin/codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" --verbose \"$FRAMEWORKS_DIR/sharedKit.framework\"\n  echo \"Framework codesigned successfully\"\nfi\n";
+		};
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* Upload dSYMs to Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(SRCROOT)/iosApp/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Upload dSYMs to Crashlytics";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/upload-symbols\" -gsp \"${PROJECT_DIR}/iosApp/GoogleService-Info.plist\" -p ios \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
