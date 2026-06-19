@@ -12,7 +12,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
-        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+        
+        let crashlytics = Crashlytics.crashlytics()
+        crashlytics.setCrashlyticsCollectionEnabled(true)
 
         // Forward seller identity from shared code to native Crashlytics.
         CrashlyticsBridge.shared.userHandler = { id, name, phone in

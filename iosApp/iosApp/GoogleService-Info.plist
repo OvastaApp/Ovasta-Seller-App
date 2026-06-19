@@ -24,6 +24,8 @@
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
+	<key>IS_CRASHLYTICS_ENABLED</key>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:92678043519:ios:172d7722aa21c0691c8c4a</string>
 	<key>DATABASE_URL</key>
