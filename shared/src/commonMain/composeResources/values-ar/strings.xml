@@ -263,4 +263,19 @@
     <string name="notification_permission_denied_message">لتلقي تحديثات الطلبات، يرجى تفعيل الإشعارات في الإعدادات</string>
     <string name="open_settings">فتح الإعدادات</string>
 
+    <!-- My Products -->
+    <string name="my_products">منتجاتي</string>
+    <string name="no_categories">لا توجد فئات</string>
+    <string name="sales_price">سعر البيع</string>
+    <string name="purchase_price">سعر الشراء</string>
+    <string name="active">مفعّل</string>
+    <string name="inactive">غير مفعّل</string>
+    <string name="shown">ظاهر</string>
+    <string name="hidden">مخفي</string>
+    <string name="show_in_app">العرض في التطبيق</string>
+    <string name="update_product">تحديث المنتج</string>
+    <string name="product_updated_successfully">تم تحديث المنتج بنجاح</string>
+    <string name="add_product">إضافة منتج</string>
+    <string name="product_added_successfully">تمت إضافة المنتج بنجاح</string>
+
 </resources>

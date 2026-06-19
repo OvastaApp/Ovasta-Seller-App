@@ -15,6 +15,7 @@ sealed interface ProfileScreenActions {
     data class ChangeLogoutDialogStatus(val isVisible: Boolean) : ProfileScreenActions
     data object OnWalletClicked : ProfileScreenActions
     data object OnOrderHistoryTabClicked : ProfileScreenActions
+    data object OnMyProductsClicked : ProfileScreenActions
     data object OnLogout : ProfileScreenActions
     data class OnLanguageSelected(val languageCode: String) : ProfileScreenActions
 }

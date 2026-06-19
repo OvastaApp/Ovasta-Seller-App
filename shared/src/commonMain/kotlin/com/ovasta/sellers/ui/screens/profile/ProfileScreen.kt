@@ -58,6 +58,7 @@ import com.ovasta.sellers.shared.resources.language_english
 import com.ovasta.sellers.shared.resources.last_orders
 import com.ovasta.sellers.shared.resources.logout
 import com.ovasta.sellers.shared.resources.logout_message
+import com.ovasta.sellers.shared.resources.my_products
 import com.ovasta.sellers.shared.resources.no
 import com.ovasta.sellers.shared.resources.price_currency
 import com.ovasta.sellers.shared.resources.profile
@@ -167,6 +168,15 @@ private fun ProfileContent(
             )
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            if (viewState.homeInfo?.canUpdateProducts == true) {
+                ProfileInfoCard(
+                    title = stringResource(Res.string.my_products),
+                    onClick = { onAction(ProfileScreenActions.OnMyProductsClicked) }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
             val currentLangLabel = if (viewState.selectedLanguage == "ar")
                 stringResource(Res.string.language_arabic)

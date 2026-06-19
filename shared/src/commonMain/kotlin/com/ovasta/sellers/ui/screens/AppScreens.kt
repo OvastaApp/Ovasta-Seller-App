@@ -11,3 +11,5 @@ data class CreateOrder(val id: Long = 0L)
 data object Profile
 data object LastOrders
 data object Wallet
+data object ProductCategories
+data class CategoryProducts(val categoryId: Int)
