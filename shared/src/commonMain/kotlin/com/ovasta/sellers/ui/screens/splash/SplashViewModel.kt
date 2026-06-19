@@ -2,6 +2,7 @@ package com.ovasta.sellers.ui.screens.splash
 
 import androidx.lifecycle.viewModelScope
 import com.ovasta.sellers.domain.repository.ISettingsRepository
+import com.ovasta.sellers.platform.setCrashlyticsUser
 import com.ovasta.sellers.ui.base.BaseViewModel
 import com.ovasta.sellers.ui.base.ScreenDirection
 import com.ovasta.sellers.ui.screens.Home
@@ -24,7 +25,12 @@ class SplashViewModel(
         viewModelScope.launch {
             settingsRepository.getDeviceId()
             delay(500)
-            val loggedIn = settingsRepository.getUserData()?.deliveryId != null
+            val user = settingsRepository.getUserData()
+            val loggedIn = user != null
+            if (user != null) {
+                // Restore seller identity on crash reports after relaunch.
+                setCrashlyticsUser(user.id.toString(), user.name.orEmpty(), user.mobile.orEmpty())
+            }
             _destination.value = if (loggedIn) ScreenDirection.Replace(Home)
                                   else ScreenDirection.Replace(Login)
         }

@@ -11,6 +11,8 @@ import com.ovasta.sellers.data.platform.SecureStorage
 import com.ovasta.sellers.domain.model.HomeInfo
 import com.ovasta.sellers.domain.model.User
 import com.ovasta.sellers.domain.repository.ISettingsRepository
+import com.ovasta.sellers.platform.clearCrashlyticsUser
+import com.ovasta.sellers.platform.setCrashlyticsUser
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -42,6 +44,8 @@ class SettingsRepository(
         }
         // Save access token to secure storage
         user.token?.let { secureStorage.putString(SECURE_TOKEN_KEY, it) }
+        // Attach seller identity to crash reports.
+        setCrashlyticsUser(user.id.toString(), user.name.orEmpty(), user.mobile.orEmpty())
     }
 
     override suspend fun getUserData(): User? {
@@ -69,6 +73,7 @@ class SettingsRepository(
     override suspend fun clearUserData() {
         dataStore.edit { it.clear() }
         secureStorage.clear()
+        clearCrashlyticsUser()
     }
 
     override suspend fun getDeviceId(): String {

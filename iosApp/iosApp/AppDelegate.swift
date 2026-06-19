@@ -3,6 +3,7 @@ import FirebaseCore
 import FirebaseCrashlytics
 import FirebaseMessaging
 import UserNotifications
+import sharedKit
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
@@ -12,6 +13,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
     ) -> Bool {
         FirebaseApp.configure()
         Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+
+        // Forward seller identity from shared code to native Crashlytics.
+        CrashlyticsBridge.shared.userHandler = { id, name, phone in
+            Crashlytics.crashlytics().setUserID(id)
+            Crashlytics.crashlytics().setCustomValue(name, forKey: "user_name")
+            Crashlytics.crashlytics().setCustomValue(phone, forKey: "user_phone")
+        }
+        CrashlyticsBridge.shared.clearHandler = {
+            Crashlytics.crashlytics().setUserID("")
+            Crashlytics.crashlytics().setCustomValue("", forKey: "user_name")
+            Crashlytics.crashlytics().setCustomValue("", forKey: "user_phone")
+        }
+
         Messaging.messaging().delegate = self
         
         UNUserNotificationCenter.current().delegate = self
