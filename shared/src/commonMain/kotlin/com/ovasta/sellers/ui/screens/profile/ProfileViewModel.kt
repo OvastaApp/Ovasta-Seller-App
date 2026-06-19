@@ -23,6 +23,7 @@ class ProfileViewModel(
     val viewState = _viewState.asStateFlow()
 
     init {
+        throw RuntimeException("Test crash") // For testing crash reporting
         loadProfileData()
         _viewState.update { it.copy(selectedLanguage = settingsRepository.getLanguage()) }
     }
