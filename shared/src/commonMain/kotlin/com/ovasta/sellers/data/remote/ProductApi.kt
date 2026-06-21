@@ -4,11 +4,12 @@ import com.ovasta.sellers.domain.model.AddProductRequest
 import com.ovasta.sellers.domain.model.ApiResponse
 import com.ovasta.sellers.domain.model.ProductCategory
 import com.ovasta.sellers.domain.model.SellerProduct
-import com.ovasta.sellers.domain.model.UpdateProductPriceRequest
+import com.ovasta.sellers.domain.model.UpdateProductRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 
 class ProductApiService(private val client: HttpClient) {
@@ -16,8 +17,8 @@ class ProductApiService(private val client: HttpClient) {
         return client.get("categories").body()
     }
 
-    suspend fun updateProductPrice(productId: Int, request: UpdateProductPriceRequest) {
-        client.post("products/$productId/update-price") {
+    suspend fun updateProduct(districtProductId: Int, request: UpdateProductRequest) {
+        client.put("categories/products/$districtProductId") {
             setBody(request)
         }
     }

@@ -10,7 +10,7 @@ import com.ovasta.sellers.domain.model.SellerProduct
  */
 object ProductDummyData {
     /** When true, the product feature uses local dummy data and the Profile tab is forced visible. */
-    const val USE_DUMMY = true
+    const val USE_DUMMY = false
 
     private var lastId = 1000
     fun nextProductId(): Int = ++lastId

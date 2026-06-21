@@ -4,7 +4,7 @@ import com.ovasta.sellers.data.remote.ProductApiService
 import com.ovasta.sellers.domain.model.AddProductRequest
 import com.ovasta.sellers.domain.model.ProductCategory
 import com.ovasta.sellers.domain.model.SellerProduct
-import com.ovasta.sellers.domain.model.UpdateProductPriceRequest
+import com.ovasta.sellers.domain.model.UpdateProductRequest
 import com.ovasta.sellers.domain.repository.IProductRepository
 
 class ProductRepository(private val api: ProductApiService) : IProductRepository {
@@ -13,21 +13,21 @@ class ProductRepository(private val api: ProductApiService) : IProductRepository
         else api.getCategories().data ?: emptyList()
 
     override suspend fun updateProductPrice(
-        productId: Int,
+        districtProductId: Int,
         name: String,
+        description: String,
         price: Double,
         show: Boolean,
         active: Boolean,
     ) {
         if (ProductDummyData.USE_DUMMY) return
-        api.updateProductPrice(
-            productId,
-            UpdateProductPriceRequest(
-                productId = productId,
-                name = name,
-                price = price,
-                show = show,
+        // The update endpoint only accepts activation/show/sales_price; name is local-only.
+        api.updateProduct(
+            districtProductId,
+            UpdateProductRequest(
                 active = active,
+                show = show,
+                price = price,
             )
         )
     }
@@ -35,6 +35,7 @@ class ProductRepository(private val api: ProductApiService) : IProductRepository
     override suspend fun addProduct(
         subCategoryId: Int,
         name: String,
+        description: String,
         price: Double,
         show: Boolean,
         active: Boolean,
@@ -43,6 +44,7 @@ class ProductRepository(private val api: ProductApiService) : IProductRepository
             return SellerProduct(
                 id = ProductDummyData.nextProductId(),
                 name = name,
+                description = description,
                 active = active,
                 show = show,
                 salesPrice = price,
@@ -52,10 +54,18 @@ class ProductRepository(private val api: ProductApiService) : IProductRepository
             AddProductRequest(
                 subCategoryId = subCategoryId,
                 name = name,
+                description = description,
                 price = price,
                 show = show,
                 active = active,
             )
-        ).data ?: SellerProduct(id = 0, name = name, salesPrice = price, show = show, active = active)
+        ).data ?: SellerProduct(
+            id = 0,
+            name = name,
+            description = description,
+            salesPrice = price,
+            show = show,
+            active = active,
+        )
     }
 }

@@ -6,8 +6,9 @@ import com.ovasta.sellers.domain.model.SellerProduct
 interface IProductRepository {
     suspend fun getCategories(): List<ProductCategory>
     suspend fun updateProductPrice(
-        productId: Int,
+        districtProductId: Int,
         name: String,
+        description: String,
         price: Double,
         show: Boolean,
         active: Boolean,
@@ -15,6 +16,7 @@ interface IProductRepository {
     suspend fun addProduct(
         subCategoryId: Int,
         name: String,
+        description: String,
         price: Double,
         show: Boolean,
         active: Boolean,

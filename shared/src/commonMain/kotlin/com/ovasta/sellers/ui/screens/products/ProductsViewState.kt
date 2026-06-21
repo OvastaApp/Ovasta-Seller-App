@@ -31,18 +31,20 @@ data class CategoryProductsViewState(
 
 sealed interface CategoryProductsAction {
     data class LoadProducts(val categoryId: Int) : CategoryProductsAction
-    data class OnSubCategorySelected(val subCategoryId: Int) : CategoryProductsAction
+    data class OnSubCategorySelected(val subCategoryId: Int?) : CategoryProductsAction
     data class OnProductClicked(val product: SellerProduct) : CategoryProductsAction
     data object OnAddProductClicked : CategoryProductsAction
     data object DismissEditor : CategoryProductsAction
     data class OnEditSubmitted(
         val name: String,
+        val description: String,
         val price: Double,
         val show: Boolean,
         val active: Boolean,
     ) : CategoryProductsAction
     data class OnNewProductSubmitted(
         val name: String,
+        val description: String,
         val price: Double,
         val show: Boolean,
         val active: Boolean,

@@ -191,6 +191,7 @@
     <string name="remaining_products">المتبقي</string>
     <string name="products_list">قائمة المنتجات</string>
     <string name="product_name">اسم المنتج</string>
+    <string name="product_description">وصف المنتج</string>
     <string name="quantity">الكمية</string>
     <string name="price">السعر</string>
     <string name="source">المصدر</string>

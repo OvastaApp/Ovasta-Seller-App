@@ -57,7 +57,7 @@ class CategoryProductsViewModel(
     }
 
     private fun applyCategory(category: ProductCategory?) {
-        val subCategories = category?.subCategories.orEmpty()
+        val subCategories = category?.subCategories.orEmpty().sortedBy { it.priority }
         _viewState.update {
             // Keep the current selection only if it belongs to this category;
             // otherwise default to the first chip (e.g. when switching categories
@@ -79,8 +79,9 @@ class CategoryProductsViewModel(
             setLoading(true)
             runCatching {
                 productRepository.updateProductPrice(
-                    productId = product.id,
+                    districtProductId = product.districtProductId ?: product.id,
                     name = action.name,
+                    description = action.description,
                     price = action.price,
                     show = action.show,
                     active = action.active,
@@ -94,6 +95,7 @@ class CategoryProductsViewModel(
                             products = sub.products.map { p ->
                                 if (p.id == product.id) p.copy(
                                     name = action.name,
+                                    description = action.description,
                                     salesPrice = action.price,
                                     show = action.show,
                                     active = action.active,
@@ -119,6 +121,7 @@ class CategoryProductsViewModel(
                 productRepository.addProduct(
                     subCategoryId = subCategoryId,
                     name = action.name,
+                    description = action.description,
                     price = action.price,
                     show = action.show,
                     active = action.active,

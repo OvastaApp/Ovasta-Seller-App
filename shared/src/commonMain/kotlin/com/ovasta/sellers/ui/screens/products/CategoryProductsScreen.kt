@@ -77,6 +77,7 @@ import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
 import com.ovasta.sellers.ui.components.shimmer
 import androidx.compose.ui.draw.clip
+import com.ovasta.sellers.shared.resources.product_description
 import com.ovasta.sellers.ui.theme.Gray100
 import com.ovasta.sellers.ui.theme.Gray500
 import com.ovasta.sellers.ui.theme.Gray600
@@ -155,10 +156,11 @@ private fun CategoryProductsContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp)
                 ) {
-                    items(items = viewState.subCategories, key = { it.id }) { sub ->
+                    items(items = viewState.subCategories, key = { it.id ?: -1 }) { sub ->
                         val selected = sub.id == viewState.selectedSubCategoryId
-                        val label = if (sub.name.length > CHIP_LABEL_MAX_CHARS)
-                            sub.name.take(CHIP_LABEL_MAX_CHARS) + ".." else sub.name
+                        val name = sub.name.orEmpty()
+                        val label = if (name.length > CHIP_LABEL_MAX_CHARS)
+                            name.take(CHIP_LABEL_MAX_CHARS) + ".." else name
                         FilterChip(
                             selected = selected,
                             onClick = { onAction(CategoryProductsAction.OnSubCategorySelected(sub.id)) },
@@ -230,8 +232,8 @@ private fun CategoryProductsContent(
         viewState.editingProduct != null -> {
             ProductEditorBottomSheet(
                 product = viewState.editingProduct,
-                onSubmit = { name, price, show, active ->
-                    onAction(CategoryProductsAction.OnEditSubmitted(name, price, show, active))
+                onSubmit = { name, description, price, show, active ->
+                    onAction(CategoryProductsAction.OnEditSubmitted(name, description, price, show, active))
                 },
                 onDismiss = { onAction(CategoryProductsAction.DismissEditor) }
             )
@@ -240,8 +242,8 @@ private fun CategoryProductsContent(
         viewState.isAddingProduct -> {
             ProductEditorBottomSheet(
                 product = null,
-                onSubmit = { name, price, show, active ->
-                    onAction(CategoryProductsAction.OnNewProductSubmitted(name, price, show, active))
+                onSubmit = { name, description, price, show, active ->
+                    onAction(CategoryProductsAction.OnNewProductSubmitted(name, description, price, show, active))
                 },
                 onDismiss = { onAction(CategoryProductsAction.DismissEditor) }
             )
@@ -280,6 +282,16 @@ private fun ProductCard(product: SellerProduct, onClick: () -> Unit) {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+                if (!product.description.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = product.description,
+                        style = smNormal,
+                        color = Gray500,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(Res.string.price_currency, product.salesPrice.toString()),
@@ -390,7 +402,7 @@ private fun StatusPill(text: String, color: Color) {
 @Composable
 private fun ProductEditorBottomSheet(
     product: SellerProduct?,
-    onSubmit: (String, Double, Boolean, Boolean) -> Unit,
+    onSubmit: (String, String, Double, Boolean, Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     val isAdd = product == null
@@ -398,6 +410,7 @@ private fun ProductEditorBottomSheet(
     val editorKey = product?.id ?: 0
 
     var name by remember(editorKey) { mutableStateOf(product?.name.orEmpty()) }
+    var description by remember(editorKey) { mutableStateOf(product?.description.orEmpty()) }
     var price by remember(editorKey) {
         mutableStateOf(product?.salesPrice?.toString().orEmpty())
     }
@@ -409,6 +422,7 @@ private fun ProductEditorBottomSheet(
 
     val hasChanges = isAdd || (
         name != product?.name.orEmpty() ||
+            description != product?.description.orEmpty() ||
             parsedPrice != product?.salesPrice ||
             active != product.active ||
             show != product.show
@@ -449,6 +463,18 @@ private fun ProductEditorBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text(stringResource(Res.string.product_description), style = smNormal) },
+                textStyle = smNormal,
+                minLines = 2,
+                maxLines = 4,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
                 value = price,
                 onValueChange = { price = it.filter { c -> c.isDigit() || c == '.' } },
                 label = { Text(stringResource(Res.string.price), style = smNormal) },
@@ -478,6 +504,7 @@ private fun ProductEditorBottomSheet(
                 onClick = {
                     onSubmit(
                         name.trim(),
+                        description.trim(),
                         parsedPrice ?: 0.0,
                         show,
                         active
@@ -581,8 +608,8 @@ private fun ProductCardPreview() {
 @Composable
 private fun ProductEditorBottomSheetPreview() {
     ProductEditorBottomSheet(
-        product = SellerProduct(id = 1, name = "ساندويتش فراخ", active = true, show = true, salesPrice = 45.0),
-        onSubmit = { _, _, _, _ -> },
+        product = SellerProduct(id = 1, name = "ساندويتش فراخ", description = "ساندويتش فراخ مشوية", active = true, show = true, salesPrice = 45.0),
+        onSubmit = { _, _, _, _, _ -> },
         onDismiss = {}
     )
 }
