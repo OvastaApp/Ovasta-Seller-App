@@ -58,6 +58,9 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
+                // Image loading (KMP, Ktor-backed)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
                 // Lifecycle ViewModel (KMP-compatible)
                 implementation(libs.lifecycle.viewmodel.compose)
                 // Koin Compose Multiplatform

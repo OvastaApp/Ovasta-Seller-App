@@ -36,6 +36,8 @@ data class SellerProduct(
 
 @Serializable
 data class UpdateProductRequest(
+    @SerialName("name") val name: String,
+    @SerialName("description") val description: String,
     @SerialName("activation") val active: Boolean,
     @SerialName("show") val show: Boolean,
     @SerialName("sales_price") val price: Double,

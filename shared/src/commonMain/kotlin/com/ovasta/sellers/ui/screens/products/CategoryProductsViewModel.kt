@@ -57,7 +57,9 @@ class CategoryProductsViewModel(
     }
 
     private fun applyCategory(category: ProductCategory?) {
-        val subCategories = category?.subCategories.orEmpty().sortedBy { it.priority }
+        // Preserve the API's ordering for both groups and their products
+        // (first in the response = first on screen).
+        val subCategories = category?.subCategories.orEmpty()
         _viewState.update {
             // Keep the current selection only if it belongs to this category;
             // otherwise default to the first chip (e.g. when switching categories

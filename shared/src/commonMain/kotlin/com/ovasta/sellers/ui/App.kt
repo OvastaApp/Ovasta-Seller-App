@@ -27,6 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.ovasta.sellers.data.remote.UnauthorizedHandler
 import com.ovasta.sellers.shared.resources.Res
 import com.ovasta.sellers.shared.resources.home
@@ -77,6 +80,12 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(layoutDirection: LayoutDirection) {
+    // Register a Ktor-backed image loader so Coil can fetch remote images on all platforms.
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .components { add(KtorNetworkFetcherFactory()) }
+            .build()
+    }
     AppTheme {
         CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
             val backStack = remember { mutableStateListOf<Any>(Splash as Any) }

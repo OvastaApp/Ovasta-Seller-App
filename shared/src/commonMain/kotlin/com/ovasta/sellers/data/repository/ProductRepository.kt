@@ -21,10 +21,11 @@ class ProductRepository(private val api: ProductApiService) : IProductRepository
         active: Boolean,
     ) {
         if (ProductDummyData.USE_DUMMY) return
-        // The update endpoint only accepts activation/show/sales_price; name is local-only.
         api.updateProduct(
             districtProductId,
             UpdateProductRequest(
+                name = name,
+                description = description,
                 active = active,
                 show = show,
                 price = price,

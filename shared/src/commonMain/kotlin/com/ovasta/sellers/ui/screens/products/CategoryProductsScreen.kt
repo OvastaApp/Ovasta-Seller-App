@@ -50,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -66,6 +67,7 @@ import com.ovasta.sellers.shared.resources.ic_edit_task
 import com.ovasta.sellers.shared.resources.inactive
 import com.ovasta.sellers.shared.resources.my_products
 import com.ovasta.sellers.shared.resources.no_products_available
+import com.ovasta.sellers.shared.resources.other
 import com.ovasta.sellers.shared.resources.price
 import com.ovasta.sellers.shared.resources.price_currency
 import com.ovasta.sellers.shared.resources.product_name
@@ -77,6 +79,8 @@ import com.ovasta.sellers.ui.base.LocalNavigator
 import com.ovasta.sellers.ui.components.CenteredTextAppBar
 import com.ovasta.sellers.ui.components.shimmer
 import androidx.compose.ui.draw.clip
+import coil3.compose.AsyncImage
+import com.ovasta.sellers.data.remote.ApiConstants
 import com.ovasta.sellers.shared.resources.product_description
 import com.ovasta.sellers.ui.theme.Gray100
 import com.ovasta.sellers.ui.theme.Gray500
@@ -94,6 +98,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private const val CHIP_LABEL_MAX_CHARS = 12
+
+// Toggle on when the add-product feature is ready to ship.
+private const val SHOW_ADD_PRODUCT = false
 
 @Composable
 fun CategoryProductsScreen(viewModel: CategoryProductsViewModel, categoryId: Int) {
@@ -126,7 +133,8 @@ private fun CategoryProductsContent(
                     viewState.categoryName.ifEmpty { stringResource(Res.string.my_products) },
                     onBackButtonPressed = { onNavigateBack() },
                     actions = {
-                        if (viewState.selectedSubCategoryId != null) {
+                        // Add-product is hidden until the feature is released.
+                        if (SHOW_ADD_PRODUCT && viewState.selectedSubCategoryId != null) {
                             IconButton(onClick = { onAction(CategoryProductsAction.OnAddProductClicked) }) {
                                 Icon(
                                     painter = painterResource(Res.drawable.ic_add),
@@ -158,7 +166,9 @@ private fun CategoryProductsContent(
                 ) {
                     items(items = viewState.subCategories, key = { it.id ?: -1 }) { sub ->
                         val selected = sub.id == viewState.selectedSubCategoryId
-                        val name = sub.name.orEmpty()
+                        // Groups with a null/blank name (the API's ungrouped bucket) fall back to "Other".
+                        val name = sub.name?.takeIf { it.isNotBlank() }
+                            ?: stringResource(Res.string.other)
                         val label = if (name.length > CHIP_LABEL_MAX_CHARS)
                             name.take(CHIP_LABEL_MAX_CHARS) + ".." else name
                         FilterChip(
@@ -251,6 +261,17 @@ private fun CategoryProductsContent(
     }
 }
 
+/**
+ * Builds a loadable URL from the API's image field, which may be either an
+ * absolute URL or a path relative to the host root. Returns null when blank.
+ */
+private fun resolveImageUrl(image: String?): String? {
+    val raw = image?.trim().orEmpty()
+    if (raw.isEmpty()) return null
+    return if (raw.startsWith("http", ignoreCase = true)) raw
+    else ApiConstants.IMAGE_BASE_URL.trimEnd('/') + "/" + raw.trimStart('/')
+}
+
 @Composable
 private fun ProductCard(product: SellerProduct, onClick: () -> Unit) {
     Card(
@@ -267,12 +288,24 @@ private fun ProductCard(product: SellerProduct, onClick: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // View-only image placeholder (no shared image loader available).
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .background(Gray100, RoundedCornerShape(8.dp))
-            )
+            val imageUrl = resolveImageUrl(product.image)
+            if (imageUrl != null) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = product.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Gray100)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(Gray100, RoundedCornerShape(8.dp))
+                )
+            }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -434,70 +467,82 @@ private fun ProductEditorBottomSheet(
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         containerColor = Color.White
     ) {
+        // Outer column lifts the whole sheet above the keyboard; only the fields scroll,
+        // keeping the submit button pinned and visible while typing.
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
                 .imePadding()
-                .padding(horizontal = 24.dp, vertical = 8.dp)
         ) {
-            Text(
-                text = stringResource(if (isAdd) Res.string.add_product else Res.string.update_product),
-                style = mdSemiBold,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = false)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(if (isAdd) Res.string.add_product else Res.string.update_product),
+                    style = mdSemiBold,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text(stringResource(Res.string.product_name), style = smNormal) },
-                textStyle = smNormal,
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    // Name can only be set when adding; it is read-only when editing an existing product.
+                    readOnly = !isAdd,
+                    enabled = isAdd,
+                    label = { Text(stringResource(Res.string.product_name), style = smNormal) },
+                    textStyle = smNormal,
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text(stringResource(Res.string.product_description), style = smNormal) },
-                textStyle = smNormal,
-                minLines = 2,
-                maxLines = 4,
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text(stringResource(Res.string.product_description), style = smNormal) },
+                    textStyle = smNormal,
+                    minLines = 2,
+                    maxLines = 4,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = price,
-                onValueChange = { price = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text(stringResource(Res.string.price), style = smNormal) },
-                textStyle = smNormal,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = { price = it.filter { c -> c.isDigit() || c == '.' } },
+                    label = { Text(stringResource(Res.string.price), style = smNormal) },
+                    textStyle = smNormal,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            ToggleRow(
-                label = stringResource(Res.string.active),
-                checked = active,
-                onCheckedChange = { active = it }
-            )
-            ToggleRow(
-                label = stringResource(Res.string.show_in_app),
-                checked = show,
-                onCheckedChange = { show = it }
-            )
+                ToggleRow(
+                    label = stringResource(Res.string.active),
+                    checked = active,
+                    onCheckedChange = { active = it }
+                )
+                ToggleRow(
+                    label = stringResource(Res.string.show_in_app),
+                    checked = show,
+                    onCheckedChange = { show = it }
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             val enabled = isValid && hasChanges
             Button(
@@ -513,6 +558,7 @@ private fun ProductEditorBottomSheet(
                 enabled = enabled,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
