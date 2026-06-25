@@ -46,9 +46,28 @@ open class BaseViewModel : ViewModel(), KoinComponent {
     protected fun handleError(throwable: Throwable, retryAction: () -> Unit = {}) {
         recordException(throwable)
         val exception = AppException(
-            message = throwable.message ?: "An unknown error occurred",
+            message = userFacingMessage(throwable.message),
             actions = listOf(retryAction)
         )
         _appExceptionEvent.value = exception
+    }
+
+    /**
+     * Returns a safe message to show in the UI. Raw exception messages from the
+     * network stack (timeouts, connection failures, etc.) often embed the request
+     * URL/host, which must never be exposed to the user. Any message that looks
+     * technical is replaced with a generic fallback.
+     */
+    private fun userFacingMessage(message: String?): String {
+        val fallback = "An unknown error occurred"
+        if (message.isNullOrBlank()) return fallback
+        val looksTechnical = message.contains("http", ignoreCase = true) ||
+            message.contains("://") ||
+            URL_OR_IP_REGEX.containsMatchIn(message)
+        return if (looksTechnical) fallback else message
+    }
+
+    private companion object {
+        private val URL_OR_IP_REGEX = Regex("""\d{1,3}(\.\d{1,3}){3}|[\w-]+(\.[\w-]+)+(/|:\d)""")
     }
 }

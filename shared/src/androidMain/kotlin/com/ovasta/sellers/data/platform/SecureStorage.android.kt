@@ -28,7 +28,16 @@ actual class SecureStorage(private val context: Context) {
             // initialization (UnauthorizedHandler -> SettingsRepository -> SecureStorage).
             deleteCorruptedPrefs()
             deleteMasterKey()
-            createPrefs(buildMasterKey())
+            try {
+                createPrefs(buildMasterKey())
+            } catch (e2: Exception) {
+                // Even after wiping the keystore and prefs file, encryption can keep
+                // failing (e.g. an unrecoverable AndroidKeyStore / StrongBox state).
+                // SecureStorage is created eagerly during Koin init, so throwing here
+                // crashes the whole app on startup. Fall back to plain SharedPreferences
+                // as a last resort: degraded security beats an unstartable app.
+                context.getSharedPreferences("${prefsFileName}_fallback", Context.MODE_PRIVATE)
+            }
         }
     }
 

@@ -58,14 +58,38 @@
 }
 
 # ---------- Kotlinx Serialization ----------
+# Official JetBrains rules (https://github.com/Kotlin/kotlinx.serialization#android).
+# Required for R8 "full mode" (enabled by proguard-android-optimize.txt), which
+# otherwise strips the synthetic Companion / serializer() lookups that Ktor uses
+# to serialize request bodies, breaking POST calls in release builds only.
+-keepattributes RuntimeVisibleAnnotations,AnnotationDefault
+-dontwarn kotlinx.serialization.**
+
+# Keep generated serializers and their descriptors.
 -keep,includedescriptorclasses class com.ovasta.sellers.**$$serializer { *; }
--keepclassmembers class com.ovasta.sellers.** {
-    *** Companion;
+
+# Keep `Companion` object fields of serializable classes.
+-if @kotlinx.serialization.Serializable class **
+-keepclassmembers public class <1> {
+    static <1>$Companion Companion;
 }
--keepclasseswithmembers class com.ovasta.sellers.** {
+
+# Keep `serializer()` on companion objects (both default and named) of serializable classes.
+-if @kotlinx.serialization.Serializable class ** {
+    static **$* *;
+}
+-keepclassmembers class <2>$<3> {
     kotlinx.serialization.KSerializer serializer(...);
 }
--dontwarn kotlinx.serialization.**
+
+# Keep `INSTANCE.serializer()` of serializable objects.
+-if @kotlinx.serialization.Serializable class ** {
+    public static ** INSTANCE;
+}
+-keepclassmembers class <1> {
+    public static <1> INSTANCE;
+    kotlinx.serialization.KSerializer serializer(...);
+}
 
 # ---------- Navigation3 Route Objects ----------
 -keep class com.ovasta.sellers.presentation.nav.** { *; }
