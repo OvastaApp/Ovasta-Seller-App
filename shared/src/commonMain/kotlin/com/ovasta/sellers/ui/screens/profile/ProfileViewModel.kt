@@ -37,7 +37,7 @@ class ProfileViewModel(
             is ProfileScreenActions.OnLanguageSelected -> changeLanguage(action.languageCode)
         }
     }
-
+0
     private fun loadProfileData() {
         viewModelScope.launch {
             setLoading(true)
