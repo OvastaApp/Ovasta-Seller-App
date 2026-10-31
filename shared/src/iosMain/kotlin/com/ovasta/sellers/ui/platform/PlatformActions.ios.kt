@@ -80,7 +80,7 @@ actual fun showToast(message: String) {
     )
 
     dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (2000).toLong()),
+        dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC.toLong()),
         dispatch_get_main_queue()
     ) {
         alert.dismissViewControllerAnimated(true, completion = null)
