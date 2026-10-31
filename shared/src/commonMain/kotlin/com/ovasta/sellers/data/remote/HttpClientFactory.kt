@@ -69,11 +69,13 @@ fun createHttpClient(
         }
 
         HttpResponseValidator {
-            handleResponseExceptionWithRequest { exception, _ ->
+            handleResponseExceptionWithRequest { exception, request ->
                 if (exception !is ResponseException) return@handleResponseExceptionWithRequest
                 
-                // Handle 401 Unauthorized
-                if (exception.response.status == HttpStatusCode.Unauthorized) {
+                // Handle 401 Unauthorized as an expired session only for requests that sent a token.
+                // Without one (e.g. login with wrong credentials) fall through and show the server message.
+                val sentToken = request.headers.contains(ApiConstants.Headers.AUTHORIZATION)
+                if (exception.response.status == HttpStatusCode.Unauthorized && sentToken) {
                     CoroutineScope(Dispatchers.Default).launch {
                         unauthorizedHandler.onUnauthorized()
                     }
