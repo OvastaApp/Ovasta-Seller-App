@@ -212,9 +212,17 @@ private fun DeliveryOrderCard(
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-            InfoRow(icon = Res.drawable.ic_location, value = order.toAddress)
-            Spacer(modifier = Modifier.height(6.dp))
-            InfoRow(icon = Res.drawable.ic_call, value = order.receiverMobile)
+            val hasAddress = !order.toAddress.isNullOrBlank()
+            val hasPhone = !order.receiverMobile.isNullOrBlank()
+            if (hasAddress) {
+                InfoRow(icon = Res.drawable.ic_location, value = order.toAddress!!)
+            }
+            if (hasAddress && hasPhone) {
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+            if (hasPhone) {
+                InfoRow(icon = Res.drawable.ic_call, value = order.receiverMobile!!)
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(color = Gray200)

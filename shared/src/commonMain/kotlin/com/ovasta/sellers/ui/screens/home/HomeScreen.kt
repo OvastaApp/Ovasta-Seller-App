@@ -319,13 +319,14 @@ private fun SellerHomeContent(
 @Composable
 private fun MilestoneProgressCard(progress: MilestonesProgress?, onClick: () -> Unit = {}) {
     val ordersToday = progress?.ordersToday ?: 0
-    val threshold = progress?.nextMilestoneThreshold ?: 0
-    val remaining = progress?.ordersRemainingToNextMilestone ?: 0
-    val nextPercentage = progress?.nextMilestonePercentage ?: 0.0
+    val threshold = progress?.nextMilestoneThreshold
+    val remaining = progress?.ordersRemainingToNextMilestone
+    val nextPercentage = progress?.nextMilestonePercentage
     val currentPercentage = progress?.currentMilestonePercentage ?: 0.0
-    val progressRatio = if (threshold > 0) {
-        (ordersToday.toFloat() / threshold.toFloat()).coerceIn(0f, 1f)
-    } else 0f
+    val hasNextMilestone = threshold != null && threshold > 0 && remaining != null && nextPercentage != null
+    val progressRatio = if (hasNextMilestone) {
+        (ordersToday.toFloat() / threshold!!.toFloat()).coerceIn(0f, 1f)
+    } else 1f
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -367,17 +368,18 @@ private fun MilestoneProgressCard(progress: MilestonesProgress?, onClick: () -> 
                 trackColor = Gray200,
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(
-                    Res.string.milestone_next_hint,
-                    remaining.toString(),
-                    nextPercentage.formatPercent()
-                ),
-                style = smNormal,
-                color = Gray500
-            )
+            if (hasNextMilestone) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(
+                        Res.string.milestone_next_hint,
+                        remaining!!.toString(),
+                        nextPercentage!!.formatPercent()
+                    ),
+                    style = smNormal,
+                    color = Gray500
+                )
+            }
 
             if (currentPercentage > 0.0) {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -511,14 +513,21 @@ private fun DeliveryOrderCard(
                 StatusBadge(order.statusId)
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            val hasAddress = !order.toAddress.isNullOrBlank()
+            val hasPhone = !order.receiverMobile.isNullOrBlank()
 
-            // Address
-            InfoRow(icon = Res.drawable.ic_location, value = order.toAddress)
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Receiver phone
-            InfoRow(icon = Res.drawable.ic_call, value = order.receiverMobile)
+            if (hasAddress || hasPhone) {
+                Spacer(modifier = Modifier.height(10.dp))
+                if (hasAddress) {
+                    InfoRow(icon = Res.drawable.ic_location, value = order.toAddress!!)
+                }
+                if (hasAddress && hasPhone) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+                if (hasPhone) {
+                    InfoRow(icon = Res.drawable.ic_call, value = order.receiverMobile!!)
+                }
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalDivider(color = Gray200)
