@@ -28,14 +28,17 @@ private fun getTopWindow(): UIWindow? {
 }
 
 actual fun openDialer(phoneNumber: String) {
-    val url = NSURL(string = "tel:$phoneNumber")
-    UIApplication.sharedApplication.openURL(url)
+    val sanitized = phoneNumber.filter { it.isDigit() || it == '+' }
+    if (sanitized.isEmpty()) return
+    val url = NSURL.URLWithString("tel:$sanitized") ?: return
+    UIApplication.sharedApplication.openURL(url, options = emptyMap<Any?, Any>(), completionHandler = null)
 }
 
 actual fun openWhatsApp(phoneNumber: String) {
-    val cleanNumber = phoneNumber.replace("+", "")
-    val url = NSURL(string = "https://wa.me/$cleanNumber")
-    UIApplication.sharedApplication.openURL(url)
+    val cleanNumber = phoneNumber.replace("+", "").filter { it.isDigit() }
+    if (cleanNumber.isEmpty()) return
+    val url = NSURL.URLWithString("https://wa.me/$cleanNumber") ?: return
+    UIApplication.sharedApplication.openURL(url, options = emptyMap<Any?, Any>(), completionHandler = null)
 }
 
 actual fun copyToClipboard(text: String) {

@@ -29,11 +29,6 @@ data class WithdrawRequests(
 )
 
 @Serializable
-data class RedeemPointsRequest(
-    @SerialName("points") val points: Int,
-)
-
-@Serializable
 data class WithdrawRequest(
     @SerialName("amount") val amount: Double,
 )

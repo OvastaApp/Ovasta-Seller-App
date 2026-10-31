@@ -1,10 +1,8 @@
 package com.ovasta.sellers.ui.screens.wallet
 
 import androidx.lifecycle.viewModelScope
-import com.ovasta.sellers.domain.repository.ISettingsRepository
 import com.ovasta.sellers.domain.repository.IWalletRepository
-    import com.ovasta.sellers.shared.resources.Res
-import com.ovasta.sellers.shared.resources.mini_redeem_message
+import com.ovasta.sellers.shared.resources.Res
 import com.ovasta.sellers.shared.resources.no_wallet_balance_to_withdraw
 import com.ovasta.sellers.shared.resources.request_submitted_successfully
 import com.ovasta.sellers.ui.base.BaseViewModel
@@ -16,7 +14,6 @@ import org.jetbrains.compose.resources.getString
 
 class WalletViewModel(
     private val walletRepository: IWalletRepository,
-    private val settingsRepository: ISettingsRepository,
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow(WalletViewState())
@@ -48,24 +45,6 @@ class WalletViewModel(
                 _viewState.update { it.copy(showWithdrawConfirmDialog = false) }
             WalletAction.DismissSuccessDialog ->
                 _viewState.update { it.copy(showWithdrawSuccessDialog = false) }
-            WalletAction.ConvertPoints -> {
-                getMinRedeemPoints {
-                    val available = _viewState.value.wallet?.points ?: 0.0
-                    val min = _viewState.value.minimumRedeemPoints
-                    if (available < min) {
-                        viewModelScope.launch {
-                            emitMessage(getString(Res.string.mini_redeem_message, min.toInt().toString()))
-                        }
-                    } else {
-                        _viewState.update { it.copy(showRedeemBottomSheet = true, redeemPointsInput = "", redeemPointsError = null) }
-                    }
-                }
-            }
-            WalletAction.DismissRedeemBottomSheet ->
-                _viewState.update { it.copy(showRedeemBottomSheet = false, redeemPointsInput = "", redeemPointsError = null) }
-            is WalletAction.UpdateRedeemPoints ->
-                _viewState.update { it.copy(redeemPointsInput = action.points, redeemPointsError = null) }
-            WalletAction.ConfirmRedeemPoints -> validateAndRedeemPoints()
             WalletAction.DismissToast ->
                 _viewState.update { it.copy(toastMessage = null) }
         }
@@ -108,41 +87,6 @@ class WalletViewModel(
                     _viewState.update { it.copy(showWithdrawSuccessDialog = true, selectedTab = 1) }
                     getWalletTransactions()
                     getWithdrawRequests()
-                }
-                .onFailure { setLoading(false); handleError(it) }
-        }
-    }
-
-    private fun validateAndRedeemPoints() {
-        val input = _viewState.value.redeemPointsInput.toIntOrNull() ?: 0
-        if (input <= 0) return
-        _viewState.update { it.copy(pointsToRedeem = input, showRedeemBottomSheet = false) }
-        redeemPoints()
-    }
-
-    private fun redeemPoints() {
-        viewModelScope.launch {
-            setLoading(true)
-            runCatching { walletRepository.redeemPoints(_viewState.value.pointsToRedeem) }
-                .onSuccess {
-                    viewModelScope.launch {
-                        emitMessage(getString(Res.string.request_submitted_successfully))
-                    }
-                    setLoading(false)
-                    getWalletTransactions()
-                }
-                .onFailure { setLoading(false); handleError(it) }
-        }
-    }
-
-    private fun getMinRedeemPoints(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            setLoading(true)
-            runCatching { settingsRepository.getHomeInfo() }
-                .onSuccess { response ->
-                    setLoading(false)
-                    _viewState.update { it.copy(minimumRedeemPoints = response?.minRedeemPoints ?: 0.0) }
-                    onSuccess()
                 }
                 .onFailure { setLoading(false); handleError(it) }
         }

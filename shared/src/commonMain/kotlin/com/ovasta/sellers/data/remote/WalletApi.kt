@@ -1,7 +1,6 @@
 package com.ovasta.sellers.data.remote
 
 import com.ovasta.sellers.domain.model.ApiResponse
-import com.ovasta.sellers.domain.model.RedeemPointsRequest
 import com.ovasta.sellers.domain.model.WalletResponse
 import com.ovasta.sellers.domain.model.WithdrawRequest
 import com.ovasta.sellers.domain.model.WithdrawRequests
@@ -23,12 +22,6 @@ class WalletApiService(private val client: HttpClient) {
         return client.get("withdrawal-requests") {
             if (page != null) parameter("page", page)
         }.body()
-    }
-
-    suspend fun redeemPoints(request: RedeemPointsRequest) {
-        client.post("wallet/redeem-points") {
-            setBody(request)
-        }
     }
 
     suspend fun requestWithdraw(request: WithdrawRequest) {

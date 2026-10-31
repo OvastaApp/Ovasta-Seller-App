@@ -4,17 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,9 +39,9 @@ import com.ovasta.sellers.domain.model.PointsHistory
 import com.ovasta.sellers.domain.model.WithdrawRequests
 import com.ovasta.sellers.shared.resources.Res
 import com.ovasta.sellers.shared.resources.approved
+import com.ovasta.sellers.shared.resources.balance_details
 import com.ovasta.sellers.shared.resources.confirm
 import com.ovasta.sellers.shared.resources.back
-import com.ovasta.sellers.shared.resources.convert_to_money
 import com.ovasta.sellers.shared.resources.empty_wallet_transactions
 import com.ovasta.sellers.shared.resources.empty_withdraw_history
 import com.ovasta.sellers.shared.resources.ic_confirm
@@ -53,7 +50,6 @@ import com.ovasta.sellers.shared.resources.pending_label
 import com.ovasta.sellers.shared.resources.price_currency
 import com.ovasta.sellers.shared.resources.rejected
 import com.ovasta.sellers.shared.resources.success
-import com.ovasta.sellers.shared.resources.the_points
 import com.ovasta.sellers.shared.resources.wallet
 import com.ovasta.sellers.shared.resources.wallet_balance
 import com.ovasta.sellers.shared.resources.withdraw
@@ -130,16 +126,8 @@ private fun WalletContent(
         )
     }
 
-    // Redeem Points Bottom Sheet
-    if (viewState.showRedeemBottomSheet) {
-        RedeemPointsBottomSheet(
-            viewState = viewState,
-            onAction = onAction
-        )
-    }
-
     val tabs = listOf(
-        stringResource(Res.string.the_points),
+        stringResource(Res.string.balance_details),
         stringResource(Res.string.withdraw_requests)
     )
 
@@ -162,79 +150,37 @@ private fun WalletContent(
                 .padding(paddingValues)
         ) {
             viewState.wallet?.let { wallet ->
-                Row(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(IntrinsicSize.Min),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Primary)
                 ) {
-                    // Points Card
-                    Card(
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Amber)
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                        Text(
+                            text = stringResource(Res.string.wallet_balance),
+                            style = xsMedium, color = Color.White.copy(alpha = 0.8f)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(Res.string.price_currency, "${wallet.walletBalance ?: 0.0}"),
+                            style = mdSemiBold, color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = { onAction(WalletAction.RequestWithdraw) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White, contentColor = Primary
+                            ),
+                            contentPadding = PaddingValues(vertical = 8.dp)
                         ) {
-                            Text(
-                                text = stringResource(Res.string.the_points),
-                                style = xsMedium, color = Color.White.copy(alpha = 0.8f)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "${wallet.points ?: 0}",
-                                style = mdSemiBold, color = Color.White
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Button(
-                                onClick = { onAction(WalletAction.ConvertPoints) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White, contentColor = Amber
-                                ),
-                                contentPadding = PaddingValues(vertical = 8.dp)
-                            ) {
-                                Text(text = stringResource(Res.string.convert_to_money), style = xsMedium)
-                            }
-                        }
-                    }
-                    // Wallet Balance Card
-                    Card(
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Primary)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = stringResource(Res.string.wallet_balance),
-                                style = xsMedium, color = Color.White.copy(alpha = 0.8f)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = stringResource(Res.string.price_currency, "${wallet.walletBalance ?: 0.0}"),
-                                style = mdSemiBold, color = Color.White
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Button(
-                                onClick = { onAction(WalletAction.RequestWithdraw) },
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White, contentColor = Primary
-                                ),
-                                contentPadding = PaddingValues(vertical = 8.dp)
-                            ) {
-                                Text(text = stringResource(Res.string.withdraw), style = xsMedium)
-                            }
+                            Text(text = stringResource(Res.string.withdraw), style = xsMedium)
                         }
                     }
                 }
@@ -310,18 +256,20 @@ private fun PointsHistoryTab(history: List<PointsHistory>) {
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(text = item.description ?: "", style = smMedium)
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(text = formatReadableDate(item.createdAt), style = xsRegular, color = Gray500)
                         }
                         Text(
-                            text = "${item.amount ?: 0}",
+                            text = stringResource(Res.string.price_currency, "${item.amount ?: 0}"),
                             style = smSemiBold,
-                            color = if ((item.amount ?: 0.0) > 0) Green else Color.Red
+                            color = if ((item.amount ?: 0.0) > 0) Green else Color.Red,
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
@@ -362,10 +310,10 @@ private fun WithdrawRequestsTab(requests: List<WithdrawRequests>) {
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = stringResource(Res.string.price_currency, "${request.amount ?: 0.0}"),
                                 style = smSemiBold

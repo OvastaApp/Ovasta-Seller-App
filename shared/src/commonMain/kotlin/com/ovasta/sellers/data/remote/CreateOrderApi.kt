@@ -11,4 +11,8 @@ class CreateOrderApiService(private val client: HttpClient) {
             setBody(request)
         }
     }
+
+    suspend fun createQuickOrder() {
+        client.post("delivery-orders")
+    }
 }

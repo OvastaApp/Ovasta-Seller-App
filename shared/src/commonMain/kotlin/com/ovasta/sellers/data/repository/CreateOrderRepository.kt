@@ -22,4 +22,8 @@ class CreateOrderRepository(private val api: CreateOrderApiService) : ICreateOrd
             )
         )
     }
+
+    override suspend fun createQuickOrder() {
+        api.createQuickOrder()
+    }
 }

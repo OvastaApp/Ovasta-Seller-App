@@ -8,4 +8,6 @@ interface ICreateOrderRepository {
         deliveryFees: Double,
         note: String? = null,
     )
+
+    suspend fun createQuickOrder()
 }

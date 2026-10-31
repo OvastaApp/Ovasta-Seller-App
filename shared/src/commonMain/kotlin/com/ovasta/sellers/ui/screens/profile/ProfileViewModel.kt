@@ -52,8 +52,7 @@ class ProfileViewModel(
                 _viewState.update {
                     it.copy(
                         homeInfo = homeResponse,
-                        walletBalance = homeResponse?.walletBalance ?: 0.0,
-                        points = homeResponse?.pointsCount ?: 0.0
+                        walletBalance = homeResponse?.walletBalance ?: 0.0
                     )
                 }
             }.onFailure { handleError(it) }

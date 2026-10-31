@@ -7,7 +7,6 @@ data class ProfileViewState(
     val homeInfo: HomeInfo? = null,
     val userInfo: User? = null,
     val walletBalance: Double = 0.0,
-    val points: Double = 0.0,
     val selectedLanguage: String = "ar",
 )
 

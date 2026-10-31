@@ -10,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.ovasta.sellers.BuildConfig
 import com.ovasta.sellers.data.notification.FcmTokenApi
+import com.ovasta.sellers.data.remote.ApiConstants
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
@@ -48,7 +49,7 @@ val remoteModule = module {
 
     single<Retrofit> {
         Retrofit.Builder()
-            .baseUrl("http://167.172.209.252/api/seller-app/")
+            .baseUrl(ApiConstants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(get()))
             .client(get())
             .build()

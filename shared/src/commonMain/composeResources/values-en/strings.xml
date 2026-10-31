@@ -51,6 +51,7 @@
     <string name="profile_image">Profile Image</string>
     <string name="wallet">Wallet</string>
     <string name="the_points">Points</string>
+    <string name="balance_details">Balance Details</string>
     <string name="points">Points</string>
     <string name="point">Point</string>
     <string name="points_unit">pts</string>
@@ -209,8 +210,19 @@
     <string name="equivalent_money">Equivalent Money</string>
     <string name="points_rate">Points Rate</string>
     <string name="my_orders">My Orders</string>
+    <string name="milestones_progress">Your Progress</string>
+    <string name="orders_today_count">Today: %1$s orders</string>
+    <string name="milestone_next_hint">%1$s more orders to unlock %2$s bonus</string>
+    <string name="milestone_current_bonus">Current bonus: %1$s</string>
+    <string name="earned_today">Today</string>
+    <string name="earned_this_week">This Week</string>
+    <string name="earned_this_month">This Month</string>
+    <string name="earnings_breakdown">Earnings Breakdown</string>
     <string name="no_orders_yet">No orders yet</string>
     <string name="create_order">Create Order</string>
+    <string name="quick_order">Quick Order</string>
+    <string name="quick_order_title">Confirm Quick Order</string>
+    <string name="quick_order_confirm_message">We will send a courier to your location as soon as possible. Do you want to continue?</string>
     <string name="call_courier">Call Courier</string>
 
     <!-- Create Order Screen -->

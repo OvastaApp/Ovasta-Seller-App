@@ -5,6 +5,7 @@ import com.ovasta.sellers.data.remote.FcmTokenApiService
 import com.ovasta.sellers.data.remote.HomeApiService
 import com.ovasta.sellers.data.remote.HttpClientFactory
 import com.ovasta.sellers.data.remote.LoginApiService
+import com.ovasta.sellers.data.remote.MilestonesApiService
 import com.ovasta.sellers.data.remote.OrderHistoryApiService
 import com.ovasta.sellers.data.remote.ProductApiService
 import com.ovasta.sellers.data.remote.SettingsApiService
@@ -13,6 +14,7 @@ import com.ovasta.sellers.data.remote.WalletApiService
 import com.ovasta.sellers.data.repository.CreateOrderRepository
 import com.ovasta.sellers.data.repository.HomeRepository
 import com.ovasta.sellers.data.repository.LoginRepository
+import com.ovasta.sellers.data.repository.MilestonesRepository
 import com.ovasta.sellers.data.repository.OrderHistoryRepository
 import com.ovasta.sellers.data.repository.ProductRepository
 import com.ovasta.sellers.data.repository.SettingsRepository
@@ -20,6 +22,7 @@ import com.ovasta.sellers.data.repository.WalletRepository
 import com.ovasta.sellers.domain.repository.ICreateOrderRepository
 import com.ovasta.sellers.domain.repository.IHomeRepository
 import com.ovasta.sellers.domain.repository.ILoginRepository
+import com.ovasta.sellers.domain.repository.IMilestonesRepository
 import com.ovasta.sellers.domain.repository.IOrderHistoryRepository
 import com.ovasta.sellers.domain.repository.IProductRepository
 import com.ovasta.sellers.domain.repository.ISettingsRepository
@@ -68,6 +71,7 @@ val sharedModule = module {
     singleOf(::ProductApiService)
     singleOf(::FcmTokenApiService)
     singleOf(::SettingsApiService)
+    singleOf(::MilestonesApiService)
 
     // Repositories
     singleOf(::LoginRepository) bind ILoginRepository::class
@@ -77,6 +81,7 @@ val sharedModule = module {
     singleOf(::OrderHistoryRepository) bind IOrderHistoryRepository::class
     singleOf(::ProductRepository) bind IProductRepository::class
     singleOf(::SettingsRepository) bind ISettingsRepository::class
+    singleOf(::MilestonesRepository) bind IMilestonesRepository::class
 
     // ViewModels
     viewModelOf(::SplashViewModel)

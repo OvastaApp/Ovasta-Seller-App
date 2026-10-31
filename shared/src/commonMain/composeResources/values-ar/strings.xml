@@ -51,6 +51,7 @@
     <string name="profile_image">صورة الملف الشخصي</string>
     <string name="wallet">المحفظة</string>
     <string name="the_points">النقاط</string>
+    <string name="balance_details">تفاصيل الرصيد</string>
     <string name="points">نقاط</string>
 
     <string name="point">نقطه</string>
@@ -206,8 +207,19 @@
     <string name="equivalent_money">المبلغ المعادل</string>
     <string name="points_rate">سعر النقطة</string>
     <string name="my_orders">طلباتي</string>
+    <string name="milestones_progress">تقدمك</string>
+    <string name="orders_today_count">اليوم: %1$s طلب</string>
+    <string name="milestone_next_hint">%1$s طلبات متبقية للحصول على مكافأة %2$s</string>
+    <string name="milestone_current_bonus">المكافأة الحالية: %1$s</string>
+    <string name="earned_today">اليوم</string>
+    <string name="earned_this_week">هذا الأسبوع</string>
+    <string name="earned_this_month">هذا الشهر</string>
+    <string name="earnings_breakdown">تفاصيل الأرباح</string>
     <string name="no_orders_yet">لا توجد طلبات بعد</string>
     <string name="create_order">إنشاء طلب</string>
+    <string name="quick_order">طلب سريع</string>
+    <string name="quick_order_title">تأكيد الطلب السريع</string>
+    <string name="quick_order_confirm_message">سيتم إرسال مندوب إليك في أقرب وقت ممكن. هل تريد المتابعة؟</string>
     <string name="call_courier">اتصل بالسائق</string>
 
     <!-- Create Order Screen -->
